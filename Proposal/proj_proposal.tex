@@ -16,8 +16,8 @@
 
 %% These are standard LaTeX definitions for the document
 %%
-\title{Project Title}
-\author{The Author}
+\title{Logical Neural Networks: Opening the black box}
+\author{Daniel Thomas Braithwaite}
 
 %% This file can be used for creating a wide range of reports
 %%  across various Schools
@@ -38,6 +38,7 @@
 % You should specifiy your supervisor here with
 %     \supervisor{Firstname Lastname}
 % use \supervisors if there are more than one supervisor
+\supervisor{Marcus Frean}
 
 % Unless you've used the bschonscomp or mcompsci
 %  options above use
@@ -77,101 +78,24 @@
 
 \section*{1. Introduction}
 
-In this section you should include a very brief introduction to the
-problem to the problem and the project.
-
-Your project proposal should cover the following points:
-
-\begin{itemize}
-\item the engineering problem that you are going to solve;
-\item how you plan to solve your problem;
-\item how you intend to evaluate your solution; and
-\item any resource requirements for your project such as software,
-  hardware or other resources that will be needed in the course of the
-  project.
-\end{itemize}
-
-Your proposal should be not more than than 3 pages long.
+Neural Networks peform exceptonallty well over a wide range of different problems. However a problelm is that once trained these networks become a black box, near impossible for a human to understand what features the network is using to solve the problem presented to it. Logical Neural Netowrks (neural networks with logical activation functions) have been shown to provide a more understandable representation.
 
 \section*{2. The Problem}
 
-In this section you should give a brief description of the problem
-itself. You want to briefly explain the problem, why it is important
-to solve the problem and define your project aims. After reading this
-section, the reader should understand why it is a problem, believe
-that it is important to solve and have a clear idea of the aims of
-your project.
+Continueing on from previous work giving a proof of concept for LLN's, showing (in the case of the MINST dataset) that a trained LLN has significant improvements in the ease at which a human could understand the networks process. This improvement dosnt come free however, the cost is a significant accuracy decrcrease when compared to a standard NN. \\
 
-When describing the aims of the project, you should avoid vague,
-unmeasurable words like `analyse', `investigate', `describe', and use
-specific, measurable words like `implement', `demonstrate', `show',
-`prove'.
+The aim of this project is to explore the idea of LLN's and to investigate wether this accuracy cost can be mitigated but still maintain our ability to understand what the network is using to solve the given problem. This project will evaluate other activation functions based of this idea of Nosiy-OR/AND to see if we can achive a higher accuracy on datasets such as MNIST. Alog with evaluating the accuracy.\\
 
-For example:
-
-\begin{itemize}
-\item[\bf Good] The aim of this project is to implement and evaluate a
-  management system for network switches;
-\end{itemize}
-is much better than:
-\begin{itemize}
-\item[\bf Bad] The aim of this project is to investigate management
-  systems for network switches.
-\end{itemize}
-
-In the second case there is no idea of how much work is involved, and
-you will never know whether you have finished. You and your supervisor
-(and the markers of your project) may have very different ideas about
-what such an `investigation' involves. Of course, it is possible that
-the task you set yourself is not achievable, but if you are clear from
-the outset this is less likely, and will more easily be corrected.
+So far LLN's have only been evaluated on classification datasets (namely MNIST), we will implement and evaluate LLN's to solve a number of other non trivial problems which neural networks are often applyed to.
 
 \section*{3. Proposed Solution}
 
-In this section you will explain how solve the problem, that is, how
-you intend to carry the project out. At this early stage you need to
-be both clear about what you are going to do and flexible enough to
-adapt to changing circumstances. Making an early plan will not prevent
-you from running into trouble, but it will help you identify possible
-problems early. For example, if you intended to run an experiment in
-HCI, you might realise early on that there would be problems gathering
-sufficient data to get reliable results, and that you should re-design
-your experiment.
-
-Part of the planning process involves producing a timetable for when
-the work is actually going to be done.
-
-Each part of the project should produce some output. For example you
-might plan on spending two weeks on background reading: the output of
-this will be a bibliography, and a possibly a literature survey for
-your report. Indeed, if you take the advice given above about having
-specific, measurable goals, you should describe this part of your
-project as:
-
-\begin{itemize}
-\item[\bf Good] Produce bibliography (est: 2 weeks)
-\end{itemize}
-rather than
-\begin{itemize}
-\item[\bf Bad] Background reading (est: 2 weeks)
-\end{itemize}
-
-Note that the methodology you outline here is dependent upon the type
-of project and engineering area. You must talk to your supervisor
-about this.
 
 \section*{4. Evaluating your Solution}
 
-In this section you will explain how you will evaluate your solution
-once you have built it. The method of evaluation will be domain
-specific. Your supervisor should provide guidance as to what is an
-appropriate form of evaluation. For example, user testing for a HCI
-project or performance measurement for a Network Engineering project.
 
 \section*{5. Resource Requirements}
 
-In this section you will detail any resource requirements such as
-hardware, software or access to subjects.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \backmatter
