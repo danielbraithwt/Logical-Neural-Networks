@@ -1,0 +1,204 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\newtheorem{theorem}{Theorem}
+
+\title{%
+	Logical Neural Networks: Opening the black box\\
+	\large Neuron Paramaterisations
+}
+\author{Daniel Braithwaite}
+
+\begin{document}
+
+\maketitle
+
+\section{Continous Logic Based Paramaterisation}
+\subsection{Background}
+Based on the idea of continous logic (CL) \cite{basicConceptsCL} we can develop paramaterisations for various CL gates. First some background on CL. We define our CL on a closed interval $C = [A, B]$ i.e. if $a \in C \iff -1 \leq a \leq 1$. Let  $M = \frac{(A + B)}{2}$. We define basic operations on CL as 
+
+\begin{align}
+a \lor b &= max(a, b) \\
+a \land b &= min(a, b) \\
+\bar{a} &= 2M - a
+\end{align}
+
+We will omit the $\land$ from now on. The folowing are some of the laws of CL. The laws given here are the ones we find most useful. As we see these corospond to the laws of descrete logic (DL).
+
+\begin{align}
+& a \lor b = a, aa = a \\
+& a \lor b = b \lor a, ab = ba \\
+& (a \lor b) \lor c = a \lor (b \lor c), (ab)c = a(bc) \\
+& a(b \lor c) = ab \lor ac, a \lor bc = (a \lor b)(a \lor c) \\
+& \bar{a \lor b} = \bar{a}\bar{b}, \bar{ab} = \bar(a) \lor \bar{b} \\
+& \overline{\overline{a}} = a
+\end{align}
+
+\subsection{Differentation In CL}
+We can use the folowing two rules in CL
+
+\begin{align}
+\frac{\partial}{\partial x_1} \bigg[ (x_1 \lor x_2) \bigg] &= (x_1 - x_2)\\
+\frac{\partial}{\partial x_1} \bigg[ (x_1 \land x_2) \bigg] &= (x_2 - x_1)
+\end{align}
+
+
+\subsection{NAND Is Functionally Complete}
+Similarly to DL we can prove that NAND is functionally complete in CL.
+
+\begin{theorem}[NAND ($\uparrow$) is Functionally Complete]
+The NAND gate, defined as NOT(AND) can be used to represent any logical expression in CL
+\end{theorem}
+
+\begin{proof}
+\textbf{NOTE: This is simply a reiteration of the proof in DL as the laws are the same}
+It is sufficient to show we can represent NOT, AND, OR using NAND. First we consider NOT
+
+\begin{align*}
+\bar{a} &= \bar{a} \lor \bar{a} = \overline{a \land a} = a \uparrow a
+\end{align*}
+
+Now we show this is true for AND
+\begin{align*}
+a \land b = \overline{(\overline{a \land b})} = (\overline{a \uparrow b}) \uparrow (\overline{a \uparrow b})
+\end{align*}
+
+Finally consider the case of OR
+\begin{align*}
+a \lor b = \overline{\overline{a} \land \overline{b}} = \overline{(a \uparrow a) \land (b \uparrow b)} = (a \uparrow a) \uparrow (b \uparrow b)
+\end{align*}
+
+All operations used are laws of CL, so we have proved what was required and thus NAND is functionally complete.
+\end{proof}
+
+\subsection{Paramaterisation}
+We will consider a paramaterisation of a NAND gate. First we define our CL as folows, C = [-1, 1], we think of -1 as being as false as possible and 1 as being as positive as posible, giving us M = 0. We have n inputs to our gate, there value denoted $x_1, ..., x_n$, and our weights are defined as $\epsilon_1, ..., \epsilon_n$. We think of each input $x_i$ as being the probability that node i is on and we consider $\epsilon_i$ to be the probality that the input $x_i$ is relevent to our gate.\\
+
+So how do we link our $\epsilon_i$ to $x_i$. Take some $\mu_i$ to be the input from $x_i$ transformed according to $\epsilon_i$, therefor $\mu_i = f(x_i, \epsilon_i)$. First lets consider the descrete case, So if $\epsilon_i = 1$ then we consider input $x_i$ irrelevent to our gate, in the case of NAND this means that we want $\mu_i$ to be true, on the otherhand if $\epsilon_i = -1$ then input $x_i$ is relevent and we want $\mu_i = x_i$. Therefor we say that $\mu_i = OR(x_i, \epsilon_i) = max(x_i, \epsilon_i)$ 
+
+So the output from our NAND gate is given by $y = NOT(AND(\mu_1, ..., \mu_n) = -min(\mu_1, ..., \mu_n)$. So setting all $\epsilon_i$'s to -1 would give us a triditional NAND gate in CL
+
+\subsubsection{Comparason to DL}
+We want to see how this connects to NAND in the DL case, clearly if we have a CL defined over [0,1] we can see the connection. Consider a CL over [0,1] (Note that in this case $\bar{a} = 1 - a$), the table below represents a NAND gate with two inputs
+
+\begin{center}
+\begin{tabular}{| c | c | c | c |}
+\hline
+$x_1$ & $x_2$ & $x_1 \uparrow x_2$ & $1 - min(x_1, x_2)$ \\
+\hline
+\hline
+0 & 0 & 1 & 1 - 0 = 1 \\
+0 & 1 & 1 & 1 - 0 = 1 \\
+1 & 0 & 1 & 1 - 0 = 1 \\
+1 & 1 & 0 & 1 - 1 = 0 \\
+\hline
+\end{tabular}
+\end{center}
+
+We see this clearly represents a NAND gate, now we only need connect our CL over [-1, 1] to the CL over [0, 1]. We can define a bijection $f: [-1, 1] \longrightarrow [0, 1]$, take $f(x) = \frac{(x + 1)}{2}$
+
+\begin{theorem}
+$f(x) = \frac{(x + 1)}{2}$ is a bijection
+\end{theorem}
+
+\begin{proof}
+Say we have $f(x_1) = f(x_2)$, then we see the folowing
+\begin{align*}
+f(x_1) &= f(x_2)\\
+\frac{(x_1 + 1)}{2} &= \frac{(x_2 + 1)}{2}\\
+x_1 + 1 &= x_2 + 1\\
+x_1 &= x_2
+\end{align*}
+Therefor $f$ is one-to-one. Now we only need show $f$ is onto, consider the folowing
+
+\begin{align*}
+y &= \frac{x + 1}{2} \\
+2y &= x + 1\\
+2y - 1 &= x
+\end{align*}
+Therefor $x$ is also onto and therefor is a bijection.
+\end{proof}
+
+Now we can connect our NAND in a CL over [-1, 1] to a NAND in DL. 
+
+\subsubsection{Deriving Backpropagation Gradients}
+\textbf{NOTE: This is the origonal attempt at deriving gradients, before I realised I was differentatiing the logical functions incorrectly}
+We want to find the folowing quantiy
+
+\begin{align}
+\frac{\partial x_j}{\partial w_{k,j}} = \frac{\partial E}{\partial y_i} \frac{\partial d_i}{\partial x_j} \frac{\partial x_j}{\partial w_{k,j}}
+\end{align}
+
+Which involves solving for the individual components of this
+
+\begin{align*}
+\frac{\partial x_j}{\partial w_{k,j}} &= \frac{\partial}{\partial w_{k,j}} \bigg[ x_j \bigg] \\
+&= \frac{\partial}{\partial w_{k,j}} \bigg[ -\mu_{j, a_j} \bigg] \\
+&= \frac{\partial}{\partial w_{k,j}} \bigg[ -max(y_{a_j}, w_{a_j, j}) \bigg] \\
+&= 
+\begin{cases}
+0 & k \neq a\ or\ y_a > w_{a_j, j} \\
+-1 & otherwise
+\end{cases} 
+\end{align*}
+
+Here we define the folowing function to simplyfy things
+\begin{align*}
+C(k, j) =  
+\begin{cases}
+0 & k \neq a\ or\ y_a > w_{a_j, j} \\
+-1 & otherwise
+\end{cases} 
+\end{align*}
+We consider this function as being 0 if the weight $w_{k, j}$ had no effect on the output of neuron j, otherwise this function is 1. Making 
+
+\begin{align}
+\frac{\partial x_j}{\partial w_{k, j}} = C(k, j)
+\end{align}
+
+Now we derive
+
+\begin{align*}
+\frac{\partial y_j}{\partial x_jl} &= \frac{\partial}{\partial x_j} \bigg[ x_j\bigg] \\
+&= 1
+\end{align*}
+
+Now when deriving $\frac{\partial E}{\partial y_j}$ we must account for this quantity being different for when j is an output node or a node in the hidden layer. First we consider the output layer
+\begin{align}
+\frac{\partial E}{\partial y_j} = -(t_j -- y_j)
+\end{align}
+
+Giving us the folowing final quantify for change in weight when \textbf{node j is an output node}
+\begin{align}
+\frac{\partial E}{\partial w_{k,j}} = -C(k, j)(t_j - y_j)
+\end{align}
+
+Now we consider the more complicated case of node j being a hidden layer
+\begin{align*}
+\frac{\partial E}{\partial y_j} &= \sum_{i \in I_j} \frac{\partial E}{\partial y_i} \frac{\partial y_i}{\partial x_i} \frac{\partial x_i}{\partial y_j} \\
+&= \sum_{i \in I_j} \frac{\partial E}{\partial y_i} \frac{\partial x_i}{\partial y_j}
+\end{align*}
+
+We see that
+
+\begin{align*}
+\frac{\partial x_i}{\partial y_i} = C(i,j)
+\end{align*}
+
+Giving us the folowing final quantity for change in weights \textbf{when j is a hidden node}
+
+\begin{align}
+\frac{\partial E}{\partial w_{k,j}} = C(k,j) \bigg[ \sum_{i \in I_j} C(j, i) \frac{\partial E}{\partial y_i} \bigg]
+\end{align}
+
+\subsubsection{Experemtal Tests}
+A single NAND neuron is able to learn to be a NAND and NOT, this makes sense as a single nuron is able to represent these. We run in to trouble when trying to learn AND and OR as these require more than one NAND.
+
+\medskip
+\bibliographystyle{acm}
+\bibliography{bibliography}
+\end{document}
