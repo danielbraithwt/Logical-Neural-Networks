@@ -48,12 +48,15 @@ A \textbf{DNF-Network} is a three layer network where neurons in the hidden laye
 
 It is worth noteing that CNF and DNF form can have the nots of atoms in there clauses, a simple way to account for this is to double the number of inputs where one represents the atom and the next represents the negation of that atom.
 
-
-\section{Learnability Of Boolean Gates}
+\subsection{Learnability Of Boolean Gates}
 Theoretiaclly it makes sense for these networks to be able to learn the CNF and DNF representations of various boolean expressions, however before we attempt arbatary boolean functions we would like to start with something simple, namely expressions such as NOT, AND, NOR, NAND, XOR and IMPLIES. Results of which where promising, we where able to achieve a low error and from inspecting the weights we could see that the networks where infact learning the correct CNF and DNF representations.\\
 
-\section{Learnability Of Interesting Expressions}
-We now wish to see if we can use these networks to learn more interesting boolean formula, starting with expressions of 3 variables. However we encounter our first issue with this approach, despite being able to learn the given expressions and achieve a low error the weights are now sometimes not interpretable. This sugests that we need to use a different paramaterisation for our neurons. Specifically something which limits our neurons functionality so that we can maintian a well defined operation.
+\subsection{Learnability Of Interesting Expressions}
+We now wish to see if we can use these networks to learn more interesting boolean formula, starting with expressions of 3 variables. While we are able to achieve a small error there is now some noise (i.e. small non zero weights for inputs that are irrelevant). While a small ammount of noise is okay and can be pruned out after training we could run into issues if the ammount of noise increases as the number of inputs does. \\
+
+One other interesting observation to be made is that both the CNF and DNF Netoworks have trouble learning the boolean expression $(a\ XOR\ b)\ AND\ c$. They can't achevice an error lower than 1. Indivually we can learn an XOR gate and an AND gate but somehow combining the two results in something which is unlearnable.\\
+
+During the investigation of this a more sinister issue was uncovered, namely that these LNF netowrks are unable to learn boolean expressions of 2 variables when given 3. I.e. we give the network all values for three inputs, a, b and c but we only want to learn $a\ OR\ b$. This is a fundimental issue as in practice most problems will be made up of boolean expressions which dont rely on all inputs.
 
 \medskip
 \bibliographystyle{acm}
