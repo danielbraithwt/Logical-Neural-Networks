@@ -6,9 +6,9 @@ from Networks import trainNetwork
 import numpy as np
 import threading
 
-N_max = 4
+N_max = 10
 SS = 5
-repeat = 1
+repeat = 5
 
 def __perms(n):
     if not n:
@@ -51,9 +51,9 @@ for n in range(2, N_max):
         DNFPeformance = np.array([])
         PecpPeformance = np.array([])
 
-        print("[" + str(e) + "]: Starting Expression")
+        print("[" + str(e) + "] Starting Expression")
         for r in range(0, repeat):
-            print("[" + str(r) + "]: Starting Repition")
+            print("[" + str(r) + "] Starting Repition")
             print("[*] Training CNF")
             CNFN, CNFLoss = trainNetwork('cnf', data, targets, n, 2**n)
             print("[*] Training DNF")
@@ -75,6 +75,7 @@ for n in range(2, N_max):
         result.writelines(str(DNFPeformance) + " : " + str(DNF_m) + " : " + str(np.var(DNFPeformance)))
         result.writelines(str(PecpPeformance) + " : " + str(P_m) + " : " + str(np.var(PecpPeformance)))
         result.writelines("\n")
+        result.flush()
 
         print("[" + str(e) + "]: Result - CNF [" + str(CNF_m) + "], DNF [" + str(DNF_m) + "]" + ", P [" + str(P_m) + "]")
     result.close()
