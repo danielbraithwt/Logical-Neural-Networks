@@ -26,7 +26,7 @@ def __computeGrad(network, neuron, pterb, data, targets):
 
     return gradient
 
-def trainNetwork(t, data, targets, inputNodes, numC, it=10000, lr=0.1):
+def trainNetwork(t, data, targets, inputNodes, numC, q=None, it=10000, lr=0.1):
     if t == 'cnf':
         network = CNFNetwork(inputNodes, numC)
     elif t == 'dnf':
@@ -46,5 +46,8 @@ def trainNetwork(t, data, targets, inputNodes, numC, it=10000, lr=0.1):
         network.getOutput().updateWeights(g * lr)
         for d in network.getHidden():
             d.applyGrad()
+
+    if q:
+        q.put((network, __loss(network, data, targets)))
 
     return network, __loss(network, data, targets)
