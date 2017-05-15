@@ -4,7 +4,8 @@ sys.path.insert(0, '../lib')
 
 from Networks import trainNetwork
 import numpy as np
-import threading
+from multiprocessing import Process
+from multiprocessing import Queue
 
 N_max = 10
 SS = 5
@@ -31,54 +32,73 @@ def generateExpressions(n):
 
     return np.array(list(map(lambda x: (inputs, x), outputs)))
 
-for n in range(2, N_max):
-    print("\n\n[!] -- N = " + str(n) + " --")
-    result = open("results/" + str(n) + "-num-vars.txt", "w+")
-    print("[*] Generating Expressions")
-    allExpressions = generateExpressions(n)
-    # print(allExpressions)
-    idx = np.random.randint(len(allExpressions), size=SS)
-    expressions = allExpressions[idx,:]
+if __name__ == "__main__":
+    DNFResults = Queue()
+    CNFResults = Queue()
+    PCEPResults = Queue()
 
-    print("[*] Running Experements")
-    for e in range(0, len(expressions)):
-        expression = expressions[e]
+    for n in range(2, N_max):
+        print("\n\n[!] -- N = " + str(n) + " --")
+        result = open("results/" + str(n) + "-num-vars.txt", "w+")
+        print("[*] Generating Expressions")
+        allExpressions = generateExpressions(n)
+        # print(allExpressions)
+        idx = np.random.randint(len(allExpressions), size=SS)
+        expressions = allExpressions[idx,:]
 
-        data = expression[0]
-        targets = expression[1]
+        print("[*] Running Experements")
+        for e in range(0, len(expressions)):
+            expression = expressions[e]
 
-        CNFPeformance = np.array([])
-        DNFPeformance = np.array([])
-        PecpPeformance = np.array([])
+            data = expression[0]
+            targets = expression[1]
 
-        print("[" + str(e) + "] Starting Expression")
-        for r in range(0, repeat):
-            print("[" + str(r) + "] Starting Repition")
-            print("[*] Training CNF")
-            CNFN, CNFLoss = trainNetwork('cnf', data, targets, n, 2**n)
-            print("[*] Training DNF")
-            DNFN, DNFLoss = trainNetwork('dnf', data, targets, n, 2**n)
-            print("[*] Training Perceptron")
-            PN, PLoss = trainNetwork('perceptron', data, targets, n, 2**n)
+            CNFPeformance = np.array([])
+            DNFPeformance = np.array([])
+            PecpPeformance = np.array([])
 
-            CNFPeformance = np.append(CNFPeformance, CNFLoss)
-            DNFPeformance = np.append(DNFPeformance, DNFLoss)
-            PecpPeformance = np.append(PecpPeformance, PLoss)
+            print("[" + str(e) + "] Starting Expression")
+            for r in range(0, repeat):
+                print("[" + str(r) + "] Starting Repition")
+                # print("[*] Training CNF")
+                cnfP = Process(target=trainNetwork, args=('cnf', data, targets, n, 2**n, CNFResults))
+                dnfP = Process(target=trainNetwork, args=('dnf', data, targets, n, 2**n, DNFResults))
+                pcepP = Process(target=trainNetwork, args=('perceptron', data, targets, n, 2**n, PCEPResults))
 
-        CNF_m = CNFPeformance.mean()
-        DNF_m = DNFPeformance.mean()
-        P_m = PecpPeformance.mean()
+                print("[*] Starting Learning")
 
-        result.writelines(str(n))
-        result.writelines(str(expression))
-        result.writelines(str(CNFPeformance) + " : " + str(CNF_m) + " : " + str(np.var(CNFPeformance)))
-        result.writelines(str(DNFPeformance) + " : " + str(DNF_m) + " : " + str(np.var(DNFPeformance)))
-        result.writelines(str(PecpPeformance) + " : " + str(P_m) + " : " + str(np.var(PecpPeformance)))
-        result.writelines("\n")
-        result.flush()
+                cnfP.start()
+                dnfP.start()
+                pcepP.start()
 
-        print("[" + str(e) + "]: Result - CNF [" + str(CNF_m) + "], DNF [" + str(DNF_m) + "]" + ", P [" + str(P_m) + "]")
-    result.close()
+                cnfP.join()
+                dnfP.join()
+                pcepP.join()
+
+                CNFN, CNFLoss = CNFResults.get()
+                DNFN, DNFLoss = DNFResults.get()
+                PN, PLoss = PCEPResults.get()
+
+                print("[*] Learning Finished")
+
+                CNFPeformance = np.append(CNFPeformance, CNFLoss)
+                DNFPeformance = np.append(DNFPeformance, DNFLoss)
+                PecpPeformance = np.append(PecpPeformance, PLoss)
+
+            CNF_m = CNFPeformance.mean()
+            DNF_m = DNFPeformance.mean()
+            P_m = PecpPeformance.mean()
+
+            result.writelines(str(n))
+            result.writelines(str(expression))
+            result.writelines(str(CNFPeformance) + " : " + str(CNF_m) + " : " + str(np.var(CNFPeformance)))
+            result.writelines(str(DNFPeformance) + " : " + str(DNF_m) + " : " + str(np.var(DNFPeformance)))
+            result.writelines(str(PecpPeformance) + " : " + str(P_m) + " : " + str(np.var(PecpPeformance)))
+            result.writelines("\n")
+            result.flush()
+
+            print("[" + str(e) + "]: Result - CNF [" + str(CNF_m) + "], DNF [" + str(DNF_m) + "]" + ", P [" + str(P_m) + "]")
+        result.close()
 
 
-print("[!] DONE!!")
+    print("[!] DONE!!")
