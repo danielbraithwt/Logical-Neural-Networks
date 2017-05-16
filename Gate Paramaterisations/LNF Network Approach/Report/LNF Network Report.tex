@@ -60,6 +60,18 @@ During the investigation of this a more sinister issue was uncovered, namely tha
 
 It turns out this problem was not caused by a problem with our LNF Networks but with the weight initilizations, namely they where currently initilised to 0, changing the weights to be randomly distrubuted over the interval [0,1] fixed this problem and allows the LNF Networks to solve all attempted problems so far, along with there weight representations being intepretable. However the networks seem quite sensitive to there intial conditions, an investgation of best ways to initilise LNF networks would be prudent.
 
+\section{LNF Network Peformance}
+We wish to compare the CNF and DNF networks against each other but also against standard perceptron networks. We will take 5 randomly choosen boolean expressions of n inputs for n between 2 and 10. For each we will train CNF, DNF and Perceptron networks 5 separate times and use the datapoints to peform significance tests between the three.
+
+\section{LNF Network Generalization}
+Say we are trying to learn a boolean function of $n$ inputs, we know for a fact there are $2^n$ total input patterns in total for this boolean function. We also know there are $2^n$ total possible boolean functions with $n$ inputs. So an important question to ask is once we start to remove some of the traning examples what happens to our network accuracy? The usefulness of standard neural networks is in part because they are able to take a sample of the total data set and then generalise well to unseen examples, can we achieve the same with LNF networks?\\
+
+We will take one boolean expression with $n = 4$ and slowley remove from the pool of traning examples, training a fresh network each time. This will allow us to see a trend of network accuracy as we remove more and more from the training pool.
+
+\section{LNF Network Pruning}
+
+\section{LNF Network Rule Extraction}
+
 \medskip
 \bibliographystyle{acm}
 \bibliography{bibliography}
