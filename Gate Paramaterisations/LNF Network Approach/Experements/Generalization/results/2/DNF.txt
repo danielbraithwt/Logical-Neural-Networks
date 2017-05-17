@@ -1,0 +1,39 @@
+Expression:
+[[0, 0, 0] [0, 0, 1] [0, 1, 0] [0, 1, 1] [1, 0, 0] [1, 0, 1] [1, 1, 0]
+ [1, 1, 1]]
+[1 1 1 0 0 1 1 0]
+
+i = 7
+Training Loss: 0.0033131566231981123
+Generalization Loss: 0.0
+Overall Loss: 0.003313156623198112
+
+i = 7
+Training Loss: 0.095412468041371
+Generalization Loss: 2.30154715414e-13
+Overall Loss: 0.09541246804160115
+
+i = 7
+Training Loss: 0.0022368741653772334
+Generalization Loss: 1.25302399208
+Overall Loss: 1.2552608662458704
+
+i = 7
+Training Loss: 0.001331437664462008
+Generalization Loss: 1.19680387026
+Overall Loss: 1.1981353079288433
+
+i = 7
+Training Loss: 0.0017448103601344267
+Generalization Loss: 1.01297036084
+Overall Loss: 1.0147151712011997
+
+i = 7
+Training Loss: 0.001293472858708385
+Generalization Loss: 3.13205396364
+Overall Loss: 3.133347436495968
+
+i = 7
+Training Loss: 0.0006861073498831776
+Generalization Loss: 4.00967488653
+Overall Loss: 4.010360993877457
