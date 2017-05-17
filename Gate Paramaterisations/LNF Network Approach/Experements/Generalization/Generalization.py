@@ -6,7 +6,7 @@ from Networks import trainNetwork, __loss
 from multiprocessing import Process
 import numpy as np
 
-N = 4
+N = 3
 
 def __perms(n):
     if not n:
@@ -56,7 +56,7 @@ def runExperement(netType, name, data, targets):
         for i in range(0, len(data)):
             if not i in ids:
                 testData.append(data[i])
-                testTargets.append(targts[i])
+                testTargets.append(targets[i])
 
         GLoss = __loss(NET, testData, testTargets)
         ALoss = __loss(NET, data, targets)
@@ -66,9 +66,9 @@ def runExperement(netType, name, data, targets):
         result.write("Generalization Loss: " + str(GLoss) + "\n")
         result.write("Overall Loss: " + str(ALoss) + "\n")
 
-def runExperementThread(netType, name, data, targets):
-    return Process(target=runExperement, args=(netType, name, data, targets))
-
+# def runExperementThread(netType, name, data, targets):
+#     return Process(target=runExperement, args=(netType, name, data, targets))
+#
 if __name__ == "__main__":
     print("[*] Generating Expressions")
     allExpressions = generateExpressions(N)
@@ -83,16 +83,16 @@ if __name__ == "__main__":
     print(str(data) + "\n")
     print(str(targets) + "\n")
 
-    cnfP = runExperementThread("cnf", "CNF", data, targets)
-    dnfP = runExperementThread("dnf", "DNF", data, targets)
-    PcepP = runExperementThread("perceptron", "Perceptron", data, targets)
-
-    cnfP.start()
-    dnfP.start()
-    PcepP.start()
-
-    cnfP.join()
-    dnfP.join()
-    PcepP.join()
+    runExperement("cnf", "CNF", data, targets)
+    runExperement("dnf", "DNF", data, targets)
+    runExperement("perceptron", "Perceptron", data, targets)
+    #
+    # cnfP.start()
+    # dnfP.start()
+    # PcepP.start()
+    #
+    # cnfP.join()
+    # dnfP.join()
+    # PcepP.join()
 
     print("[*] Done!")
