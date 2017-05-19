@@ -21,11 +21,10 @@ data = np.array([
 targets = [1.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0]
 
 device_name = None
-
-if len(sys.argv) == 1:
+if len(sys.argv) == 0:
     device_name = "cpu"
 else:
-    device_name = sys.argv[1]
+    device_name = sys.argv[0]
     
 device = None
 if device_name == "cpu":
@@ -33,8 +32,9 @@ if device_name == "cpu":
 elif device_name == "gpu":
     device = "/gpu:0"
 
-
-with tf.device(device):
+with tf.device('/cpu:0'):
+    model = tf.global_variables_initializer()
+    
     ones = tf.constant(np.repeat([1.0], 2**N).T, name='ones')
 
     # Data and target variables
@@ -42,11 +42,12 @@ with tf.device(device):
     y = tf.placeholder("float64", [2**N])
 
     x_prime = tf.concat([tf.expand_dims(ones, 1), x], axis=1)
-
+    
     # Set up weights
     w_hidden = tf.Variable(np.array(np.random.rand(2**N, N + 1)), name='w_hidden')
     w_out = tf.Variable(np.random.rand(2**N + 1), name='w_out')
 
+with tf.device(device):
     # Compute output of hidden layer
     hidden_out = 1 - tf.exp(-tf.matmul(w_hidden, tf.transpose(x_prime)))
     hidden_out_prime = tf.concat([tf.expand_dims(ones, 1), hidden_out], axis=1)
@@ -61,8 +62,6 @@ with tf.device(device):
 
     clip_op_hidden = tf.assign(w_hidden, tf.clip_by_value(w_hidden, 0, np.infty))
     clip_op_out = tf.assign(w_out, tf.clip_by_value(w_out, 0, np.infty))
-
-    model = tf.global_variables_initializer()
 
 start_time = time.time()
 
