@@ -1,13 +1,14 @@
 import sys
-sys.path.insert(0, '../lib')
+sys.path.insert(0, '../lib/TensorFlow')
 
 
-from Networks import trainNetwork
+from LNFNetwork import trainNetwork
 import numpy as np
 from multiprocessing import Process
 from multiprocessing import Queue
 
 N_max = 10
+N_start = 2
 SS = 5
 repeat = 5
 
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     CNFResults = Queue()
     PCEPResults = Queue()
 
-    for n in range(2, N_max):
+    for n in range(N_start, N_max):
         print("\n\n[!] -- N = " + str(n) + " --")
         result = open("results/" + str(n) + "-num-vars.txt", "w+")
         print("[*] Generating Expressions")
