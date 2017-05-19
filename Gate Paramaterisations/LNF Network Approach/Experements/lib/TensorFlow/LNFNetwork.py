@@ -21,16 +21,18 @@ data = np.array([
 targets = [1.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0]
 
 device_name = None
-if len(sys.argv) == 0:
+
+if len(sys.argv) == 1:
     device_name = "cpu"
 else:
-    device_name = sys.argv[0]
+    device_name = sys.argv[1]
     
 device = None
 if device_name == "cpu":
     device = "/cpu:0"
 elif device_name == "gpu":
     device = "/gpu:0"
+
 
 with tf.device(device):
     ones = tf.constant(np.repeat([1.0], 2**N).T, name='ones')
