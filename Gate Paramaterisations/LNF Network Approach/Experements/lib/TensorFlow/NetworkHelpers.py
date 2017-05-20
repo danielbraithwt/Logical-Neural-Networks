@@ -1,3 +1,4 @@
+import numpy as np
 from NeuralNetwork import noisy_or_activation, noisy_and_activation, perceptron_activation, train_network
 
 def train_cnf_network(n, data, targets):

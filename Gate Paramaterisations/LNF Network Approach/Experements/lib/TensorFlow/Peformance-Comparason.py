@@ -5,7 +5,10 @@ from multiprocessing import Queue
 import matplotlib.pyplot as plt
 import scipy.stats as ss
 
-n_max = 4
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '4'
+
+n_max = 3
 n_start = 2
 SS = 5
 repeat = 5
@@ -20,7 +23,7 @@ def __perms(n):
         s = bin(i)[2:]
         s = "0" * (n-len(s)) + s
 
-        s_prime = list(map(lambda x: int(x), list(s)))
+        s_prime = np.array(list(map(lambda x: int(x), list(s))))
         p.append(s_prime)
 
     return p
@@ -31,6 +34,38 @@ def generateExpressions(n):
 
     return np.array(list(map(lambda x: (inputs, x), outputs)))
 
+
+def run_experement(func, n, data, targets, q):
+    net, loss, time = func(n, data, targets)
+    q.put((net, loss, time))
+
+def runExperements(n, data, targets):
+    cnf_res = Queue()
+    dnf_res = Queue()
+    pcep_res = Queue()
+    
+    cnf_p = Process(target=run_experement, args=(train_cnf_network, n, data, targets, cnf_res))
+    dnf_p = Process(target=run_experement, args=(train_dnf_network, n, data, targets, dnf_res))
+    pcep_p = Process(target=run_experement, args=(train_perceptron_network, n, data, targets, pcep_res))
+
+    cnf_p.start()
+    dnf_p.start()
+    pcep_p.start()
+
+    cnf_p.join()
+    dnf_p.join()
+    pcep_p.join()
+
+    cnf_net, cnf_loss, cnf_time = cnf_res.get()
+    dnf_net, dnf_loss, dnf_time = dnf_res.get()
+    pcep_net, pcep_loss, pcep_time = pcep_res.get()
+    
+    #cnf_net, cnf_loss, cnf_time = train_cnf_network(n, data, targets)
+    #dnf_net, dnf_loss, dnf_time = train_dnf_network(n, data, targets)
+    #pcep_net, pcep_loss, pcep_time = train_perceptron_network(n, data, targets)
+
+    print("[T] Training Time: [CNF: " + str(cnf_time) + ", DNF: " + str(dnf_time) + ", PCEP: " + str(pcep_time))
+    return cnf_loss, dnf_loss, pcep_loss
 
 if __name__ == "__main__":
     cnf_data = []
@@ -62,8 +97,12 @@ if __name__ == "__main__":
         for e in range(0, len(expressions)):
             expression = expressions[e]
 
-            data = expression[0]
-            targets = expression[1]
+            data = np.asarray(expression[0].tolist(), dtype=np.float64)
+            targets = np.asarray(expression[1].tolist(), dtype=np.float64)
+
+            print("[" + str(e) + "] Experement:")
+            print(data)
+            print(targets)
 
             cnf_peformance = []
             dnf_peformance = []
@@ -74,7 +113,7 @@ if __name__ == "__main__":
 
                 cnf_peformance.append(cnf_loss)
                 dnf_peformance.append(dnf_loss)
-                pecp_peformance.append(pcep_loss)
+                pcep_peformance.append(pcep_loss)
 
 
             cnf_m = np.array(cnf_peformance).mean()
@@ -85,9 +124,9 @@ if __name__ == "__main__":
             dnf_means.append(dnf_m)
             pcep_means.append(pcep_m)
 
-            cnf_f.writeline(str(cnf_means))
-            dnf_f.writeline(str(dnf_means))
-            pcep_f.writeline(str(pcep_means))
+            cnf_f.write(str(cnf_means) + "\n")
+            dnf_f.write(str(dnf_means) + "\n")
+            pcep_f.write(str(pcep_means) + "\n")
 
         cnf_data.append(np.array(cnf_means).mean())
         cnf_std.append(np.array(cnf_means).std())
@@ -96,13 +135,21 @@ if __name__ == "__main__":
         dnf_std.append(np.array(dnf_means).std())
         
         pcep_data.append(np.array(pcep_means).mean())
-        pecp_std.append(np.array(pcep_means).std())
+        pcep_std.append(np.array(pcep_means).std())
                     
 
     # Draw the graph from collected data
     x_axis = np.array(range(n_start, n_max))
     df = np.repeat(SS-1, n_max - n_start)
+
+    plt.plot(x_axis, cnf_data, '-o', color='b', label='CNF')
+    plt.errorbar(x_axis, cnf_data, yerr=ss.t.ppf(0.95, df)*cnf_std, color='b')
+
+    plt.plot(x_axis, dnf_data, '-o', color='r', label='DNF')
+    plt.errorbar(x_axis, dnf_data, yerr=ss.t.ppf(0.95, df)*dnf_std, color='r')
+
+    plt.plot(x_axis, pcep_data, '-o', color='g', label='Perceptron')
+    plt.errorbar(x_axis, pcep_data, yerr=ss.t.ppf(0.95, df)*pcep_std, color='g')
     
-    plt.errorbar(x_axis, cnf_data, yerr=ss.t.ppf(0.95, df)*cnf_std)
-    plt.errorbar(x_axis, dnf_data, yerr=ss.t.ppf(0.95, df)*dnf_std)
-    plt.errorbar(x_axis, pecp_data, yerr=ss.t.ppf(0.95, df)*pcep_std)
+                 
+    plt.savefig("peformance.png")
