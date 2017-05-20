@@ -8,6 +8,7 @@ from multiprocessing import Queue
 import matplotlib
 import matplotlib.pyplot as plt
 import scipy.stats as ss
+import random
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '4'
@@ -34,9 +35,26 @@ def __perms(n):
 
     return p
 
+def __n_rand_perms(n, size):
+    if not n:
+        return
+
+    idx = [random.randrange(2**n) for i in range(size)]
+
+    p = []
+
+    for i in idx:
+        s = bin(i)[2:]
+        s = "0" * (n-len(s)) + s
+
+        s_prime = np.array(list(map(lambda x: int(x), list(s))))
+        p.append(s_prime)
+
+    return p
+
 def generateExpressions(n):
     inputs = __perms(n)
-    outputs = __perms(len(inputs))
+    outputs = __n_rand_perms(len(inputs), 5)
 
     return np.array(list(map(lambda x: (inputs, x), outputs)))
 
