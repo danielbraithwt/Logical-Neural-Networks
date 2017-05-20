@@ -126,9 +126,9 @@ if __name__ == "__main__":
             dnf_means.append(dnf_m)
             pcep_means.append(pcep_m)
 
-            cnf_f.write(str(cnf_means) + "\n")
-            dnf_f.write(str(dnf_means) + "\n")
-            pcep_f.write(str(pcep_means) + "\n")
+            cnf_f.write(str(cnf_peformance) + "\n")
+            dnf_f.write(str(dnf_peformance) + "\n")
+            pcep_f.write(str(pcep_peformance) + "\n")
 
         cnf_data.append(np.array(cnf_means).mean())
         cnf_std.append(np.array(cnf_means).std())
@@ -157,5 +157,5 @@ if __name__ == "__main__":
     plt.plot(x_axis, pcep_data, '-o', color='g', label='Perceptron')
     plt.errorbar(x_axis, pcep_data, yerr=ss.t.ppf(0.95, df)*pcep_std, color='g')
     
-                 
+    plt.legend()
     plt.savefig("peformance.png")
