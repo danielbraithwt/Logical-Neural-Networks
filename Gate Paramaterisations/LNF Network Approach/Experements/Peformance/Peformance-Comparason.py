@@ -5,13 +5,16 @@ from NetworkHelpers import train_cnf_network, train_dnf_network, train_perceptro
 import numpy as np
 from multiprocessing import Process
 from multiprocessing import Queue
+import matplotlib
 import matplotlib.pyplot as plt
 import scipy.stats as ss
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '4'
 
-n_max = 3
+plt.switch_backend("TkAgg")
+
+n_max = 10
 n_start = 2
 SS = 5
 repeat = 5
@@ -62,10 +65,6 @@ def runExperements(n, data, targets):
     cnf_net, cnf_loss, cnf_time = cnf_res.get()
     dnf_net, dnf_loss, dnf_time = dnf_res.get()
     pcep_net, pcep_loss, pcep_time = pcep_res.get()
-    
-    #cnf_net, cnf_loss, cnf_time = train_cnf_network(n, data, targets)
-    #dnf_net, dnf_loss, dnf_time = train_dnf_network(n, data, targets)
-    #pcep_net, pcep_loss, pcep_time = train_perceptron_network(n, data, targets)
 
     print("[T] Training Time: [CNF: " + str(cnf_time) + ", DNF: " + str(dnf_time) + ", PCEP: " + str(pcep_time))
     return cnf_loss, dnf_loss, pcep_loss
