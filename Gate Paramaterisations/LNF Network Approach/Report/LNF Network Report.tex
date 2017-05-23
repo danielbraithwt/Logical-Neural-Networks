@@ -2,8 +2,10 @@
 
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{amssymb}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
+\usepackage[linesnumbered,ruled]{algorithm2e}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -68,9 +70,42 @@ Say we are trying to learn a boolean function of $n$ inputs, we know for a fact 
 
 We will take one boolean expression with $n = 4$ and slowley remove from the pool of traning examples, training a fresh network each time. This will allow us to see a trend of network accuracy as we remove more and more from the training pool.
 
-\section{LNF Network Pruning}
-
 \section{LNF Network Rule Extraction}
+The motivation for this project is to beable to train these networks and esentially extract rules from them. How ever as the networks get larger we see that the networks pickup noise so we must investigate how to remove this noise and then extract rules from the network
+
+\subsection{LNF Network Pruning}
+A nice property of LNF Networks is that there weights directly represent how relevant they are to the network. The larger the weight the more important that perticular input is. Our goal here is to find weights less than some threshold and set them to 0, removing noise and allowing us to uncover the CNF or DNF expression (or something close to it).
+
+The question now becomes how to we decide on a threshold. We could investigate trained networks for which we know what the respresentation should look like and decide on what an approaite threshold should be. From my investigation I have found that in allcases weights less than 1 represent noise, so this would be a good place to start. We will call this method relevance pruning.
+
+\subsubsection{Relevance Pruning}
+\begin{algorithm}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+
+\underline{Function: Relevance Prune} $(hidden,output,threshold)$\\
+\Input{The weights for the hidden nodes and output nodes finally a threshold for the weights}
+\Output{Pruned weights}
+
+$H \gets \varnothing$
+$O \gets \varnothing$
+
+\For{$i \gets\ 1\ to\ |H|$}{
+\If{$output_i < threshold$}{
+$H_{i} \gets {0,...,0}$
+$O_i \gets 0$
+}
+\Else{
+$H_{i} \gets PRUNE(hidden_{i}, threshold)$   \tcc{PRUNE simply sets any value less than threshold to 0}
+$O_i \gets output_i$
+}
+
+\Return{H, O}
+}
+\caption{Algorythm for peforming Relevance Pruning on some LNF Network}
+\end{algorithm}
+
+It should be noted that this algorythm dosnt account for byases being in the weight vectors, if they are some indicies will need to be shifted
 
 \medskip
 \bibliographystyle{acm}
