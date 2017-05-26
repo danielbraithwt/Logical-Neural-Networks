@@ -1,1 +1,1 @@
-nohup python3 -u Generalization.py >experement.log 2>&1 &
+nohup python3 -u Generalization-Comparason.py >experement.log 2>&1 &

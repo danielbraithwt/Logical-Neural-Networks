@@ -3,6 +3,9 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amssymb}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subfig}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[linesnumbered,ruled]{algorithm2e}
@@ -62,6 +65,103 @@ During the investigation of this a more sinister issue was uncovered, namely tha
 
 It turns out this problem was not caused by a problem with our LNF Networks but with the weight initilizations, namely they where currently initilised to 0, changing the weights to be randomly distrubuted over the interval [0,1] fixed this problem and allows the LNF Networks to solve all attempted problems so far, along with there weight representations being intepretable. However the networks seem quite sensitive to there intial conditions, an investgation of best ways to initilise LNF networks would be prudent.
 
+\section{LNF Network Learning Issues}
+Before we can hope to compare peformance, pruning or generalization we must address an issue with learning boolean functions of size 7 or greater.
+
+\begin{figure}[H]
+\centering
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-LD-iterations.png}
+    \caption{Boolean Formula of size 6}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-LD2-iterations.png}
+    \caption{Boolean Formula of size 7}
+  \end{minipage}
+\end{figure}
+
+The above graphs demonstraite a CNF Network learning boolean formulas of size 6 and 7. As we move from 6 to 7 we are unable to achieve an error close enough to 0. As we further increase N this only gets worse. Here we will explore possible options for how to fix this
+
+\subsection{Weight Initilization}
+Currently the weights are initilized from the uniform distrubution $[0,1]$, however one noticible feature of trained networks of lower inputs is that the weights which noise (i.e. once removed reveal the CNF or DNF of the formula) are in the interval $[0,1]$. Trying different intervals for initilizing the weights could result in better peformance.
+
+\begin{figure}[H]
+\centering
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-LD-WI-01.png}
+    \caption{Weight initilization from uniform in [1.0, 3.0]}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-LD-WI-02.png}
+    \caption{Weight initilization from uniform in [0.5, 1.5]}
+  \end{minipage}
+\begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-LD-WI-03.png}
+    \caption{Weight initilization from uniform in [0.0, 2.0]}
+  \end{minipage}
+\end{figure}
+
+This significantly improves the peformance of learning boolean functions of 7 inputs for learning all boolean functions of less that 7 inputs aswell. Does further increasing the upper bound on this initilization range keep increasing the peformance? Also does this change in initilization range fix the similar problems with boolean functions of size greater than 7?
+
+\begin{figure}[H]
+\centering
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-LD-WI-04.png}
+    \caption{Weight initilization from uniform in [0.0, 3.0]}
+  \end{minipage}
+  \hfill
+\end{figure}
+
+So further increasing the range does not help peformance. Also our current change dosnt benifit when we move to functions of size 8
+
+\begin{figure}[H]
+\centering
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-LD-WI-06.png}
+    \caption{Size 8 Weight initilization from uniform in [0.0, 1.0]}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-LD-WI-05.png}
+    \caption{Weight initilization from uniform in [0.0, 2.0]}
+  \end{minipage}
+\end{figure}
+
+\subsection{Different Optimizers}
+Currently we are using Gradient Descent to optimize our paramaters, however there are other optimization techequics that could be more suitible our networks. Such as Adam or RMSProp.
+
+\begin{figure}[H]
+\centering
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-OP-ADAM-01.png}
+    \caption{Size 8 With ADAM optimizer}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-OP-RMS-01.png}
+    \caption{Size 8 With RMS optimizer}
+  \end{minipage}
+\end{figure}
+
+RMSProp gives us signigicant improvement at 8 inputs, but are we able to maintain this improvement while we scale up the number of inputs? From experementation as we increase the number of inputs we need a smaller learning rate to achieve a smalle error. This means the larger the number of inputs the larger the training time required, as demonstraited below
+
+\begin{figure}[H]
+\centering
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-OP-RMS-03.png}
+    \caption{RMSProp with size 9, learning rate 0.0005 and total iterations 20000. Error 0.5}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{CNF-OP-RMS-04.png}
+    \caption{RMSProp with size 10, learning rate 0.0005 and total iterations 25000. Error 9.5}
+  \end{minipage}
+\end{figure}
+
+One thing to consider is that despite the fact that we might have the correct CNF or DNF representation our error wont be 0. Because of how the activations work our error approaches 0 as the correct weights approach infinity. As the number of inputs increase the number of paramaters in the network increase exponentially and the small errors from these neurons build up. So larger networks might have a larger error even when we have converged on the optimal solution.
+
 \section{LNF Network Peformance}
 We wish to compare the CNF and DNF networks against each other but also against standard perceptron networks. We will take 5 randomly choosen boolean expressions of n inputs for n between 2 and 10. For each we will train CNF, DNF and Perceptron networks 5 separate times and use the datapoints to peform significance tests between the three.
 
@@ -79,7 +179,7 @@ A nice property of LNF Networks is that there weights directly represent how rel
 The question now becomes how to we decide on a threshold. We could investigate trained networks for which we know what the respresentation should look like and decide on what an approaite threshold should be. From my investigation I have found that in allcases weights less than 1 represent noise, so this would be a good place to start. We will call this method relevance pruning.
 
 \subsubsection{Relevance Pruning}
-\begin{algorithm}
+\begin{algorithm}[H]
 \SetKwInOut{Input}{Input}
 \SetKwInOut{Output}{Output}
 
