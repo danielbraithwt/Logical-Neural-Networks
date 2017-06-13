@@ -58,7 +58,7 @@ class Or():
 
 
 def build_cnf(n, network):
-    pruned_network = Pruning.relevance_pruning(network, 1.0)
+    pruned_network = network#Pruning.relevance_pruning(network, 1.0)
 
     hidden_w = pruned_network[0]
     out_w = pruned_network[1]
@@ -149,7 +149,8 @@ if __name__ == '__main__':
     data = expression[0]
     targets = expression[1]
 
-    network, loss, time = train_cnf_network(n, data, targets)
+    network, loss, time = train_cnf_network(n, data, targets, iterations=50000)
+    print(loss)
     cnf = build_cnf(n, network)
 
     print(data)

@@ -160,7 +160,7 @@ RMSProp gives us signigicant improvement at 8 inputs, but are we able to maintai
   \end{minipage}
 \end{figure}
 
-One thing to consider is that despite the fact that we might have the correct CNF or DNF representation our error wont be 0. Because of how the activations work our error approaches 0 as the correct weights approach infinity. As the number of inputs increase the number of paramaters in the network increase exponentially and the small errors from these neurons build up. So larger networks might have a larger error even when we have converged on the optimal solution.
+However these expressions are still not correct, even at n=4 we are able to achieve a low error but we cant extract the correct CNF formula. To make the error easier to intepret we will switch to using the cross entropy loss. We now observe that when training on 4 inputs we achieve an error of 1.1 but when we extract our formula we find we are getting 4 of the input patterns wrong. This indicates that our Noisy-OR and Noisy-AND neurons arnt restrictive enough and allow solutions which dont corospond to an OR or AND operation. So we need to choose a different paramaterisation for our CNF and DNF Networks
 
 \section{LNF Network Peformance}
 We wish to compare the CNF and DNF networks against each other but also against standard perceptron networks. We will take 5 randomly choosen boolean expressions of n inputs for n between 2 and 10. For each we will train CNF, DNF and Perceptron networks 5 separate times and use the datapoints to peform significance tests between the three.
