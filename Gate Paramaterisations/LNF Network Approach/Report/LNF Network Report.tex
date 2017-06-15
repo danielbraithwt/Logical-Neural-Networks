@@ -160,7 +160,32 @@ RMSProp gives us signigicant improvement at 8 inputs, but are we able to maintai
   \end{minipage}
 \end{figure}
 
-However these expressions are still not correct, even at n=4 we are able to achieve a low error but we cant extract the correct CNF formula. To make the error easier to intepret we will switch to using the cross entropy loss. We now observe that when training on 4 inputs we achieve an error of 1.1 but when we extract our formula we find we are getting 4 of the input patterns wrong. This indicates that our Noisy-OR and Noisy-AND neurons arnt restrictive enough and allow solutions which dont corospond to an OR or AND operation. So we need to choose a different paramaterisation for our CNF and DNF Networks
+However these expressions are still not correct, even at n=4 we are able to achieve a low error but we cant extract the correct CNF formula. To make the error easier to intepret we will switch to using the cross entropy loss. We now observe that when training on 4 inputs we achieve an error of 1.1 but when we extract our formula we find we are getting 4 of the input patterns wrong. This indicates that our Noisy-OR and Noisy-AND neurons arnt restrictive enough and allow solutions which dont corospond to an OR or AND operation. So we need to choose a different paramaterisation for our CNF and DNF Networks.
+
+\subsection{Regularisation}
+Esentially we know that there exsists a weight representation that corosponds to a boolean formula, to encourage our network to learn this representaton we will use regulrization on the weights. Esentially we want to reward the network for having weights which are either 0 or really large, it is not immeaditly obvious how to reward the network for this so to simplyfy things we can switch to our Noisy-OR, Noisy-AND represented which has bounded weights.\\
+
+Using this bounded weight representation also removes the decision of the range to initilize over as now we can uniformly distrubute over the entire range.\\
+
+Now we know that all our weights will be in the interval $[0, 1]$ meaning we can use a 1D-Gussian function as our penalty, which has the nice property allowing us to adjust the seapness. The generic function, where $\beta$ defines our steepness.
+
+\begin{align}
+p(w) = e^{-\beta (w - 0.5)^2}
+\end{align}
+
+Purely by abrtrary decision and from inspecting graphs we choose to use $\beta = 25$. Now we can make our regulrization the sum over all weights, $\lambda \sum p(w)$. We should note that we do not regurilize on the biases, these can take on any value in the interval $[0,1]$ as we dont take these into account when deciding what variables a Noisy neuron is considering.
+
+We denote these networks as \textbf{Binary LNF Networks}, as once trained, if there is a boolean formula to be learnt then the weights will be binary.
+
+\section{Dicussion}
+Using our regularisation technequic not only are we able to achieve better results but given that our networks are now binary at the conclusion of training we are also able to extract boolean formula from these networks which when run over the binary inputs and outputs get 100\% accuracy. This is testing up to boolean formulas of 7 inputs, previously we where unable to get consistant results on size 3, letalone get any good results on 7. There is however alot of blote in these formulas, many clauses in the formula are tautologies, i.e. always true. \\
+
+After trying both on and offline training I found that the best and most consistant results where achieved with online. This makes intuitive sense as we expect that each neuron will respond positively to a subset of the training data.\\
+
+However time taken to train these networks is now a significant factor, one reason is that of online learning, effort must now be put into speeding up the training time otherwise these LNF Networks are not feasable in practice.
+
+\section{Binary LNF Network Training Time}
+In this section we hope to work toward reducing the time taken to train our models, currently implemented in TensorFlow which is significantly faster than vanalla python however we need further increase in peformance.
 
 \section{LNF Network Peformance}
 We wish to compare the CNF and DNF networks against each other but also against standard perceptron networks. We will take 5 randomly choosen boolean expressions of n inputs for n between 2 and 10. For each we will train CNF, DNF and Perceptron networks 5 separate times and use the datapoints to peform significance tests between the three.
@@ -171,41 +196,9 @@ Say we are trying to learn a boolean function of $n$ inputs, we know for a fact 
 We will take one boolean expression with $n = 4$ and slowley remove from the pool of traning examples, training a fresh network each time. This will allow us to see a trend of network accuracy as we remove more and more from the training pool.
 
 \section{LNF Network Rule Extraction}
-The motivation for this project is to beable to train these networks and esentially extract rules from them. How ever as the networks get larger we see that the networks pickup noise so we must investigate how to remove this noise and then extract rules from the network
 
 \subsection{LNF Network Pruning}
-A nice property of LNF Networks is that there weights directly represent how relevant they are to the network. The larger the weight the more important that perticular input is. Our goal here is to find weights less than some threshold and set them to 0, removing noise and allowing us to uncover the CNF or DNF expression (or something close to it).
 
-The question now becomes how to we decide on a threshold. We could investigate trained networks for which we know what the respresentation should look like and decide on what an approaite threshold should be. From my investigation I have found that in allcases weights less than 1 represent noise, so this would be a good place to start. We will call this method relevance pruning.
-
-\subsubsection{Relevance Pruning}
-\begin{algorithm}[H]
-\SetKwInOut{Input}{Input}
-\SetKwInOut{Output}{Output}
-
-\underline{Function: Relevance Prune} $(hidden,output,threshold)$\\
-\Input{The weights for the hidden nodes and output nodes finally a threshold for the weights}
-\Output{Pruned weights}
-
-$H \gets \varnothing$
-$O \gets \varnothing$
-
-\For{$i \gets\ 1\ to\ |H|$}{
-\If{$output_i < threshold$}{
-$H_{i} \gets {0,...,0}$
-$O_i \gets 0$
-}
-\Else{
-$H_{i} \gets PRUNE(hidden_{i}, threshold)$   \tcc{PRUNE simply sets any value less than threshold to 0}
-$O_i \gets output_i$
-}
-
-\Return{H, O}
-}
-\caption{Algorythm for peforming Relevance Pruning on some LNF Network}
-\end{algorithm}
-
-It should be noted that this algorythm dosnt account for byases being in the weight vectors, if they are some indicies will need to be shifted
 
 \medskip
 \bibliographystyle{acm}

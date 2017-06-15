@@ -144,7 +144,7 @@ def generateExpressions(n):
 
 
 #pltswitch_backend("TkAgg")  
-n = 3
+n = 8
 if __name__ == '__main__':
     expression = generateExpressions(n)[0]
     data = expression[0]
