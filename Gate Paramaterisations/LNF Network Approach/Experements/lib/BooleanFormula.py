@@ -1,5 +1,5 @@
 #from NetworkHelpers import train_cnf_network, train_dnf_network, train_perceptron_network, train_perceptron_general_network
-import BinaryNetworkPOC
+import RealSpaceBinaryNetwork
 import numpy as np
 import Pruning
 import random
@@ -62,10 +62,11 @@ def build_cnf(n, network):
     pruned_network = network#Pruning.relevance_pruning(network, 1.0)
 
     hidden_w = pruned_network[0]
-    out_w = pruned_network[1]
+    out_w = pruned_network[1][0]
+    
 
-    present = [i for i in range(1,len(out_w)) if out_w[i] == 0]
-    raw_disjunctions = [hidden_w[i-1] for i in present]
+    present = [i for i in range(0,len(out_w)) if out_w[i] == 0]
+    raw_disjunctions = [hidden_w[i] for i in present]
 
     atoms = []
     for i in range(n):
@@ -74,8 +75,8 @@ def build_cnf(n, network):
 
     disjunctions = []
     for weights in raw_disjunctions:
-        mask = [w for w in range(1, len(weights)) if weights[w] == 0]
-        a = [atoms[i-1] for i in mask]
+        mask = [w for w in range(0, len(weights)) if weights[w] == 0]
+        a = [atoms[i] for i in mask]
         disjunctions.append(Or(a))
 
 
@@ -144,13 +145,13 @@ def generateExpressions(n):
 
 
 #pltswitch_backend("TkAgg")  
-n = 8
+n = 9
 if __name__ == '__main__':
     expression = generateExpressions(n)[0]
     data = expression[0]
     targets = expression[1]
 
-    network, r_net, loss, time = BinaryNetworkPOC.train_network(n, data, targets, 5000, 0.01)
+    r_net = RealSpaceBinaryNetwork.train_network(n, data, targets, 70000, 0.01)
     print(r_net)
     cnf = build_cnf(n, r_net)
 

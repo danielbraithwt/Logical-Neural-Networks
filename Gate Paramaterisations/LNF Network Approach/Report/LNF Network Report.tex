@@ -184,8 +184,25 @@ After trying both on and offline training I found that the best and most consist
 
 However time taken to train these networks is now a significant factor, one reason is that of online learning, effort must now be put into speeding up the training time otherwise these LNF Networks are not feasable in practice.
 
-\section{Binary LNF Network Training Time}
-In this section we hope to work toward reducing the time taken to train our models, currently implemented in TensorFlow which is significantly faster than vanalla python however we need further increase in peformance.
+\section{Real Space Noisy Gate Paramaterisation}
+Currently both paramaterisations require that we peform weight clipping operations which are expencive. We will construct a new way to think of our Noisy gates which esentially peforms a sort of soft clipping.
+
+We have that $\epsilon_i \in (0, 1]$ so let $\sigma(w_i) = \epsilon_i$. We can train these $w_i$'s without having to clip them, after training we can simply transform them into our $\epsilon$'s as this is a more convenient form. Now we must substutite this into our activation functions, first we consider the Noisy-OR
+
+\begin{align*}
+a(X) &= 1 - \prod^p_{i=1}(\epsilon_i^{x_i}) \cdot \epsilon_b\\
+&= 1 - \prod^p_{i=1}(\sigma(w_i)^{x_i}) \cdot \sigma(b)\\
+&= 1 - \prod^p_{i=1}((\frac{1}{1 + e^{-w_i}})^{x_i}) \cdot \frac{1}{1 + e^{-b}}\\
+&= 1 - \prod^p_{i=1}((1 + e^{-w_i})^{-x_i}) \cdot (1 + e^{-w_i})^{-1}\\
+&= 1 - e^{\sum^p_{i=1} ln(1 + e^{-w_i}) + ln(1 + e^{-b})} \\
+&Let\ w_i^{'} = ln(1 + e^{-w_i}),\ b^{'} = ln(1 + e^{-b})\\
+&= 1 - e^{-(W^{'} \cdot X + b^{'})}
+\end{align*}
+
+An interesting obsivation is that we have derived the analytic function, soft ReLU. From a similar derivation we get the activation for a Noisy-AND to be
+\begin{align*}
+a(X) = e^{W^{'} \cdot (1 - X) + b^{'}}
+\end{align*}
 
 \section{LNF Network Peformance}
 We wish to compare the CNF and DNF networks against each other but also against standard perceptron networks. We will take 5 randomly choosen boolean expressions of n inputs for n between 2 and 10. For each we will train CNF, DNF and Perceptron networks 5 separate times and use the datapoints to peform significance tests between the three.

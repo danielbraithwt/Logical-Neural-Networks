@@ -1,7 +1,8 @@
 import sys
 sys.path.append('../lib/')
 
-from NetworkHelpers import train_cnf_network, train_dnf_network, train_perceptron_network, train_perceptron_general_network
+from RealSpaceLNFNetwork import train_cnf_network, train_dnf_network
+from NeuralNetwork import train_perceptron_network, train_perceptron_network_general
 import numpy as np
 from multiprocessing import Process
 from multiprocessing import Queue
@@ -15,7 +16,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '4'
 
 plt.switch_backend("TkAgg")
 
-n_max = 11
+n_max = 10
 n_start = 2
 SS = 5
 repeat = 5
@@ -60,7 +61,7 @@ def generateExpressions(n):
 
 
 def run_experement(func, n, data, targets, q):
-    net, loss, time = func(n, data, targets)
+    net, loss, time = func(n, data, targets, 80000)
     q.put((net, loss, time))
 
 def runExperements(n, data, targets):
@@ -72,7 +73,7 @@ def runExperements(n, data, targets):
     cnf_p = Process(target=run_experement, args=(train_cnf_network, n, data, targets, cnf_res))
     dnf_p = Process(target=run_experement, args=(train_dnf_network, n, data, targets, dnf_res))
     pcep_p = Process(target=run_experement, args=(train_perceptron_network, n, data, targets, pcep_res))
-    pcep_g_p = Process(target=run_experement, args=(train_perceptron_general_network, n, data, targets, pcep_g_res))
+    pcep_g_p = Process(target=run_experement, args=(train_perceptron_network_general, n, data, targets, pcep_g_res))
 
     cnf_p.start()
     dnf_p.start()

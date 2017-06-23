@@ -1,0 +1,13 @@
+\contentsline {chapter}{\numberline {1}Introduction}{1}
+\contentsline {chapter}{\numberline {2}Using this document and the \texttt {vuwproject} style}{3}
+\contentsline {subsection}{\numberline {2.0.1}Specifying the details}{3}
+\contentsline {section}{\numberline {2.1}Copying the style}{5}
+\contentsline {chapter}{\numberline {3}Some \LaTeX \ hints and tips}{7}
+\contentsline {section}{\numberline {3.1}Floats}{7}
+\contentsline {section}{\numberline {3.2}URL's}{8}
+\contentsline {section}{\numberline {3.3}Graphics and \LaTeX }{8}
+\contentsline {section}{\numberline {3.4}The bibliography}{8}
+\contentsline {section}{\numberline {3.5}Run \LaTeX , run}{8}
+\contentsline {section}{\numberline {3.6}Find out more by\dots }{9}
+\contentsline {section}{\numberline {3.7}Summary}{9}
+\contentsline {chapter}{\numberline {4}Conclusions}{11}
