@@ -1,13 +1,20 @@
+\select@language {english}
 \contentsline {chapter}{\numberline {1}Introduction}{1}
-\contentsline {chapter}{\numberline {2}Using this document and the \texttt {vuwproject} style}{3}
-\contentsline {subsection}{\numberline {2.0.1}Specifying the details}{3}
-\contentsline {section}{\numberline {2.1}Copying the style}{5}
-\contentsline {chapter}{\numberline {3}Some \LaTeX \ hints and tips}{7}
-\contentsline {section}{\numberline {3.1}Floats}{7}
-\contentsline {section}{\numberline {3.2}URL's}{8}
-\contentsline {section}{\numberline {3.3}Graphics and \LaTeX }{8}
-\contentsline {section}{\numberline {3.4}The bibliography}{8}
-\contentsline {section}{\numberline {3.5}Run \LaTeX , run}{8}
-\contentsline {section}{\numberline {3.6}Find out more by\dots }{9}
-\contentsline {section}{\numberline {3.7}Summary}{9}
-\contentsline {chapter}{\numberline {4}Conclusions}{11}
+\contentsline {chapter}{\numberline {2}Background Survey}{3}
+\contentsline {section}{\numberline {2.1}Logical Neural Networks}{3}
+\contentsline {section}{\numberline {2.2}Logical Normal Form Networks}{3}
+\contentsline {section}{\numberline {2.3}Decompositional Methods for Rule Extraction}{4}
+\contentsline {subsection}{\numberline {2.3.1}The KT Method}{4}
+\contentsline {chapter}{\numberline {3}Work Done}{5}
+\contentsline {section}{\numberline {3.1}NAND Network}{5}
+\contentsline {subsection}{\numberline {3.1.1}Development of Paramaterisation}{5}
+\contentsline {subsection}{\numberline {3.1.2}Dicussion}{5}
+\contentsline {section}{\numberline {3.2}Logical Normal Form Networks}{6}
+\contentsline {subsection}{\numberline {3.2.1}Noisy Gate Paramaterisation}{6}
+\contentsline {subsection}{\numberline {3.2.2}Training LNF Networks}{7}
+\contentsline {subsection}{\numberline {3.2.3}LNF Network Peformance}{7}
+\contentsline {subsection}{\numberline {3.2.4}LNF Network Rule Extraction}{8}
+\contentsline {subsection}{\numberline {3.2.5}LNF Network Generalization}{9}
+\contentsline {subsubsection}{Rule Extraction}{9}
+\contentsline {chapter}{\numberline {4}Future Plan}{11}
+\contentsline {chapter}{\numberline {5}Request For Feedback}{13}

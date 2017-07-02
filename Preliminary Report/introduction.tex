@@ -1,4 +1,10 @@
 \chapter{Introduction}\label{C:intro}
-This chapter gives an introduction to the project report.
+Neural Networks (NN's) are commenly used to model supervised learning problems. A well trained NN can generalize well but it is very diffcult to intepret how the network is operating. This is called the black-box problem, many algorythms exsist for extracting rules from neural networks.\\
 
-In Chapter \ref{C:us} we explain how to use this document, and the \texttt{vuwproject} style. In Chapter \ref{C:ex} we say some things about \LaTeX, and in Chapter \ref{C:con} we give our conclusions.
+There are a number of motivations for wanting to extract rules from NN's. If a NN is able to provide an explination for its output by inspecting the reasoning a deeper understanding of the problem can be developed, the rules learnt by an NN could represent some knolwedge or patten in the data which has not yet been identifyed. Another possibility is that the neural network is being implemented to operate a critical systems which involve the saftey of humans, in this case being able to extract rules and inspect the NN is a necessary part of ensuring the system is safe.\\
+
+Rule extraction algorythms are generally split into three categories. The \textbf{Decompositional Approach} extracts rules by analysing the activations and weights in the hidden layers. The \textbf{Pedagogical Approach} works by creating a  mapping of the relationship beween inputs and outputs. Finally The \textbf{Eclectic Approach} combines the previous two approaches\\
+
+This report develops a decompositional approach to rule extraction, learning the rules to be extracted happens automatically during the training phase. Once a network has been trained logical rules can be extracted from the hidden and output weights. By restricting the operations peformed by the neurons to be logical or's or and's it becomes possible to intepret the neurons as logical operations on their inputs.
+
+

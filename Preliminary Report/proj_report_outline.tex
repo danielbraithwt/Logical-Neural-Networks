@@ -13,6 +13,19 @@
 \usepackage{float} % lets you have non-floating floats
 
 \usepackage{url} % for typesetting urls
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[linesnumbered,ruled]{algorithm2e}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}
 
 %
 %  We don't want figures to float so we define
@@ -72,12 +85,12 @@ A short description of the project goes here.
 
 \maketitle
 
-\include{acknowledge}
+%\include{acknowledge}
 
 \tableofcontents
 
 % we want a list of the figures we defined
-\listof{fig}{Figures}
+%\listof{fig}{Figures}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -87,9 +100,10 @@ A short description of the project goes here.
 
 % individual chapters included here
 \include{introduction}
-\include{using}
-\include{example}
-\include{conclusion}
+\include{backgroundsurvey}
+\include{workdone}
+\include{futureplan}
+\include{requestforfeedback}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

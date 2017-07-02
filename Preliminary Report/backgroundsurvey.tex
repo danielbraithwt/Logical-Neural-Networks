@@ -1,0 +1,42 @@
+\chapter{Background Survey}\label{C:backgroundsurvey}
+\section{Logical Neural Networks}
+Logical Neural Networks (LNN's) are Neural Networks (NN's) which have activation functions that resemble boolean functions \cite{LearningLogicalActivations}. The two Logical Neurons developed in "Learning Logical Activations" are Noisy-AND and Noisy-OR Neurons.
+
+\begin{definition}
+A \textbf{Noisy-OR} Neuron has weights $\epsilon_1, ..., \epsilon_n$ which represent the irielevence of corosponding inputs $x_1, ..., x_n$. The activation of a Noisy-OR Neurons is.
+
+\begin{align}
+a = 1 - \prod^p_{i=1} (\epsilon_i^{x_i}) \cdot \epsilon_b
+\label{equ:noisy-or-activation-1}
+\end{align}
+\end{definition}
+
+\begin{definition}
+A \textbf{Noisy-AND} Neuron has weights $\epsilon_1, ..., \epsilon_n$ which represent the irielevence of corosponding inputs $x_1, ..., x_n$. The activation of a Noisy-AND Neurons is.
+
+\begin{align}
+a = \prod^p_{i=1} (\epsilon_i^{1 - x_i}) \cdot \epsilon_b
+\label{equ:noisy-or-activation-1}
+\end{align}
+\end{definition}
+
+\section{Logical Normal Form Networks}
+"Backpropagation for Neural DNF- and CNF-Networks" presents a class of networks to overcome the black-box problem asociated with nerual networks. Each neuron represents either a disjunction (OR) or an conjunction (AND) of the inputs given to it. After training a network of this form if a low error is achieved then a boolean formula can be extracted from the network \cite{herrmann1996backpropagation}.
+
+\begin{definition}
+A \textbf{Conjunctive Normal Form (CNF) Network} consists of three layers. The hidden layer contains only Noisy-OR neurons and the output layer contains a single Noisy-AND.
+\end{definition}
+
+\begin{definition}
+A \textbf{Disjunctive Normal Form (DNF) Network} consists of three layers. The hidden layer contains only Noisy-AND neurons and the output layer contains a single Noisy-OR.
+\end{definition}
+
+\begin{definition}
+A \textbf{LNF Network} is either a DNF or CNF Network
+\end{definition}
+
+The work presented in \cite{herrmann1996backpropagation} lacks justification and explination for a number of key choices, consequently this report re derives the concept of LNF Networks insted using our Noisy-AND and Noisy-OR neurons.
+
+
+\section{Decompositional Methods for Rule Extraction}
+\subsection{The KT Method}
