@@ -1,45 +1,11 @@
-\chapter{Work Done}\label{C:workdone}
-\section{NAND Network}
-In descrete logic any boolean expression can be built using NAND gates. The concept of a continous NAND Neuron is developed with the idea that they could be used as units in a feedfoward network. Restricting the possible operations each neuron can peform will make the network more interpretable, it will allow inspection of the weights to see which inputs are being considered in the NAND operation.
+\chapter{Logical Normal Form Networks}\label{C:workdone}
+Assume the problem we are trying to learn has some boolean formula which underpins it. Then it is known that this formula must have a Conjunctive Normal Form (CNF) or Disjunctive Normal Form (DNF). This section explores networks which learn the CNF or DNF representation of any underlying boolean expression.\\
 
-\subsection{Development of Paramaterisation}
-
-\theoremstyle{definition}
-\begin{definition}
-Let $x_1, ..., x_n$ be the inputs to a neuron n.  Then n is a \textbf{NAND neuron} if the corosponding weights are $\epsilon_1, ..., \epsilon_n$. $0 \leq \epsilon_i \leq 1$ is the beleif that $x_i$ does not effect the output. The activation of a NAND neuron is 
-
-\begin{align}
-	a(X) = NOT(AND(OR(x_1, \epsilon_1), ..., OR(x_n, \epsilon_n)))
-	\label{equ:nand-activation-1}
-\end{align}
-\end{definition}
-
-The folowing "Boolean Like" functions are the continous representations of NOT, AND and OR that will be used.
-
-\begin{align}
-NOT(a) = 1 - x \label{equ:not} \\
-AND(x_1, ..., x_n) = \prod^n_{i=1} x_i \label{equ:and} \\
-OR(x_1, x_2) = x_1 + x_2 - x_1x_2 \label{equ:or}
-\end{align}
-
-The activation \ref{equ:nand-activation-1} can now be re written interms of equations \ref{equ:not}, \ref{equ:and}, \ref{equ:or} as equation \ref{equ:nand-activation-2}.
-
-\begin{align}
-	a(x) = 1 - \prod^n_{i=1} (x_i + \epsilon_i - x_i\epsilon_i)
-	\label{equ:nand-activation-2}
-\end{align}
-
-\subsection{Dicussion}
-Using this NAND Neuron paramaterisation networks of these gates are able to learn to be NOT, NAND, AND, OR (if the network has the right configuration). Attempting to learn the implys function demonstraits a fundimental issue with this approach. The implys function is given by $p \implies q \iff p \uparrow (q \uparrow q)$, given that these networks must be feedfoward this would require a NAND neuron to act as an identity which it cant do.
-
-\section{Logical Normal Form Networks}
-Assume the problem we are trying to learn has some boolean formula which underpins it. Then it is known that this formula must have a Conjunctive Normal Form (CNF) or Disjunctive Normal Form (DNF). This section explores the posibility of designing networks which learn the CNF or DNF representation of any underlying boolean expression.\\
-
-The paper "Backpropagation for Neural DNF and CNF Networks" \cite{herrmann1996backpropagation} proposes networks which can solve this task, however the paper does not provide justification and consequently is diffcult to reproduce. This report takes this concept but rederives it using the Noisy-OR and Noisy-AND gates \cite{LearningLogicalActivations}.\\
+The paper "Backpropagation for Neural DNF and CNF Networks" \cite{herrmann1996backpropagation} proposes networks which can solve this task, however the paper does not provide justification, consequently it is diffcult to understand and reproduce. This report takes this concept but rederives it using the Noisy-OR and Noisy-AND gates \cite{LearningLogicalActivations}.\\
 
 A CNF or DNF formula contains clauses of literals which is either an atom or a negation of an atom. To account for this the number of inputs to the network will be doubled, i.e. the inputs will be all the atoms and negations of thoughs atoms. $2^n$ is an upper bound on the number of Noisy gates needed to learn any boolean expression of $n$ inputs. To ensure that an LNF Network can learn a boolean expression the number of Noisy gates in the hidden layer will be $2^n$.
 
-\subsection{Noisy Gate Paramaterisation} 
+\section{Noisy Gate Paramaterisation} 
 The paramaterisation of Noisy gates require weight clipping, an expensive operation, to avoid manual clipping a new paramaterisation is derived that implisitley clips the weights. Consider that $\epsilon \in (0, 1]$, therefore let $\epsilon_i = \sigma(w_i)$, these $w_i$'s can be trained without any clipping, after training the origonal $\epsilon_i$'s can be recovered.\\
 
 Now these weights must be substutited into the Noisy activation. Consider the Noisy-OR activation.
@@ -63,12 +29,12 @@ a_{or}(X)&= 1 - e^{-(W^{'} \cdot X + b^{'})} \label{equ:real-noisy-or-activation
 
 The function taking $w_i$ to $w_i^{'}$ is the soft ReLU function which is peforming a soft clipping on the $w_i$'s. 
 
-\subsection{Training LNF Networks}
+\section{Training LNF Networks}
 Using equations \ref{equ:real-noisy-or-activation} and \ref{equ:real-noisy-and-activation} for the Noisy-OR, Noisy-AND activations retrespectively allows the networks to be trained without expliscit clipping. The ADAM Optimizer is used for training firstly for the convenience of an adaptive learning rate but also because it inclueds the advantages of RMSProp which works well with on-line (single-example-training) learning, which these LNF Networks respond well to.\\
 
 Preliminary testing showed that LNF Networks are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. It is also possible to inspect the trained weights and see that the networks have learnt the correct CNF or DNF representation.
 
-\subsection{LNF Network Peformance}
+\section{LNF Network Peformance}
 How do LNF Networks peform against standard perceptron networks which we know to be universal function approximators. Two different perceptron networks will be used as a benchmark, one with the same configuration as the LNF Network, the other with less hidden neurons. The testing will consist of selecting 5 random boolean expressions for $2 \leq n \leq 9$ and training each network 5 times, each with random initial conditions. Figure \ref{fig:peformance-comparason-all} shows a comparason between all 4 of the networks and figure \ref{fig:peformance-comparason-cnfdnf} shows just the LNF Networks.
 
 \begin{figure}[H]
@@ -93,7 +59,7 @@ How do LNF Networks peform against standard perceptron networks which we know to
 
 Figure  \ref{fig:peformance-comparason-all} shows that neither of the perceptron networks peform as well as the LNF Networks as $n$ increases. Figure  \ref{fig:peformance-comparason-cnfdnf} shows on avarage there are no stastically significant differences between the CNF or DNF networks. What is not present in  \ref{fig:peformance-comparason-cnfdnf} is that at $n = 9$ sometimes the CNF network far out peforms the DNF and visa versa, theoretically both should beable to learn any boolean expression. 
 
-\subsection{LNF Network Rule Extraction}
+\section{LNF Network Rule Extraction}
 The goal of this report is to make neural networks more intepretable, for LNF Networks to addres this problem there must be a way to extract rules from them. Take the weights of a trained LNF Network, these weights can be converted back into $\epsilon_i$'s by apply the sigmoid function to each $w_i$.\\
 
 As $\epsilon_i \rightarrow 0$ then $x_i$ becomes relevent and as $\epsilon_i \rightarrow 1$ then $x_i$ becomes irrielevent. If the network has learnt the correct DNF or CNF representation the for every neuron if input $i$ is relevent then $w_i \rightarrow -\infty$ and therefore $\epsilon_i \rightarrow 0$, othwerwise $x_i$ is irelevent and  $w_i \rightarrow \infty$ meaning $\epsilon_i \rightarrow 1$.\\
@@ -102,7 +68,7 @@ Consequently in $\epsilon$ form the network is binary and rules can be easily ex
 
 When training an LNF network over the entire truth table for a boolean expression, when a low error is achieved it is possible to extract boolean formula from the network which gets can generate the origonal truth table. This is a necessary first step but a more important question is, can formula still be extracted from the network when the LNF network is not trained with the entire truth table?
 
-\subsection{LNF Network Generalization}
+\section{LNF Network Generalization}
 These networks are able to peform as well as standard perceptron networks but so far they have been getting the complete set of data, in practice this will almost never be the case. Perceptron networks are so widely used because of their ability to generalize, for LNF Networks to be useful they must also be able to generilize.
 
 \begin{figure}[H]
@@ -117,4 +83,4 @@ These networks are able to peform as well as standard perceptron networks but so
 
 Figure \ref{fig:generalization-peformance-6} shows a comparason between the generalization ability of CNF, DNF and Perceptron networks. The graph shows the peformance over all training data when successively removing elements from the training set. It demonstraits that the CNF and DNF networks generalize as well as the perceptron networks when the boolean formula has 6 inputs.
 
-\subsubsection{Rule Extraction}
+\subsection{Rule Extraction}

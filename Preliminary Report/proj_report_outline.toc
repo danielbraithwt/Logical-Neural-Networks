@@ -1,20 +1,15 @@
 \select@language {english}
 \contentsline {chapter}{\numberline {1}Introduction}{1}
-\contentsline {chapter}{\numberline {2}Background Survey}{3}
-\contentsline {section}{\numberline {2.1}Logical Neural Networks}{3}
-\contentsline {section}{\numberline {2.2}Logical Normal Form Networks}{3}
-\contentsline {section}{\numberline {2.3}Decompositional Methods for Rule Extraction}{4}
-\contentsline {subsection}{\numberline {2.3.1}The KT Method}{4}
-\contentsline {chapter}{\numberline {3}Work Done}{5}
-\contentsline {section}{\numberline {3.1}NAND Network}{5}
-\contentsline {subsection}{\numberline {3.1.1}Development of Paramaterisation}{5}
-\contentsline {subsection}{\numberline {3.1.2}Dicussion}{5}
-\contentsline {section}{\numberline {3.2}Logical Normal Form Networks}{6}
-\contentsline {subsection}{\numberline {3.2.1}Noisy Gate Paramaterisation}{6}
-\contentsline {subsection}{\numberline {3.2.2}Training LNF Networks}{7}
-\contentsline {subsection}{\numberline {3.2.3}LNF Network Peformance}{7}
-\contentsline {subsection}{\numberline {3.2.4}LNF Network Rule Extraction}{8}
-\contentsline {subsection}{\numberline {3.2.5}LNF Network Generalization}{9}
-\contentsline {subsubsection}{Rule Extraction}{9}
-\contentsline {chapter}{\numberline {4}Future Plan}{11}
-\contentsline {chapter}{\numberline {5}Request For Feedback}{13}
+\contentsline {chapter}{\numberline {2}Proposal Review}{3}
+\contentsline {chapter}{\numberline {3}Background Survey}{5}
+\contentsline {section}{\numberline {3.1}Core Concepts}{5}
+\contentsline {section}{\numberline {3.2}Litrature Review}{5}
+\contentsline {chapter}{\numberline {4}Logical Normal Form Networks}{9}
+\contentsline {section}{\numberline {4.1}Noisy Gate Paramaterisation}{9}
+\contentsline {section}{\numberline {4.2}Training LNF Networks}{10}
+\contentsline {section}{\numberline {4.3}LNF Network Peformance}{10}
+\contentsline {section}{\numberline {4.4}LNF Network Rule Extraction}{12}
+\contentsline {section}{\numberline {4.5}LNF Network Generalization}{12}
+\contentsline {subsection}{\numberline {4.5.1}Rule Extraction}{13}
+\contentsline {chapter}{\numberline {5}Future Plan}{15}
+\contentsline {chapter}{\numberline {6}Request For Feedback}{17}
