@@ -36,7 +36,64 @@ def train_cnf_network(N, data, targets, iterations):
 
 def train_dnf_network(N, data, targets, iterations):
     return _train_network(N, data, targets, iterations, noisy_and_activation, noisy_or_activation)
+
+def run_cnf_network(N, data, targets, network):
+    return _run_network(N, data, targets, network, noisy_or_activation, noisy_and_activation)
+
+def run_dnf_network(N, data, targets, network):
+    return _run_network(N, data, targets, network, noisy_and_activation, noisy_or_activation)
     
+def _run_network(N, data, targets, network, hidden_activation, output_activation):
+    data = list(map(lambda x: transform_input(x), data))
+
+    examples = tf.constant(data)
+    labels = tf.constant(targets.tolist())
+
+    random_example, random_label = tf.train.slice_input_producer([examples, labels],
+                                                           shuffle=False)
+
+    example_batch, label_batch = tf.train.batch([random_example, random_label],
+                                          batch_size=1)
+    
+    # Data and target variables
+    x = tf.placeholder("float32", [None, None])
+    y = tf.placeholder("float32", )
+
+
+    w_hidden = tf.Variable(network[0][0], dtype='float32')
+    b_hidden = tf.Variable(network[0][1], dtype='float32')
+
+    w_out = tf.Variable(network[1][0], dtype='float32')
+    b_out = tf.Variable(network[1][1], dtype='float32')
+
+    hidden_out = hidden_activation(x, w_hidden, b_hidden)
+    y_hat = output_activation(hidden_out, w_out, b_out)
+
+    errors = tf.pow(y - y_hat, 2)
+    error = tf.reduce_sum(errors)
+
+    model = tf.global_variables_initializer()
+    start = time.time()
+
+    with tf.Session() as session:
+        session.run(model)
+        coord = tf.train.Coordinator()
+        threads = tf.train.start_queue_runners(sess=session,coord=coord)
+
+        er = 0
+        for d in range(len(data)):
+            er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
+
+        end = time.time()
+
+        coord.request_stop()
+        coord.join(threads)
+
+        total_time = end - start
+    
+    return er
+
+
 
 def _train_network(N, data, targets, iterations, hidden_activation, output_activation):
     data = list(map(lambda x: transform_input(x), data))
@@ -87,6 +144,12 @@ def _train_network(N, data, targets, iterations, hidden_activation, output_activ
             batch_ex, batch_l = session.run([example_batch, label_batch])
             session.run([train_op_error], feed_dict={x:batch_ex, y:batch_l})
 
+##            if i % 10 == 0:
+##                er = 0
+##                for d in range(len(data)):
+##                    er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
+                #print(er)
+            
         er = 0
         for d in range(len(data)):
             er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
@@ -96,9 +159,15 @@ def _train_network(N, data, targets, iterations, hidden_activation, output_activ
         coord.request_stop()
         coord.join(threads)
         
-        w_hidden_final = session.run(r_w_hidden)
-        w_out_final = session.run(r_w_out)
+        r_hidden_final = session.run(r_w_hidden)
+        r_out_final = session.run(r_w_out)
 
         total_time = end - start
+
+        w_hidden_final = session.run(w_hidden)
+        b_hidden_final = session.run(b_hidden)
+
+        w_out_final = session.run(w_out)
+        b_out_final = session.run(b_out)
     
-    return (w_hidden_final, w_out_final), er, total_time
+    return (r_hidden_final, r_out_final), ((w_hidden_final, b_hidden_final), (w_out_final, b_out_final)), er, total_time

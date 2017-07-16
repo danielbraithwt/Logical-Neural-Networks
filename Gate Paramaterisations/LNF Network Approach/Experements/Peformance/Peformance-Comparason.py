@@ -61,8 +61,14 @@ def generateExpressions(n):
 
 
 def run_experement(func, n, data, targets, q):
-    net, loss, time = func(n, data, targets, 80000)
+    _, net, loss, time = func(n, data, targets, 100000)
     q.put((net, loss, time))
+
+def conf_interval(data):
+    N = len(data)
+    sorted_estimates = np.sort(np.array(data))
+    conf_interval = (np.abs(sorted_estimates[int(0.025 * N)] - M), np.abs(sorted_estimates[int(0.975 * N)] - M))
+    return conf_interval
 
 def runExperements(n, data, targets):
     cnf_res = Queue()
@@ -94,34 +100,35 @@ def runExperements(n, data, targets):
     print("[T] Training Loss: [CNF: " + str(cnf_loss) + ", DNF: " + str(dnf_loss) + ", PCEP: " + str(pcep_loss) + ", PCEP G: " + str(pcep_g_loss) + "]")
     return cnf_loss, dnf_loss, pcep_loss, pcep_g_loss
 
+def plot(x, y, ci, c, name):
+    ci=np.transpose(np.array(ci))
+    plt.errorbar(x, y, yerr=ci, marker='o', color=c, label=name)
+    
+
 if __name__ == "__main__":
     cnf_data = []
-    cnf_std = []
+    cnf_ci = []
     
     dnf_data = []
-    dnf_std = []
+    dnf_ci = []
     
     pcep_data = []
-    pcep_std = []
+    pcep_ci = []
 
     pcep_g_data = []
-    pcep_g_std = []
+    pcep_g_ci = []
     
     for n in range(n_start, n_max):
         print("\n\n[!] -- N = " + str(n) + " --")
         print("[*] Generating Expressions")
 
-        cnf_f = open("raw-results/" + str(n) + "-cnf.txt", 'w+')
-        dnf_f = open("raw-results/" + str(n) + "-dnf.txt", 'w+')
-        pcep_f = open("raw-results/" + str(n) + "-pcep.txt", 'w+')
-        pcep_g_f = open("raw-results/" + str(n) + "-pcep-g.txt", 'w+')
-
         allExpressions = generateExpressions(n)
         
-        cnf_means = []
-        dnf_means = []
-        pcep_means = []
-        pcep_g_means = []
+
+        cnf_peformance = []
+        dnf_peformance = []
+        pcep_peformance = []
+        pcep_g_peformance = []
 
         print("[*] Running Experements")
         for e in range(0, len(allExpressions)):
@@ -134,71 +141,58 @@ if __name__ == "__main__":
             print(data)
             print(targets)
 
-            cnf_peformance = []
-            dnf_peformance = []
-            pcep_peformance = []
-            pcep_g_peformance = []
-
             for r in range(repeat):
                 cnf_loss, dnf_loss, pcep_loss, pcep_g_loss = runExperements(n, data, targets)
+                #cnf_loss, dnf_loss = runExperements(n, data, targets)
 
                 cnf_peformance.append(cnf_loss)
                 dnf_peformance.append(dnf_loss)
                 pcep_peformance.append(pcep_loss)
                 pcep_g_peformance.append(pcep_g_loss)
 
-
-            cnf_m = np.array(cnf_peformance).mean()
-            dnf_m = np.array(dnf_peformance).mean()
-            pcep_m = np.array(pcep_peformance).mean()
-            pcep_g_m = np.array(pcep_g_peformance).mean()
-
-            cnf_means.append(cnf_m)
-            dnf_means.append(dnf_m)
-            pcep_means.append(pcep_m)
-            pcep_g_means.append(pcep_g_m)
-
-            cnf_f.write(str(cnf_peformance) + "\n")
-            dnf_f.write(str(dnf_peformance) + "\n")
-            pcep_f.write(str(pcep_peformance) + "\n")
-            pcep_g_f.write(str(pcep_g_peformance) + "\n")
-
-        cnf_data.append(np.array(cnf_means).mean())
-        cnf_std.append(np.array(cnf_means).std())
         
-        dnf_data.append(np.array(dnf_means).mean())
-        dnf_std.append(np.array(dnf_means).std())
+        cnf_peformance = np.array(cnf_peformance)
+        dnf_peformance = np.array(dnf_peformance)
+        pcep_peformance = np.array(pcep_peformance)
+        pcep_g_peformance = np.array(pcep_g_peformance)
+
+        cnf_data.append(cnf_peformance.mean())
+        cnf_ci.append(conf_interval(cnf_peformance))
         
-        pcep_data.append(np.array(pcep_means).mean())
-        pcep_std.append(np.array(pcep_means).std())
+        dnf_data.append(dnf_peformance.mean())
+        dnf_ci.append(conf_interval(dnf_peformance))
 
-        pcep_g_data.append(np.array(pcep_g_means).mean())
-        pcep_g_std.append(np.array(pcep_g_means).std())
-
-        cnf_f.close()
-        dnf_f.close()
-        pcep_f.close()
-        pcep_g_f.close()
+        pcep_data.append(pcep_peformance.mean())
+        pcep_ci.append(conf_interval(pcep_peformance))
+        
+        pcep_g_data.append(pcep_g_peformance.mean())
+        pcep_g_ci.append(conf_interval(pcep_g_peformance))
                     
 
     # Draw the graph from collected data
     x_axis = np.array(range(n_start, n_max))
-    df = np.repeat(SS-1, n_max - n_start)
+    #df = np.repeat(SS-1, n_max - n_start)
 
-    plt.plot(x_axis, cnf_data, '-o', color='b', label='CNF')
-    plt.errorbar(x_axis, cnf_data, yerr=ss.t.ppf(0.95, df)*cnf_std, color='b')
+    print(cnf_ci)
 
-    plt.plot(x_axis, dnf_data, '-o', color='r', label='DNF')
-    plt.errorbar(x_axis, dnf_data, yerr=ss.t.ppf(0.95, df)*dnf_std, color='r')
+    plot(x_axis, cnf_data, cnf_ci, 'b', 'CNF')
+    plot(x_axis, dnf_data, dnf_ci, 'r', 'DNF')
+    plot(x_axis, pcep_data, pcep_ci, 'g', 'Perceptron (Same Config)')
+    plot(x_axis, pcep_g_data, pcep_g_ci, 'y', 'Perceptron')
 
-    plt.plot(x_axis, pcep_data, '-o', color='g', label='Perceptron')
-    plt.errorbar(x_axis, pcep_data, yerr=ss.t.ppf(0.95, df)*pcep_std, color='g')
-    
-    plt.plot(x_axis, pcep_g_data, '-o', color='y', label='Perceptron General')
-    plt.errorbar(x_axis, pcep_g_data, yerr=ss.t.ppf(0.95, df)*pcep_std, color='y')
-
-    plt.ylabel("Accuracy Over All Data")
+    plt.ylabel("Error")
     plt.xlabel("Size Of Expression")
     plt.xlim([n_start-1, n_max + 1])
     plt.legend(loc='best')
-    plt.savefig("peformance.png")
+    plt.savefig("all-peformance.png")
+
+    plt.clf()
+
+    plot(x_axis, cnf_data, cnf_ci, 'b', 'CNF')
+    plot(x_axis, dnf_data, dnf_ci, 'r', 'DNF')
+
+    plt.ylabel("Error")
+    plt.xlabel("Size Of Expression")
+    plt.xlim([n_start-1, n_max + 1])
+    plt.legend(loc='best')
+    plt.savefig("lnfn-peformance.png")

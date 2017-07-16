@@ -1,16 +1,18 @@
 \select@language {english}
 \contentsline {chapter}{\numberline {1}Introduction}{1}
 \contentsline {chapter}{\numberline {2}Proposal Review}{3}
-\contentsline {chapter}{\numberline {3}Background Survey}{5}
-\contentsline {section}{\numberline {3.1}Core Concepts}{5}
-\contentsline {subsection}{\numberline {3.1.1}CNF \& DNF}{5}
-\contentsline {subsection}{\numberline {3.1.2}CNF \& DNF from Truth Table}{5}
+\contentsline {chapter}{\numberline {3}Background Survey}{4}
+\contentsline {section}{\numberline {3.1}Core Concepts}{4}
+\contentsline {subsection}{\numberline {3.1.1}CNF \& DNF}{4}
+\contentsline {subsection}{\numberline {3.1.2}CNF \& DNF from Truth Table}{4}
 \contentsline {section}{\numberline {3.2}Literature Review}{5}
-\contentsline {chapter}{\numberline {4}Logical Normal Form Networks}{9}
-\contentsline {section}{\numberline {4.1}Noisy Gate Parametrisation}{11}
+\contentsline {chapter}{\numberline {4}Logical Normal Form Networks}{8}
+\contentsline {section}{\numberline {4.1}Noisy Gate Parametrisation}{10}
 \contentsline {section}{\numberline {4.2}Training LNF Networks}{11}
-\contentsline {section}{\numberline {4.3}LNF Network Performance}{12}
-\contentsline {section}{\numberline {4.4}LNF Network Rule Extraction}{13}
-\contentsline {section}{\numberline {4.5}LNF Network Generalization}{14}
+\contentsline {section}{\numberline {4.3}LNF Network Performance}{11}
+\contentsline {section}{\numberline {4.4}LNF Network Generalization}{13}
+\contentsline {section}{\numberline {4.5}LNF Network Rule Extraction}{13}
 \contentsline {chapter}{\numberline {5}Future Plan}{15}
-\contentsline {chapter}{\numberline {6}Request For Feedback}{17}
+\contentsline {chapter}{\numberline {6}Request For Feedback}{16}
+\contentsline {chapter}{Appendices}{18}
+\contentsline {chapter}{\numberline {A}Proposal}{19}

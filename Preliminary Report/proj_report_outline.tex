@@ -5,7 +5,7 @@
 
 \documentclass[11pt
               , a4paper
-              , twoside
+%%              , twoside
               , openright
               ]{report}
 
@@ -22,6 +22,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[linesnumbered,ruled]{algorithm2e}
+\usepackage[toc,page]{appendix}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -77,7 +78,7 @@
 
 \begin{abstract}
 
-A short description of the project goes here.
+Artificial Neural Networks (ANN's) are powerful because of their ability to approximate any function and generalize to unseen data, however they are essentially a black box, any knowledge learnt by an ANN is difficult to interpret. The ANN's presented in this report are more interpretable than standard Multilayer Perecptron Networks (MLPN's), moreover they have statistically equivalent performance and generalization to MLPN's when trained over boolean truth tables.
 
 \end{abstract}
 
@@ -117,6 +118,8 @@ A short description of the project goes here.
 %\bibliographystyle{ieeetr}
 \bibliographystyle{acm}
 \bibliography{sample}
+
+\include{appendix}
 
 
 \end{document}
