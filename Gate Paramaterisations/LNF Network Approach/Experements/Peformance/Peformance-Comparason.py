@@ -19,7 +19,7 @@ plt.switch_backend("TkAgg")
 n_max = 10
 n_start = 2
 SS = 5
-repeat = 5
+repeat = 1
 
 def __perms(n):
     if not n:
@@ -66,6 +66,7 @@ def run_experement(func, n, data, targets, q):
 
 def conf_interval(data):
     N = len(data)
+    M = data.mean()
     sorted_estimates = np.sort(np.array(data))
     conf_interval = (np.abs(sorted_estimates[int(0.025 * N)] - M), np.abs(sorted_estimates[int(0.975 * N)] - M))
     return conf_interval

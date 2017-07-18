@@ -99,16 +99,16 @@ a_{or}(X)&= 1 - e^{-(W^{'} \cdot X + b^{'})} \label{equ:real-noisy-or-activation
 The function taking $w_i$ to $w_i^{'}$ is the soft ReLU function which is performing a soft clipping on the $w_i$'s. 
 
 \section{Training LNF Networks}
-Using equations \ref{equ:real-noisy-or-activation} and \ref{equ:real-noisy-and-activation} for the Noisy-OR, Noisy-AND activations retrospectively allows LNFNs to be trained without explicit clipping. The ADAM Optimizer is used for training firstly for the convenience of an adaptive learning rate but also because it includes the advantages of RMSProp which works well with on-line (single-example) learning \cite{kingma2014adam}, which LNF Networks respond well to.\\
+Using equations \ref{equ:real-noisy-or-activation} and \ref{equ:real-noisy-and-activation} for the Noisy-OR, Noisy-AND activation's retrospectively allows LNFNs to be trained without explicit clipping. The ADAM Optimizer is used for training firstly for the convenience of an adaptive learning rate but also because it includes the advantages of RMSProp which works well with on-line (single-example) learning \cite{kingma2014adam}, which LNF Networks respond well to.\\
 
-Preliminary testing showed that LNFN's are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. It is also possible to inspect the trained weights and see that the networks have learnt the correct CNF or DNF representation.
+Preliminary testing showed that LNFN's are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. It is also possible to inspect the trained weights and see that the networks have learned the correct CNF or DNF representation.
 
 \section{LNF Network Performance}
 How do LNFNs perform against standard perceptron networks which we know to be universal function approximators. Two different perceptron networks will be used as a benchmark
 
 \begin{enumerate}
-	\item One will have the same configuration as the LNFNs, i.e. $2^n$ hidden neurons.
-	\item The other has two hidden layers, both with N neurons.
+	\item One will have the same configuration as the LNFNs, i.e. $2^n$ hidden neurons. Labeled as "Perceptron" in graphs.
+	\item The other has two hidden layers, both with N neurons. Labeled as "Perceptron General" in graphs.
 \end{enumerate}
 
 The testing will consist of selecting 5 random boolean expressions for $2 \leq n \leq 9$ and training each network 5 times, each with random initial conditions. Figure \ref{fig:peformance-comparason-all} shows a comparison between all 4 of the networks and figure \ref{fig:peformance-comparason-cnfdnf} shows just the LNFN's.
@@ -153,7 +153,7 @@ Figure \ref{fig:generalization-peformance-6} shows a comparison between the gene
 \section{LNF Network Rule Extraction}
 The goal of this report is to learn rules which can be extracted from the network, consequently a method must be developed to extract the rules from LNF Network's. Take the weights of a trained LNFN, these weights can be converted back into $\epsilon_i$'s by apply the sigmoid function to each $w_i$.\\
 
-As $\epsilon_i \rightarrow 0$ then $x_i$ becomes relevant and as $\epsilon_i \rightarrow 1$ then $x_i$ becomes irrelevant. If the network has learnt the correct DNF or CNF representation the for every neuron if input $i$ is relevant then $w_i \rightarrow -\infty$ and therefore $\epsilon_i \rightarrow 0$, otherwise $x_i$ is irrelevant and  $w_i \rightarrow \infty$ meaning $\epsilon_i \rightarrow 1$.\\
+As $\epsilon_i \rightarrow 0$ then $x_i$ becomes relevant and as $\epsilon_i \rightarrow 1$ then $x_i$ becomes irrelevant. If the network has learned the correct DNF or CNF representation the for every neuron if input $i$ is relevant then $w_i \rightarrow -\infty$ and therefore $\epsilon_i \rightarrow 0$, otherwise $x_i$ is irrelevant and  $w_i \rightarrow \infty$ meaning $\epsilon_i \rightarrow 1$.\\
 
 Consequently in $\epsilon$ form the weights of the LNFN are almost binary (i.e. very close to 0 or 1) and rules can be easily extracted as a boolean formula. Many clauses in the extracted expression contain redundant terms, i.e. clauses that are a tautology or a duplicate of another, filtering these out is not an expensive operation.\\
 

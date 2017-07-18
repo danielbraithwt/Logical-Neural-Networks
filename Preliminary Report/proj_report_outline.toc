@@ -14,5 +14,5 @@
 \contentsline {section}{\numberline {4.5}LNF Network Rule Extraction}{13}
 \contentsline {chapter}{\numberline {5}Future Plan}{15}
 \contentsline {chapter}{\numberline {6}Request For Feedback}{16}
-\contentsline {chapter}{Appendices}{18}
-\contentsline {chapter}{\numberline {A}Proposal}{19}
+\contentsline {chapter}{Appendices}{17}
+\contentsline {chapter}{\numberline {A}Proposal}{18}
