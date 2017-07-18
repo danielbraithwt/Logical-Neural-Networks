@@ -85,8 +85,8 @@ def train_network(N, data, targets, iterations, lr):
         for i in range(iterations):      
             batch_ex, batch_l = session.run([example_batch, label_batch])
             session.run([train_op_error], feed_dict={x:batch_ex, y:batch_l})
-            #if i == BATCH_SIZE:
-            #    session.run(train_op_bonus)
+            if i == len(data):
+                session.run(train_op_bonus)
 
             if i % 100 == 0:
                 er = 0

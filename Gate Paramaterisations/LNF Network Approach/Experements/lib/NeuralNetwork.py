@@ -57,7 +57,7 @@ def train_perceptron_network(N, data, targets, iterations):
     with tf.device("/cpu:0"):
         # Data and target variables
         x = tf.placeholder("float32", [None, None])
-        y = tf.placeholder("float32", [None])
+        y = tf.placeholder("float32", )
             
         # Set up weights
         w_hidden = tf.Variable(np.random.rand(2**N, 2*N), dtype='float32')
@@ -96,14 +96,14 @@ def train_perceptron_network(N, data, targets, iterations):
     return None, (w_hidden_value, w_out_value), error, total_time
 
 
-def train_perceptron_network_general(N, data, targets, iterations):
+def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
     # Convert input to the new form with the not of atoms
     data = list(map(lambda x: transform_input(x), data))
     
     with tf.device("/cpu:0"):
         # Data and target variables
         x = tf.placeholder("float32", [None, None])
-        y = tf.placeholder("float32", [None])
+        y = tf.placeholder("float32", )
             
         # Set up weights
         w_hidden = tf.Variable(np.random.rand(N, 2*N), dtype='float32')
@@ -112,8 +112,8 @@ def train_perceptron_network_general(N, data, targets, iterations):
         w_l1 = tf.Variable(np.random.rand(N, N), dtype='float32')
         b_l1 = tf.Variable(np.random.rand(1, N), dtype='float32')
         
-        w_out = tf.Variable(np.random.rand(1, N), dtype='float32')
-        b_out = tf.Variable(np.random.rand(1), dtype='float32')
+        w_out = tf.Variable(np.random.rand(num_out, N), dtype='float32')
+        b_out = tf.Variable(np.random.rand(num_out), dtype='float32')
 
         # Compute output of hidden layer
         hidden_out = perceptron_activation(x, tf.transpose(w_hidden), b_hidden)
@@ -159,7 +159,7 @@ def run_perceptron_network_general(N, data, targets, net):
     with tf.device("/cpu:0"):
         # Data and target variables
         x = tf.placeholder("float32", [None, None])
-        y = tf.placeholder("float32", [None])
+        y = tf.placeholder("float32", )
             
         # Set up weights
         w_hidden = tf.Variable(net[0][0], dtype='float32')

@@ -11,6 +11,19 @@ class Atom():
     def __init__(self, name):
         self.name = name
 
+    def get_name(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.name == other.get_name()
+
+    def negate(self):
+        if self.name.startswith("NOT"):
+            a = self.name.split(' ')[1]
+            return Atom(a)
+
+        return Atom("NOT {}".format(self.name))
+
     def apply(self, vals):
         return vals[self.name]
 
@@ -188,8 +201,8 @@ def compute_data(data, targets, i):
     return (d, t), (testData, testTargets)
 
 #pltswitch_backend("TkAgg")  
-n = 6
 if __name__ == '__main__':
+    n = 6
     np.random.seed(1234)
     random.seed(1234)
     expression = generateExpressions(n)[0]

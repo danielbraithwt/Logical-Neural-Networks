@@ -1,0 +1,17 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Introduction}{1}
+\contentsline {chapter}{\numberline {2}Background Survey}{3}
+\contentsline {section}{\numberline {2.1}Core Concepts}{3}
+\contentsline {subsection}{\numberline {2.1.1}CNF \& DNF}{3}
+\contentsline {subsection}{\numberline {2.1.2}CNF \& DNF from Truth Table}{3}
+\contentsline {section}{\numberline {2.2}Literature Review}{4}
+\contentsline {chapter}{\numberline {3}Foundation of Logical Normal Form Networks}{7}
+\contentsline {section}{\numberline {3.1}Noisy Gate Parametrisation}{9}
+\contentsline {section}{\numberline {3.2}Training LNF Networks}{10}
+\contentsline {section}{\numberline {3.3}LNF Network Performance}{10}
+\contentsline {section}{\numberline {3.4}LNF Network Generalization}{12}
+\contentsline {section}{\numberline {3.5}LNF Network Rule Extraction}{12}
+\contentsline {chapter}{\numberline {4}Investigation of Logical Normal Form Networks}{14}
+\contentsline {section}{\numberline {4.1}Developing Applications}{14}
+\contentsline {subsection}{\numberline {4.1.1}Multi-class Classification}{14}
+\contentsline {chapter}{Appendices}{16}
