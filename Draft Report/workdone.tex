@@ -170,23 +170,45 @@ How can LNFNs be developed] to support classification of more than two classes. 
 An intuitive way to extend LNFNs to support Multi-class Classification is to add more output neurons and use One-hot encoding. If we have 3 classes then $100$, $010$ and $001$ represent class 1, 2 and 3 retrospectively, then the LNFN would have 3 output neurons, each representing a bit in the One-hot encoded string.\\
 
 \begin{definition}
-	The structure of an LNFN to solve an $k$ class classification problem where each instance is described by n features has $2n$ inputs, $2^n$ hidden units and $k$ output units.
+	The structure of an LNFN to solve an $k$ class classification problem where each instance is described by n features has $2n$ inputs, $2^n$ hidden units and $k$ output units. A final Softmax layer is added, as is convention for these types of problems.
 \end{definition}
 
 A simple problem which lends its self naturally to this is the \text{Lenses} problem \cite{Lichman:2013}, a three class classification problem, each instance has 4 features, 3 of which are binary and the other has three possible values. This problem can be easily converted into one which can be used with an LNFN, each new problem instance will have 6 features, the three binary remain the same and the categorical one is expanded into 3.\\
 
-How does an LNFN network perform when compared to a MLPN on the Lenses problem. The performance of the two classifiers will be compared using Leave-One-Out (LOE) Cross-Validation.
+How does an LNFN network perform when compared to a MLPN on the Lenses problem. The performance of the two classifiers will be compared using Leave-One-Out (LOE) Cross-Validation. The structure of the MLPN only differs in the number of hidden layers/units, there are two hidden layers, one with $2 \cdot n$ hidden units and the other with $n$
 
-\begin{center}
-	\begin{tabular}{| c | c | c |}
-		\hline
-		 & Error & Confidence Interval (95\%) \\
-		\hline
-		CNF Net & 0 & 0 \\
-		\hline
-		DNF Net & 0 & 0 \\
-		\hline
-		PCEP Net & 0 & 0 \\
-		\hline
-	\end{tabular}
-\end{center}
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| c | c | c |}
+			\hline
+			& Error (SSE) & Confidence Interval (95\%) \\
+			\hline
+			CNF Net & 6.663 & (6.468, 7.198) \\
+			\hline
+			DNF Net & 6.660 & (6.468, 7.197) \\
+			\hline
+			PCEP Net & 6.751 & (6.468, 7.997) \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{}
+	\label{tab:lenses-peformance-comp}
+\end{table}
+
+Table \ref{tab:lenses-peformance-comp} demonstrates that the CNF \& DNF Networks perform comparably to an MLPN as the confidence intervals for the error overlap.\\ 
+
+Now that the LNFN network has three output neurons it should be possible to extract three rules describing each of the classes. Consider that each problem instance is of the following form $\{a, b, c, d, e, f\}$ where $a,b,c,d,e,f$ are all atoms. The following rules can be extracted from a CNFN when trained over the complete Lenses data, any duplicate clause or Tautology has been filtered out, the resultant extracted formula has also been manually simplified (so they can be displayed and understood better).
+
+\begin{itemize}
+	\item \text{Class 1:} $(a \lor b \lor e) \land (a \lor \lnot d) \land (c \lor e) \land f$
+	\item \text{Class 2:} $(a \lor b \lor \lnot c \lor d) \land \lnot e \land f$
+	\item \text{Class 3:} $(\lnot a \lor b \lor c \lor \lnot f) \land (a \lor \lnot d \lor e \lor \lnot f) \land (\lnot b \lor c \lor d \lor \lnot f) \land (d \lor \lnot e \lor \lnot f)$
+\end{itemize}
+
+Immediately it is possible to find useful information about this problem that was not obvious before, namely $\lnot f = True \implies $ Class 3. Table \ref{tab:rule-classification-lenses-cnf} shows these rules applied to all the problem instances in the Lenses data set, it demonstrates that these extracted rules are able to fully describe the Lenses problem.
+
+\subsection{Features with Continuous Domains}
+The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? Secondly what can be achieved by discretizing the continuous inputs and then using an LNFN to learn this new boolean problem. 
+
+\subsubsection{LNFNs and Continuous Features}
+\subsubsection{LNFNs and Discretized Continuous Features}

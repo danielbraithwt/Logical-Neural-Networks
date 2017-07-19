@@ -14,4 +14,8 @@
 \contentsline {chapter}{\numberline {4}Investigation of Logical Normal Form Networks}{14}
 \contentsline {section}{\numberline {4.1}Developing Applications}{14}
 \contentsline {subsection}{\numberline {4.1.1}Multi-class Classification}{14}
-\contentsline {chapter}{Appendices}{16}
+\contentsline {subsection}{\numberline {4.1.2}Features with Continuous Domains}{15}
+\contentsline {subsubsection}{LNFNs and Continuous Features}{15}
+\contentsline {subsubsection}{LNFNs and Discretized Continuous Features}{15}
+\contentsline {chapter}{Appendices}{17}
+\contentsline {chapter}{\numberline {A}Tables}{18}

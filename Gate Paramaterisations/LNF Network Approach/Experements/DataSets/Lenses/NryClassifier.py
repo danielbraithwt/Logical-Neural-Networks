@@ -5,7 +5,7 @@ import numpy as np
 import ReadLensesData
 import ConvertData
 from MultiOutLNFN import train_cnf_network, train_dnf_network, run_cnf_network, run_dnf_network
-from NeuralNetwork import train_perceptron_network_general, run_perceptron_network_general
+from MultiOutNN import train_perceptron_network_general, run_perceptron_network_general
 
 def conf_interval(data):
     N = len(data)

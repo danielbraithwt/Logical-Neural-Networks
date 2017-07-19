@@ -69,11 +69,10 @@ def _train_network(N, data, targets, iterations, hidden_activation, output_activ
     hidden_out = hidden_activation(x, w_hidden, b_hidden)
     y_hat = output_activation(hidden_out, w_out, b_out)[0]
 
-    y_hat_prime = y_hat#tf.nn.softmax(y_hat)
+    y_hat_prime = tf.nn.softmax(y_hat)
 
-    error = -(y*tf.log(y_hat_prime) + (1-y)*tf.log(1-y_hat_prime))#tf.pow(y - y_hat_prime, 2)
-    #error = tf.reduce_sum(errors)
-    er = tf.reduce_sum(errors)
+    error = tf.pow(y - y_hat_prime, 2)
+    er = tf.reduce_sum(error)
 
     train_op_error = tf.train.AdamOptimizer(0.01).minimize(error)
 
@@ -88,42 +87,42 @@ def _train_network(N, data, targets, iterations, hidden_activation, output_activ
 
     with tf.Session() as session:
         session.run(model)
-        print(session.run(y_hat, feed_dict={x:[data[0]], y:targets[0]}))
-        print(session.run(y_hat_prime, feed_dict={x:[data[0]], y:targets[0]}))
-        print(session.run(error, feed_dict={x:[data[0]], y:targets[0]}))
-        for i in range(10000):
-            print(session.run(train_op_error, feed_dict={x:[data[0]], y:[targets[0]]}))
-            print(session.run(error, feed_dict={x:[data[0]], y:targets[0]}))
-        print(session.run(y_hat, feed_dict={x:[data[0]], y:[targets[0]]}))
+##        print(session.run(y_hat, feed_dict={x:[data[0]], y:targets[0]}))
+##        print(session.run(y_hat_prime, feed_dict={x:[data[0]], y:targets[0]}))
+##        print(session.run(error, feed_dict={x:[data[0]], y:targets[0]}))
+##        for i in range(1000):
+##            print(session.run(train_op_error, feed_dict={x:[data[0]], y:[targets[0]]}))
+##            print(session.run(error, feed_dict={x:[data[0]], y:targets[0]}))
+##        print(session.run(y_hat, feed_dict={x:[data[0]], y:[targets[0]]}))
         #print(session.run(y_hat_prime, feed_dict={x:[data[0]], y:[targets[0]]}))
-##        coord = tf.train.Coordinator()
-##        threads = tf.train.start_queue_runners(sess=session,coord=coord)
-##
-##        for i in range(iterations):      
-##            batch_ex, batch_l = session.run([example_batch, label_batch])
-##            session.run([train_op_error], feed_dict={x:batch_ex, y:batch_l})
-##            
-##        er = 0
-##        for d in range(len(data)):
-##            er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
-##
-##        end = time.time()
-##
-##        coord.request_stop()
-##        coord.join(threads)
-##        
-##        r_hidden_final = session.run(r_w_hidden)
-##        r_out_final = session.run(r_w_out)
-##
-##        total_time = end - start
-##
-##        w_hidden_final = session.run(w_hidden)
-##        b_hidden_final = session.run(b_hidden)
-##
-##        w_out_final = session.run(w_out)
-##        b_out_final = session.run(b_out)
-##    
-##    return (r_hidden_final, r_out_final), ((w_hidden_final, b_hidden_final), (w_out_final, b_out_final)), er, total_time
+        coord = tf.train.Coordinator()
+        threads = tf.train.start_queue_runners(sess=session,coord=coord)
+
+        for i in range(iterations):      
+            batch_ex, batch_l = session.run([example_batch, label_batch])
+            session.run([train_op_error], feed_dict={x:batch_ex, y:batch_l})
+            
+        e = 0
+        for d in range(len(data)):
+            e += session.run(er, feed_dict={x:[data[d]], y:targets[d]})
+
+        end = time.time()
+
+        coord.request_stop()
+        coord.join(threads)
+        
+        r_hidden_final = session.run(r_w_hidden)
+        r_out_final = session.run(r_w_out)
+
+        total_time = end - start
+
+        w_hidden_final = session.run(w_hidden)
+        b_hidden_final = session.run(b_hidden)
+
+        w_out_final = session.run(w_out)
+        b_out_final = session.run(b_out)
+    
+    return (r_hidden_final, r_out_final), ((w_hidden_final, b_hidden_final), (w_out_final, b_out_final)), e, total_time
 
 
 def _run_network(N, data, targets, network, hidden_activation, output_activation):
@@ -154,8 +153,8 @@ def _run_network(N, data, targets, network, hidden_activation, output_activation
 
     y_hat_prime = tf.nn.softmax(y_hat)
 
-    errors = tf.pow(y - y_hat_prime, 2)
-    error = tf.reduce_sum(errors)
+    error = tf.pow(y - y_hat_prime, 2)
+    er = tf.reduce_sum(error)
 
     model = tf.global_variables_initializer()
     start = time.time()
@@ -165,9 +164,9 @@ def _run_network(N, data, targets, network, hidden_activation, output_activation
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=session,coord=coord)
 
-        er = 0
+        e = 0
         for d in range(len(data)):
-            er += session.run(error, feed_dict={x:[data[d]], y:[targets[d]]})
+            e += session.run(er, feed_dict={x:[data[d]], y:[targets[d]]})
 
         end = time.time()
 
@@ -176,5 +175,5 @@ def _run_network(N, data, targets, network, hidden_activation, output_activation
 
         total_time = end - start
     
-    return er
+    return e
 

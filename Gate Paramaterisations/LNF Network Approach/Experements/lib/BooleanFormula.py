@@ -63,6 +63,18 @@ class Or():
 
         return res
 
+    def get_literals(self):
+        return self.literals
+
+    def __eq__(self, other):
+        l2 = other.get_literals()
+
+        for atm in l2:
+            if not atm in self.literals:
+                return False
+
+        return True
+
     def __repr__(self):
         s = ""
 
@@ -78,7 +90,7 @@ def build_cnf(n, network):
     pruned_network = network#Pruning.relevance_pruning(network, 1.0)
 
     hidden_w = pruned_network[0]
-    out_w = pruned_network[1][0]
+    out_w = pruned_network[1]#[0]
     
 
     present = [i for i in range(0,len(out_w)) if out_w[i] == 0]
@@ -93,7 +105,16 @@ def build_cnf(n, network):
     for weights in raw_disjunctions:
         mask = [w for w in range(0, len(weights)) if weights[w] == 0]
         a = [atoms[i] for i in mask]
-        disjunctions.append(Or(a))
+
+        tau = False
+        for atm in a:
+            if atm.negate() in a:
+                tau = True
+                break
+
+        disjunc = Or(a)
+        if (not tau) and (disjunc not in disjunctions):
+            disjunctions.append(disjunc)
 
 
     return And(disjunctions)

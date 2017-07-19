@@ -27,10 +27,10 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         y = tf.placeholder("float32", )
             
         # Set up weights
-        w_hidden = tf.Variable(np.random.rand(N, 2*N), dtype='float32')
-        b_hidden = tf.Variable(np.random.rand(1, N), dtype='float32')
+        w_hidden = tf.Variable(np.random.rand(2*N, 2*N), dtype='float32')
+        b_hidden = tf.Variable(np.random.rand(1, 2*N), dtype='float32')
         
-        w_l1 = tf.Variable(np.random.rand(N, N), dtype='float32')
+        w_l1 = tf.Variable(np.random.rand(N, 2*N), dtype='float32')
         b_l1 = tf.Variable(np.random.rand(1, N), dtype='float32')
         
         w_out = tf.Variable(np.random.rand(num_out, N), dtype='float32')
@@ -47,9 +47,10 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         y_hat_prime = tf.nn.softmax(y_hat)
 
         # Compute error
-        error = tf.reduce_sum(tf.square(y - y_hat_prime))
+        error = tf.pow(y - y_hat_prime, 2)
+        er = tf.reduce_sum(error)
 
-        train_op = tf.train.GradientDescentOptimizer(0.02).minimize(error)
+        train_op = tf.train.AdamOptimizer(0.02).minimize(error)
 
     model = tf.global_variables_initializer()
 
@@ -60,7 +61,7 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         for i in range(iterations):
             session.run(train_op, feed_dict={x:data, y:[targets]})
 
-        error = session.run(error, feed_dict={x:data, y:[targets]})
+        e = session.run(er, feed_dict={x:data, y:[targets]})
         w_hidden_value = session.run(w_hidden)
         b_hidden_value = session.run(b_hidden)
 
@@ -72,7 +73,7 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
 
     total_time = time.time() - start_time
 
-    return None, ((w_hidden_value, b_hidden_value), (w_l1_value, b_l1_value), (w_out_value, b_out_value)), error, total_time
+    return None, ((w_hidden_value, b_hidden_value), (w_l1_value, b_l1_value), (w_out_value, b_out_value)), e, total_time
 
 
 def run_perceptron_network_general(N, data, targets, net):
@@ -105,14 +106,15 @@ def run_perceptron_network_general(N, data, targets, net):
         y_hat_prime = tf.nn.softmax(y_hat)
 
         # Compute error
-        error = tf.reduce_sum(tf.square(y - y_hat_prime))
+        error = tf.pow(y - y_hat_prime, 2)
+        er = tf.reduce_sum(error)
         
     model = tf.global_variables_initializer()
 
     with tf.Session() as session:
         session.run(model)
 
-        final_error = session.run(error, feed_dict={x:data, y:[targets]})
+        final_error = session.run(er, feed_dict={x:data, y:[targets]})
 
 
     return final_error
