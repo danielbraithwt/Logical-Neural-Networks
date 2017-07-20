@@ -123,7 +123,7 @@ def build_dnf(n, network):
     pruned_network = network#Pruning.relevance_pruning(network, 1.0)
 
     hidden_w = pruned_network[0]
-    out_w = pruned_network[1][0]
+    out_w = pruned_network[1]#[0]
     
 
     present = [i for i in range(0,len(out_w)) if out_w[i] == 0]
@@ -138,7 +138,16 @@ def build_dnf(n, network):
     for weights in raw_conjunctions:
         mask = [w for w in range(0, len(weights)) if weights[w] == 0]
         a = [atoms[i] for i in mask]
-        conjunctions.append(And(a))
+
+        tau = False
+        for atm in a:
+            if atm.negate() in a:
+                tau = True
+                break
+
+        conjunc = And(a)
+        if (not tau) and (conjunc not in conjunctions):    
+            conjunctions.append(conjunc)
 
 
     #return And(disjunctions)

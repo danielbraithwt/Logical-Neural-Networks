@@ -205,10 +205,28 @@ Now that the LNFN network has three output neurons it should be possible to extr
 	\item \text{Class 3:} $(\lnot a \lor b \lor c \lor \lnot f) \land (a \lor \lnot d \lor e \lor \lnot f) \land (\lnot b \lor c \lor d \lor \lnot f) \land (d \lor \lnot e \lor \lnot f)$
 \end{itemize}
 
-Immediately it is possible to find useful information about this problem that was not obvious before, namely $\lnot f = True \implies $ Class 3. Table \ref{tab:rule-classification-lenses-cnf} shows these rules applied to all the problem instances in the Lenses data set, it demonstrates that these extracted rules are able to fully describe the Lenses problem.
+Immediately it is possible to find useful information about this problem that was not obvious before, namely $\lnot f = True \implies $ Class 3. Table \ref{tab:rule-classification-lenses-cnf} shows these rules applied to all the problem instances in the Lenses data set, it demonstrates that these extracted rules are able to fully describe the Lenses problem.\\
+
+The DNFN might be more applicable as the rules will be more insiteful, given its structure as an OR of ANDs.\\
+
+\begin{itemize}
+	\item \text{Class 1:} $(a \land \lnot b \land \lnot c \land e \land f) \lor (\lnot a \land \lnot d \land e \land f)$
+	\item \text{Class 2:} $(\lnot c \land \lnot e \land f) \lor (c \land d \land \lnot e \land f)$
+	\item \text{Class 3:} $(\lnot a \land \lnot b \land c \land \lnot d) \lor (\lnot a \land d \land e) \lor \lnot f$
+\end{itemize}
+
+These DNF formula do not correspond to the CNF give above but this is to be expected, despite the fact that collectivity all the problem instances span the space of features once they have been converted to the boolean feature form this fact is no longer true.    there is a way to combine the knowledge from both the CNF and DNF formula to create resultant formula which perform better.
+
+One possible issue that could arrive here is that the CNFN is now attempting to learn three CNF expressions with the same number of hidden neurons. The fact that meaningful rules where able to be extracted in this case could of been a coincidence, intuitively if we are learning a problem with $k$ classes then we could need $k \cdot 2^n$ hidden neurons which is becoming impractical.
 
 \subsection{Features with Continuous Domains}
-The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? Secondly what can be achieved by discretizing the continuous inputs and then using an LNFN to learn this new boolean problem. 
+The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? Secondly what can be achieved by discretizing the continuous inputs and then using an LNFN to learn this new boolean problem. A simple 
+benchmark to use is the Iris problem \cite{Lichman:2013}
 
 \subsubsection{LNFNs and Continuous Features}
+If the features are continuous it no longer makes sense to extract rules but it could still be possible to see what inputs are considered in making a decision about the class. 
+
+
 \subsubsection{LNFNs and Discretized Continuous Features}
+There are a number of method for discretizing continuous features, there are many algorithms for performing such an operation on some data \cite{liu2002discretization}, to many for all to be tested. Two simple methods for descretization are Equal width or frequency binning, these methods are very naive and prone to outliers, also the number of bins must be chosen before hand so this requires experementation. 
+

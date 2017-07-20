@@ -5,7 +5,7 @@ import numpy as np
 import ReadLensesData
 import ConvertData
 from MultiOutLNFN import train_cnf_network, train_dnf_network, run_cnf_network, run_dnf_network
-from BooleanFormula import build_cnf
+from BooleanFormula import build_cnf, build_dnf
 
 data, raw_targets = ReadLensesData.read_data()
 
@@ -19,7 +19,7 @@ for t in raw_targets:
 targets = np.array(targets)
 data = np.array(data)
 
-cnf = train_cnf_network(6, data, targets, 700000, 3)
+cnf = train_dnf_network(6, data, targets, 700000, 3)
 
 hidden = cnf[0][0]
 out = cnf[0][1]
@@ -27,9 +27,9 @@ out1 = out[0]
 out2 = out[1]
 out3 = out[2]
 
-cnf1 = build_cnf(6, (hidden, out1))
-cnf2 = build_cnf(6, (hidden, out2))
-cnf3 = build_cnf(6, (hidden, out3))
+cnf1 = build_dnf(6, (hidden, out1))
+cnf2 = build_dnf(6, (hidden, out2))
+cnf3 = build_dnf(6, (hidden, out3))
 
 print(cnf1)
 print()

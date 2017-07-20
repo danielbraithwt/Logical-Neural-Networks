@@ -1,6 +1,6 @@
 \select@language {english}
 \contentsline {chapter}{\numberline {1}Introduction}{1}
-\contentsline {chapter}{\numberline {2}Background Survey}{3}
+\contentsline {chapter}{\numberline {2}Background}{3}
 \contentsline {section}{\numberline {2.1}Core Concepts}{3}
 \contentsline {subsection}{\numberline {2.1.1}CNF \& DNF}{3}
 \contentsline {subsection}{\numberline {2.1.2}CNF \& DNF from Truth Table}{3}
@@ -14,8 +14,8 @@
 \contentsline {chapter}{\numberline {4}Investigation of Logical Normal Form Networks}{14}
 \contentsline {section}{\numberline {4.1}Developing Applications}{14}
 \contentsline {subsection}{\numberline {4.1.1}Multi-class Classification}{14}
-\contentsline {subsection}{\numberline {4.1.2}Features with Continuous Domains}{15}
-\contentsline {subsubsection}{LNFNs and Continuous Features}{15}
-\contentsline {subsubsection}{LNFNs and Discretized Continuous Features}{15}
-\contentsline {chapter}{Appendices}{17}
-\contentsline {chapter}{\numberline {A}Tables}{18}
+\contentsline {subsection}{\numberline {4.1.2}Features with Continuous Domains}{16}
+\contentsline {subsubsection}{LNFNs and Continuous Features}{16}
+\contentsline {subsubsection}{LNFNs and Discretized Continuous Features}{16}
+\contentsline {chapter}{Appendices}{18}
+\contentsline {chapter}{\numberline {A}Tables}{19}

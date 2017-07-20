@@ -69,12 +69,12 @@ def _train_network(N, data, targets, iterations, hidden_activation, output_activ
     hidden_out = hidden_activation(x, w_hidden, b_hidden)
     y_hat = output_activation(hidden_out, w_out, b_out)[0]
 
-    y_hat_prime = tf.nn.softmax(y_hat)
+    y_hat_prime = y_hat#tf.nn.softmax(y_hat)
 
-    error = tf.pow(y - y_hat_prime, 2)
+    error = tf.pow(y - y_hat_prime, 2)#tf.nn.softmax_cross_entropy_with_logits(logits=y_hat_prime, labels=y)#
     er = tf.reduce_sum(error)
 
-    train_op_error = tf.train.AdamOptimizer(0.01).minimize(error)
+    train_op_error = tf.train.AdamOptimizer(0.002).minimize(error)
 
     t_w_hidden = sigmoid(w_hidden)
     t_w_out = sigmoid(w_out)
@@ -101,9 +101,16 @@ def _train_network(N, data, targets, iterations, hidden_activation, output_activ
         for i in range(iterations):      
             batch_ex, batch_l = session.run([example_batch, label_batch])
             session.run([train_op_error], feed_dict={x:batch_ex, y:batch_l})
+
+            if i % 10 == 0:
+                e = 0
+                for d in range(len(data)):
+                    e += session.run(er, feed_dict={x:[data[d]], y:targets[d]})
+                print(e)
             
         e = 0
         for d in range(len(data)):
+            print(session.run(y_hat_prime, feed_dict={x:[data[d]], y:targets[d]}))
             e += session.run(er, feed_dict={x:[data[d]], y:targets[d]})
 
         end = time.time()
