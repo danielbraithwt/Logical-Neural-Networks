@@ -71,7 +71,7 @@ def _train_network(N, data, targets, iterations, hidden_activation, output_activ
 
     y_hat_prime = y_hat#tf.nn.softmax(y_hat)
 
-    error = tf.pow(y - y_hat_prime, 2)#tf.nn.softmax_cross_entropy_with_logits(logits=y_hat_prime, labels=y)#
+    error = tf.nn.softmax_cross_entropy_with_logits(logits=y_hat, labels=y)#-(y * tf.log(y_hat) + (1 - y) * tf.log(1 - y_hat))#tf.nn.softmax_cross_entropy_with_logits(logits=y_hat_prime, labels=y)#
     er = tf.reduce_sum(error)
 
     train_op_error = tf.train.AdamOptimizer(0.002).minimize(error)
@@ -81,6 +81,8 @@ def _train_network(N, data, targets, iterations, hidden_activation, output_activ
 
     r_w_hidden = tf.round(t_w_hidden)
     r_w_out = tf.round(t_w_out)
+
+    tmp_out = tf.round(tf.nn.softmax(y_hat_prime))
 
     model = tf.global_variables_initializer()
     start = time.time()
@@ -110,7 +112,7 @@ def _train_network(N, data, targets, iterations, hidden_activation, output_activ
             
         e = 0
         for d in range(len(data)):
-            print(session.run(y_hat_prime, feed_dict={x:[data[d]], y:targets[d]}))
+            print(session.run(tmp_out, feed_dict={x:[data[d]], y:targets[d]}))
             e += session.run(er, feed_dict={x:[data[d]], y:targets[d]})
 
         end = time.time()

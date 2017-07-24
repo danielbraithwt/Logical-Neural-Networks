@@ -5,17 +5,18 @@
 \contentsline {subsection}{\numberline {2.1.1}CNF \& DNF}{3}
 \contentsline {subsection}{\numberline {2.1.2}CNF \& DNF from Truth Table}{3}
 \contentsline {section}{\numberline {2.2}Literature Review}{4}
-\contentsline {chapter}{\numberline {3}Foundation of Logical Normal Form Networks}{7}
-\contentsline {section}{\numberline {3.1}Noisy Gate Parametrisation}{9}
-\contentsline {section}{\numberline {3.2}Training LNF Networks}{10}
-\contentsline {section}{\numberline {3.3}LNF Network Performance}{10}
-\contentsline {section}{\numberline {3.4}LNF Network Generalization}{12}
-\contentsline {section}{\numberline {3.5}LNF Network Rule Extraction}{12}
-\contentsline {chapter}{\numberline {4}Investigation of Logical Normal Form Networks}{14}
-\contentsline {section}{\numberline {4.1}Developing Applications}{14}
-\contentsline {subsection}{\numberline {4.1.1}Multi-class Classification}{14}
-\contentsline {subsection}{\numberline {4.1.2}Features with Continuous Domains}{16}
-\contentsline {subsubsection}{LNFNs and Continuous Features}{16}
-\contentsline {subsubsection}{LNFNs and Discretized Continuous Features}{16}
-\contentsline {chapter}{Appendices}{18}
-\contentsline {chapter}{\numberline {A}Tables}{19}
+\contentsline {chapter}{\numberline {3}Foundation of Logical Normal Form Networks}{8}
+\contentsline {section}{\numberline {3.1}Noisy Gate Parametrisation}{10}
+\contentsline {section}{\numberline {3.2}Training LNF Networks}{11}
+\contentsline {section}{\numberline {3.3}LNF Network Performance}{11}
+\contentsline {section}{\numberline {3.4}LNF Network Generalization}{13}
+\contentsline {section}{\numberline {3.5}LNF Network Rule Extraction}{13}
+\contentsline {chapter}{\numberline {4}Investigation of Logical Normal Form Networks}{15}
+\contentsline {section}{\numberline {4.1}Developing Applications}{15}
+\contentsline {subsection}{\numberline {4.1.1}Multi-class Classification}{15}
+\contentsline {subsection}{\numberline {4.1.2}Features with Continuous Domains}{17}
+\contentsline {subsubsection}{LNFNs and Continuous Features}{17}
+\contentsline {subsubsection}{LNFNs and Discretized Continuous Features}{17}
+\contentsline {subsubsection}{Discussion of Application to Continuous Domains}{17}
+\contentsline {chapter}{Appendices}{19}
+\contentsline {chapter}{\numberline {A}Tables}{20}

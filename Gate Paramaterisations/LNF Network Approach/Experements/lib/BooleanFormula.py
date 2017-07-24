@@ -90,7 +90,7 @@ def build_cnf(n, network):
     pruned_network = network#Pruning.relevance_pruning(network, 1.0)
 
     hidden_w = pruned_network[0]
-    out_w = pruned_network[1]#[0]
+    out_w = pruned_network[1][0]
     
 
     present = [i for i in range(0,len(out_w)) if out_w[i] == 0]
@@ -123,7 +123,7 @@ def build_dnf(n, network):
     pruned_network = network#Pruning.relevance_pruning(network, 1.0)
 
     hidden_w = pruned_network[0]
-    out_w = pruned_network[1]#[0]
+    out_w = pruned_network[1][0]
     
 
     present = [i for i in range(0,len(out_w)) if out_w[i] == 0]

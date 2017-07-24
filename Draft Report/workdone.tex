@@ -133,7 +133,7 @@ The testing will consist of selecting 5 random boolean expressions for $2 \leq n
   \hfill
 \end{figure}
 
-Figure  \ref{fig:peformance-comparason-all} shows that neither of the perceptron networks perform as well as the LNF Networks as $n$ increases. Figure  \ref{fig:peformance-comparason-cnfdnf} shows on average there are no statistically significant differences between the CNF or DNF networks. What is not present in  \ref{fig:peformance-comparason-cnfdnf} is that at $n = 9$ sometimes the CNF network far out performs the DNF and visa versa, theoretically both should be able to learn any boolean expression, this is something which will be investigated, as identified in the Chapter \ref{C:futureplan}. 
+Figure  \ref{fig:peformance-comparason-all} shows that neither of the perceptron networks perform as well as the LNF Networks as $n$ increases. Figure  \ref{fig:peformance-comparason-cnfdnf} shows on average there are no statistically significant differences between the CNF or DNF networks. What is not present in  \ref{fig:peformance-comparason-cnfdnf} is that sometimes the CNF network consistently out performs the DNF and visa versa, theoretically both should be able to learn any boolean expression. 
 
 \section{LNF Network Generalization}
 These networks are able to perform as well as standard perceptron networks but so far they have been getting the complete set of data, in practice this will almost never be the case. Standard ANN's are widely used because of their ability to generalize, for LNFN's to be useful they must also be able to generalize.
@@ -207,7 +207,7 @@ Now that the LNFN network has three output neurons it should be possible to extr
 
 Immediately it is possible to find useful information about this problem that was not obvious before, namely $\lnot f = True \implies $ Class 3. Table \ref{tab:rule-classification-lenses-cnf} shows these rules applied to all the problem instances in the Lenses data set, it demonstrates that these extracted rules are able to fully describe the Lenses problem.\\
 
-The DNFN might be more applicable as the rules will be more insiteful, given its structure as an OR of ANDs.\\
+The DNFN might be more applicable as the rules will be more insightful, given its structure as an OR of ANDs.\\
 
 \begin{itemize}
 	\item \text{Class 1:} $(a \land \lnot b \land \lnot c \land e \land f) \lor (\lnot a \land \lnot d \land e \land f)$
@@ -215,7 +215,7 @@ The DNFN might be more applicable as the rules will be more insiteful, given its
 	\item \text{Class 3:} $(\lnot a \land \lnot b \land c \land \lnot d) \lor (\lnot a \land d \land e) \lor \lnot f$
 \end{itemize}
 
-These DNF formula do not correspond to the CNF give above but this is to be expected, despite the fact that collectivity all the problem instances span the space of features once they have been converted to the boolean feature form this fact is no longer true.    there is a way to combine the knowledge from both the CNF and DNF formula to create resultant formula which perform better.
+These DNF formula do not correspond to the CNF give above but this is to be expected, despite the fact that collectivity all the problem instances span the space of features once they have been converted to the boolean feature form this fact is no longer true.    there is a way to combine the knowledge from both the CNF and DNF formula to create resultant formula which perform better.\\
 
 One possible issue that could arrive here is that the CNFN is now attempting to learn three CNF expressions with the same number of hidden neurons. The fact that meaningful rules where able to be extracted in this case could of been a coincidence, intuitively if we are learning a problem with $k$ classes then we could need $k \cdot 2^n$ hidden neurons which is becoming impractical.
 
@@ -223,10 +223,18 @@ One possible issue that could arrive here is that the CNFN is now attempting to 
 The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? Secondly what can be achieved by discretizing the continuous inputs and then using an LNFN to learn this new boolean problem. A simple 
 benchmark to use is the Iris problem \cite{Lichman:2013}
 
-\subsubsection{LNFNs and Continuous Features}
-If the features are continuous it no longer makes sense to extract rules but it could still be possible to see what inputs are considered in making a decision about the class. 
+\subsubsection{LNFNs and Continuous Features} \label{subsubsec:lnfns-cont-features}
+If the features are continuous it no longer makes sense to extract rules but it could still be possible to see what inputs are considered in making a decision about the class. When training an LNFN on the Iris problem (over all problem instances) the network converges to a solution with a loss of $96.932$, poor performance when compared to a perceptron network that can achieve an accuracy of $0.0$. \\
+
+Inspecting the class prediction of each reveals that for a problem instance that has a true class of Iris-virginica or Iris-versicolor then LNFN sometimes predicts multiple classes, this leads to the belief that these networks have issues with learning problems that are not linearly separable as the two classes which an LNFN has trouble differentiating between are not linearly separable.\\
+
+The LNFN is able to learn XOR so not all problems which are not linearly separable are out of reach of LNFNs. Section \ref{subsubsec:lnfns-desc-cont-features} investigates whether it is possible to descretize the variables in such a way that makes this problem learnable by LNFNs.
 
 
-\subsubsection{LNFNs and Discretized Continuous Features}
-There are a number of method for discretizing continuous features, there are many algorithms for performing such an operation on some data \cite{liu2002discretization}, to many for all to be tested. Two simple methods for descretization are Equal width or frequency binning, these methods are very naive and prone to outliers, also the number of bins must be chosen before hand so this requires experementation. 
+\subsubsection{LNFNs and Discretized Continuous Features} \label{subsubsec:lnfns-desc-cont-features}
+There are a number of method for discretizing continuous features, there are many algorithms for performing such an operation on some data \cite{liu2002discretization}, to many for all to be tested. Two simple methods for descretization are Equal width or frequency binning, these methods are very naive and prone to outliers, also the number of bins must be chosen before hand so this requires experimentation. A supervised partitioning method will also be tested, namely Recursive Minimal Entropy Partitioning.\\
 
+Results from training LNFNs with descretized data results in the same issue as before, the network has problems with classifying classes that are not linearly separable.
+
+\subsubsection{Discussion of Application to Continuous Domains}
+The ideas explored in Sections \ref{subsubsec:lnfns-cont-features} \& \ref{subsubsec:lnfns-desc-cont-features} demonstrate that applying LNFNs to problems with continous inputs is not viable.

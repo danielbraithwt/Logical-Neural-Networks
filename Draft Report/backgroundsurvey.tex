@@ -91,5 +91,33 @@ Both these parametrisations reduce to discrete logic gates when there is no nois
 
 ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Networks (LNN's), if the network consists of only Noisy neurons then it a pure LNN. LNN's have been applied to the MINST dataset with promising results. Experiments with different combinations of logical and standard (sigmoid, soft-max) neurons have shown that pure LNN's where able to achieve an error of 8.67\%, where a standard perceptron/softmax network was able to achieve an error of 3.13\%. This reduction in performance does not come without reward, the pure LNN yields a simpler (sparser) and more interpretable network \cite{LearningLogicalActivations}. Training LNN's which are not pure have been shown to have reduced performance (compared to standard ANN's) and no interpretability benefit.\\
 
-
+% Do we need this part in the final report %
 While the concept given in \cite{herrmann1996backpropagation} is the foundation for the work given in this report, the approach presented is different that what has been done. A simpler parametrisation for disjunctive and conjunctive neurons is used, along with better justification and more investigation of the capabilities of LNFN's.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+LNFNs are based off the idea of learning an underlying boolean formula, what happens when learning problems which consist of continous features? One option is to simply train the networks using the continuous features, the other is to descretise any continuous value.\\
+
+% Talk about motivations for descrete features %
+
+There are a number of categories used to sort various descretization algorithms \cite{liu2002discretization}, three of these categories are defined below.
+
+\begin{enumerate}
+	\item \text{Supervised vs. Unsupervised:} Supervised descretization algorithms use class information, as opposed to unsupervised which do not.
+	
+	\item \text{Dynamic vs. Static:} Dynamic methods descretize features as the classifier is being built. A static algorithm performs all descretization before the lerning begins.
+	
+	\item \text{Global vs. Local: } Global methods descretize the entire instance space where as local only descretize a subset of the total space.
+\end{enumerate}
+
+The types of descretization algorithms which will be considered are Static and Global. Dynamic does not make a lot of sense when the data is used in training an ANN and a Local does not make sense if we are using a Static method. As for Supervised vs. Unsupervised it does not matter, though since we do have access to the labels using them could provide better performance.\\
+
+Basic descretizing methods are \text{Equal width and frequency binning}, these are unsupervised algorithms. Equal width divides the interval up into $K$ equally sized bins, where as equal frequency divides the interval into $K$ bins where each one has the same number of instances. While implementation is easy it is not without a cost, namely results could be poor if the distribution of features is not uniform \cite{liu2002discretization}. The two methods also require that $K$ be pre defined, this could require an expensive trial and error process. \cite{liu2002discretization}.\\
+
+A supervised technique is called \text{Recursive Minimal Entropy Partitioning} (RMEP). Let $S = \{s_1, ..., s_n\}$ be a set of instances, each with $n$ attributes. The goal of RMEP is to partition the range of each attribute. The entropy of a set is given by equation \ref{equ:entropy}
+
+\begin{align}
+	E(S) = \sum_{i} p_i \cdot log(p_i)
+	\label{equ:entropy}
+\end{align}
+

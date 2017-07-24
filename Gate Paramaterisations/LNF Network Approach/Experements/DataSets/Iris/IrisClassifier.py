@@ -9,14 +9,15 @@ from MultiOutNN import train_perceptron_network_general, run_perceptron_network_
 
 data, raw_targets = IrisData.read_data()
 
-targets = []
-for t in raw_targets:
-    t_new = [0,0,0]
-    t_new[t-1] = 1
+#targets = []
+#for t in raw_targets:
+#    t_new = [0,0,0]
+#    t_new[t-1] = 1
 
-    targets.append(t_new)
+#    targets.append(t_new)
 
-targets = np.array(targets)
-data = np.array(data)
+#targets = np.array(targets)
+#data = np.array(data)
 
-print(train_cnf_network(4, data, targets, 700000, 3))
+#print(train_cnf_network(4, data, targets, 100000, 3))
+#print(train_perceptron_network_general(4, data, targets, 700000, 3))

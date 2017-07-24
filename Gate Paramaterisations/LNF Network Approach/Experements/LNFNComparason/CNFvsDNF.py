@@ -42,24 +42,25 @@ def __n_rand_perms(n, size):
 
 def generateExpressions(n, num):
     inputs = __perms(n)
-    outputs = __n_rand_perms(len(inputs), num)
+    outputs = __n_rand_perms(len(inputs), 2**len(inputs))
 
     return np.array(list(map(lambda x: (inputs, x), outputs)))
 
 
 if __name__ == '__main__':
-    n = 9
+    n = 2
     np.random.seed(1234)
     random.seed(1234)
-    expressions = generateExpressions(n, 1)
+    expressions = generateExpressions(n, 2**n)
 
     for e in expressions:
         data = e[0]
         targets = e[1]
 
-        r_net_cnf, _, er_cnf, _ = train_cnf_network(n, data, targets, 300000)
+        print()
+        r_net_cnf, _, er_cnf, _ = train_cnf_network(n, data, targets, 100000)
         print("CNF Trained: ", er_cnf)
-        r_net_dnf, _, er_dnf, _ = train_dnf_network(n, data, targets, 300000)
+        r_net_dnf, _, er_dnf, _ = train_dnf_network(n, data, targets, 100000)
         print("DNF Trained: ", er_dnf)
 
         cnf = build_cnf(n, r_net_cnf)

@@ -42,12 +42,12 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         l1_out = perceptron_activation(hidden_out, tf.transpose(w_l1), b_l1)
 
         # Compute output of network
-        y_hat = perceptron_activation(l1_out, tf.transpose(w_out), b_out)
+        y_hat = tf.add(tf.matmul(l1_out, tf.transpose(w_out)), b_out)#perceptron_activation(l1_out, tf.transpose(w_out), b_out)
 
-        y_hat_prime = tf.nn.softmax(y_hat)
+        y_hat_prime = y_hat#tf.nn.softmax(y_hat)
 
         # Compute error
-        error = tf.pow(y - y_hat_prime, 2)
+        error = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=y_hat)#tf.pow(y - y_hat_prime, 2)
         er = tf.reduce_sum(error)
 
         train_op = tf.train.AdamOptimizer(0.02).minimize(error)
@@ -60,6 +60,11 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         session.run(model)
         for i in range(iterations):
             session.run(train_op, feed_dict={x:data, y:[targets]})
+
+            if i % 10 == 0:
+                print(session.run(er, feed_dict={x:data, y:[targets]}))
+
+        print(session.run(y_hat_prime, feed_dict={x:data, y:[targets]}))
 
         e = session.run(er, feed_dict={x:data, y:[targets]})
         w_hidden_value = session.run(w_hidden)
