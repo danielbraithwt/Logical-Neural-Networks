@@ -109,8 +109,8 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         w_hidden = tf.Variable(np.random.rand(N, 2*N), dtype='float32')
         b_hidden = tf.Variable(np.random.rand(1, N), dtype='float32')
         
-        w_l1 = tf.Variable(np.random.rand(N, N), dtype='float32')
-        b_l1 = tf.Variable(np.random.rand(1, N), dtype='float32')
+        #w_l1 = tf.Variable(np.random.rand(N, N), dtype='float32')
+        #b_l1 = tf.Variable(np.random.rand(1, N), dtype='float32')
         
         w_out = tf.Variable(np.random.rand(num_out, N), dtype='float32')
         b_out = tf.Variable(np.random.rand(num_out), dtype='float32')
@@ -118,13 +118,16 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         # Compute output of hidden layer
         hidden_out = perceptron_activation(x, tf.transpose(w_hidden), b_hidden)
 
-        l1_out = perceptron_activation(hidden_out, tf.transpose(w_l1), b_l1)
+        l1_out = hidden_out#perceptron_activation(hidden_out, tf.transpose(w_l1), b_l1)
 
         # Compute output of network
         y_hat = perceptron_activation(l1_out, tf.transpose(w_out), b_out)
+        #y_hat = sigmoid(tf.add(tf.matmul(l1_out, tf.transpose(w_out)), b_out))
+        #y_hat_prime = tf.nn.softmax(y_hat)
+        y_prime = tf.expand_dims(y, 1)#tf.nn.softmax(tf.transpose(y))
 
         # Compute error
-        error = tf.reduce_sum(tf.square(tf.expand_dims(y, 1) - y_hat))
+        error = tf.reduce_sum(tf.square(tf.expand_dims(y, 1) - y_hat))#tf.nn.softmax_cross_entropy_with_logits(labels=y_prime, logits=y_hat)#tf.reduce_sum(tf.square(tf.expand_dims(y, 1) - y_hat))
 
         train_op = tf.train.GradientDescentOptimizer(0.02).minimize(error)
 
@@ -137,19 +140,23 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         for i in range(iterations):
             session.run(train_op, feed_dict={x:data, y:targets})
 
+            if i % 100 == 0:
+                print(session.run(error, feed_dict={x:data, y:targets}))
+
         error = session.run(error, feed_dict={x:data, y:targets})
         w_hidden_value = session.run(w_hidden)
         b_hidden_value = session.run(b_hidden)
 
-        w_l1_value = session.run(w_l1)
-        b_l1_value = session.run(b_l1)
+        #w_l1_value = session.run(w_l1)
+        #b_l1_value = session.run(b_l1)
         
         w_out_value = session.run(w_out)
         b_out_value = session.run(b_out)
 
     total_time = time.time() - start_time
 
-    return None, ((w_hidden_value, b_hidden_value), (w_l1_value, b_l1_value), (w_out_value, b_out_value)), error, total_time
+    #return None, ((w_hidden_value, b_hidden_value), (w_l1_value, b_l1_value), (w_out_value, b_out_value)), error, total_time
+    return None, ((w_hidden_value, b_hidden_value), (w_out_value, b_out_value)), error, total_time
 
 
 def run_perceptron_network_general(N, data, targets, net):

@@ -42,6 +42,9 @@ class And():
 
         return res
 
+    def get_literals(self):
+        return self.literals
+
     def __repr__(self):
         s = ""
 
@@ -216,41 +219,60 @@ def generateExpressions(n):
 
 
 def compute_data(data, targets, i):
-    ids = np.random.choice(len(data), 2**n - i, replace=False)
+    ids = np.random.choice(len(data), len(data) - i, replace=False)
         
-    d = np.take(data, ids)
-    t = np.take(targets, ids)
+    d = data[ids]#np.take(data, ids)
+    t = targets[ids]#np.take(targets, ids)
 
     testData = []
     testTargets = []
-    for i in range(0, len(data)):
-        if not i in ids:
-            testData.append(data[i])
-            testTargets.append(targets[i])
+    #for i in range(0, len(data)):
+    #    if not i in ids:
+    #        testData.append(data[i])
+    #        testTargets.append(targets[i])
 
     return (d, t), (testData, testTargets)
 
 #pltswitch_backend("TkAgg")  
 if __name__ == '__main__':
-    n = 6
+    n = 4
     np.random.seed(1234)
     random.seed(1234)
     expression = generateExpressions(n)[0]
     data = expression[0]
     targets = expression[1]
 
+    false_data = []
+    true_data = []
+    for i in range(len(targets)):
+        if targets[i] == 0:
+            false_data.append(np.array(data[i]))
+        else:
+            true_data.append(np.array(data[i]))
+
+    false_data = np.array(false_data)
+    true_data = np.array(true_data)
+
+
     wrong_avgs = []
     wrong_mins = []
     wrong_maxs = []
     
-    for i in range(0, 2**n):
+    #for i in range(0, 2**n):
+    #for i in range(0, len(true_data) + 1):
+    for i in range(0, len(false_data) + 1):
         wrong = []
 
         for j in range(5):
-            training, testing = compute_data(data, targets, i)
+            #training, testing = compute_data(data, targets, i)
+            training_partial, testing = compute_data(false_data, np.zeros(len(false_data)), i)
+            #training_partial, testing = compute_data(true_data, np.ones(len(true_data)), i)
+
+            training = [np.concatenate((training_partial[0], true_data), axis=0), np.concatenate((training_partial[1], np.ones(len(true_data))), axis=0)]
+            #training = [np.concatenate((training_partial[0], false_data), axis=0), np.concatenate((training_partial[1], np.zeros(len(false_data))), axis=0)]
 
             r_net, _, er, _ = RealSpaceLNFNetwork.train_cnf_network(n, training[0], training[1], 90000)
-            cnf = build_dnf(n, r_net)
+            cnf = build_cnf(n, r_net)
             #if i == 0:
             #    print()
             #    print(cnf)
@@ -265,13 +287,14 @@ if __name__ == '__main__':
         wrong_avgs.append(wrong.mean())
         wrong_mins.append(wrong.min())
         wrong_maxs.append(wrong.max())
+        
 
         #avg_wrong = float(sum_wrong)/3.0
         #avgs.append(avg_wrong)
         #avgs_err.append(sum_err/3.0)
         #print(avg_wrong)
 
-    x_axis = np.array(range(0, 2**n))
+    x_axis = np.array(range(0, len(false_data) + 1))
 
     plt.plot(x_axis, wrong_avgs, '-o', color='b', label='CNF Avg Inaccuracy')
     plt.plot(x_axis, wrong_mins, '-o', color='g', label='CNF Min Inaccuracy')
@@ -282,7 +305,7 @@ if __name__ == '__main__':
     plt.xlabel("Number Of Training Examples Removed")
     plt.legend(loc='best')
     plt.savefig("cnf-descrete-generalization.png")
-    #plt.clf()
+    plt.clf()
 
 
 ##if __name__ == '__main__':
