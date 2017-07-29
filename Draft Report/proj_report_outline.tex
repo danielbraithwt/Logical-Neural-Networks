@@ -23,10 +23,23 @@
 \usepackage[english]{babel}
 \usepackage[linesnumbered,ruled]{algorithm2e}
 \usepackage[toc,page]{appendix}
+\usepackage{listings}
+\usepackage{color}
+
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 \newtheorem{theorem}{Theorem}[section]
+\newtheorem{conjecture}{Conjecture}[section]
+
+\definecolor{grey}{rgb}{0.95,0.95,0.95}
+
+\lstset{ %
+	backgroundcolor=\color{grey},
+	frame=single,
+	numbers=left
+}
+\newcommand{\code}[1]{\texttt{#1}}
 
 %
 %  We don't want figures to float so we define

@@ -9,7 +9,7 @@ A boolean formula is in Disjunctive Normal Form (DNF) if and only if it is a dis
 
 Consider the boolean formula $\lnot a \land (b \lor c)$, the DNF is $(\lnot a \land b) \lor (\lnot a \land c)$.\\
 
-\subsection{CNF \& DNF from Truth Table}
+\subsection{CNF \& DNF from Truth Table} \label{subsec:construct-cnfdnf}
 Given a truth table representing a boolean formula, constructing a DNF formula involves taking all rows which correspond to True and combining them with an OR operation. To construct a CNF one combines the negation of any row which corresponds to False by an OR operation and negates it.
 
 \begin{theorem}
@@ -39,6 +39,45 @@ To further divide the categories two more classifications are introduced. One me
 \item A rule set is \textbf{consistent} if when trained under different conditions it generates rules which assign the same classifications to unseen examples.
 \item The measure of \textbf{comprehensibility} is defined by the number of rules in the set and the number of literals per rule.
 \end{enumerate}
+
+One rule extraction algorithm presented in 2000 by Tsukimoto is able to extract boolean rules from ANNs in which neurons have monotonically increasing activations, such as the sigmoid function \cite{tsukimoto2000extracting}. The algorithm can be applied to problems with boolean or continuous inputs however only the boolean case will be considered here.\\
+
+Each neuron is written as a boolean operation on its inputs, this is done in the following manner. Consider a neuron $m$ in an MLPN with $n$ inputs, construct a truth table, T, with $n$ inputs. Let $f_i (i \in [0, 2^n])$ represent the activation of $m$ when given row $i$ as input and define $r_i = \land_{j=1}^{n} l_j$, the conjunction of all literals in the row $i$ in T, e.g. if $n=2$ then for row $(1,0)$ $r_i = x_1 \land \lnot x_2$. The approximation of $m$ is given by 
+
+\begin{align}
+	\lor_{i=1}^{2^n}\ g_i \land r_i
+\end{align}
+
+where $g_i$ is given by
+
+\[
+g_i =
+\begin{cases}
+1 & \text{if $f_i \geq \frac{1}{2}$} \\
+0 & \text{if $f_i < \frac{1}{2}$} \\
+\end{cases}
+\]
+
+By starting with the first hidden layer and progressing through the network an expression for the network can be extracted. Figure \ref{alg:rule-extraction-tsukimoto} shows an algorithm for extracting rules from an MLPN.
+
+\begin{figure}[H]
+\begin{lstlisting}[mathescape=true]
+function extractRulesMLPN(network)
+  prev_expressions = network.inputs
+  for layer in network
+    expressions = {}
+    patters = all input patters for layer
+    for each neuron (n) in layer
+      exp = And(Or({literals(p), $p \in $patterns n(p) > $\frac{1}{2}$}))
+      expressions.add(substitute prev_expressions into exp)
+	  
+    prev_expressions = expressions
+\end{lstlisting}
+	\caption{Rule Extraction Algorithm presented in \cite{tsukimoto2000extracting}}
+	\label{alg:rule-extraction-tsukimoto}
+\end{figure}
+
+The algorythm presented in figure \ref{alg:rule-extraction-tsukimoto} is certainly exponential time in terms of $n$, a polynomial time algorithm is also presented but deriving such an algorithm is beyond the scope of this report.\\
 
 In 1996 a class of networks, called Logical Normal Form Networks (LNFNs), where developed \cite{herrmann1996backpropagation}, focusing on learning the underlying CNF or DNF for a boolean expression which describes the problem. The approach relies on a specific network configuration along with restriction the function space of each neuron, allowing them to only perform an OR or AND on a subset of their inputs, such OR and AND neurons are called Disjunctive and Conjunctive retrospectively. If the trained network is able to achieve a low enough accuracy then rules can be extracted from the network in terms of a Boolean CNF or DNF expression \cite{herrmann1996backpropagation}.\\
 
@@ -120,4 +159,6 @@ A supervised technique is called \text{Recursive Minimal Entropy Partitioning} (
 	E(S) = \sum_{i} p_i \cdot log(p_i)
 	\label{equ:entropy}
 \end{align}
+
+% Finish talking about RMEP
 

@@ -99,7 +99,9 @@ a_{or}(X)&= 1 - e^{-(W^{'} \cdot X + b^{'})} \label{equ:real-noisy-or-activation
 The function taking $w_i$ to $w_i^{'}$ is the soft ReLU function which is performing a soft clipping on the $w_i$'s. 
 
 \section{Training LNF Networks}
-Using equations \ref{equ:real-noisy-or-activation} and \ref{equ:real-noisy-and-activation} for the Noisy-OR, Noisy-AND activations retrospectively allows LNFNs to be trained without explicit clipping. The ADAM Optimizer is used for training firstly for the convenience of an adaptive learning rate but also because it includes the advantages of RMSProp which works well with on-line (single-example) learning \cite{kingma2014adam}, which LNF Networks respond well to.\\
+Using equations \ref{equ:real-noisy-or-activation} and \ref{equ:real-noisy-and-activation} for the Noisy-OR, Noisy-AND activations retrospectively allows LNFNs to be trained without the need to clip the weights.\\
+
+Training the networks on all input patterns at the same time lead to poor learning, whereas training on a single example at a time had significantly better results. The ADAM Optimizer is the learning algorithm used, firstly for the convenience of an adaptive learning rate but also because it includes the advantages of RMSProp which works well with on-line (single-example) learning \cite{kingma2014adam}, which LNFNs respond well to.\\
 
 Preliminary testing showed that LNFN's are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. It is also possible to inspect the trained weights and see that the networks have learnt the correct CNF or DNF representation.
 
@@ -133,9 +135,11 @@ The testing will consist of selecting 5 random boolean expressions for $2 \leq n
   \hfill
 \end{figure}
 
-Figure  \ref{fig:peformance-comparason-all} shows that neither of the perceptron networks perform as well as the LNF Networks as $n$ increases. Figure  \ref{fig:peformance-comparason-cnfdnf} shows on average there are no statistically significant differences between the CNF or DNF networks. What is not present in  \ref{fig:peformance-comparason-cnfdnf} is that sometimes the CNF network consistently out performs the DNF and visa versa, theoretically both should be able to learn any boolean expression. 
+Figure  \ref{fig:peformance-comparason-all} shows that neither of the perceptron networks perform as well as the LNF Networks as $n$ increases. Figure  \ref{fig:peformance-comparason-cnfdnf} shows on average there are no statistically significant differences between the CNF or DNF networks. What is not present in Figure \ref{fig:peformance-comparason-cnfdnf} is that sometimes the CNF network consistently out performs the DNF and visa versa, theoretically both should be able to learn any boolean expression.
 
-\section{LNF Network Generalization}
+What causes some expressions to be harder to learn for one type of LNFN compared to another? 
+
+\section{LNF Network Generalization} \label{sec:lnfn-generalization}
 These networks are able to perform as well as standard perceptron networks but so far they have been getting the complete set of data, in practice this will almost never be the case. Standard ANN's are widely used because of their ability to generalize, for LNFN's to be useful they must also be able to generalize.
 
 \begin{figure}[H]
@@ -151,17 +155,85 @@ These networks are able to perform as well as standard perceptron networks but s
 Figure \ref{fig:generalization-peformance-6} shows a comparison between the generalization ability of CNF, DNF and Perceptron networks. The graph shows the performance over all training data when successively removing elements from the training set. It demonstrates that the CNF and DNF networks generalize as well as the perceptron networks when the boolean formula has 6 inputs, this trend continues as n increases up to 9.
 
 \section{LNF Network Rule Extraction}
-The goal of this report is to learn rules which can be extracted from the network, consequently a method must be developed to extract the rules from LNF Network's. Take the weights of a trained LNFN, these weights can be converted back into $\epsilon_i$'s by apply the sigmoid function to each $w_i$.\\
+Given the logical nature of LNFNs, is it possible to extract boolean rules. Consider the weights for a logical neuron $W = \{w_1, ..., w_n\}$, These can be converted to $\epsilon_i = \sigma(w_i)$ where $\epsilon_i \in [0, 1]$ and represents the relevance input $x_i$ has on the neurons output.\\
 
-As $\epsilon_i \rightarrow 0$ then $x_i$ becomes relevant and as $\epsilon_i \rightarrow 1$ then $x_i$ becomes irrelevant. If the network has learnt the correct DNF or CNF representation the for every neuron if input $i$ is relevant then $w_i \rightarrow -\infty$ and therefore $\epsilon_i \rightarrow 0$, otherwise $x_i$ is irrelevant and  $w_i \rightarrow \infty$ meaning $\epsilon_i \rightarrow 1$.\\
+To extract meaningful rules from the network using $\{ \epsilon_1, ..., \epsilon_n \}$ it is important that at the conclusion of training each $\epsilon_i \approxeq 1$ or $\epsilon_i \approxeq 0$. If this is the case then it is possible to interpret the neuron as a purely logical function, say that the neuron in question was a Noisy-OR, then the neuron can be seen as performing a logical OR on all the inputs with corresponding $\epsilon \approxeq 0$.\\
 
-Consequently in $\epsilon$ form the weights of the LNFN are almost binary (i.e. very close to 0 or 1) and rules can be easily extracted as a boolean formula. Many clauses in the extracted expression contain redundant terms, i.e. clauses that are a tautology or a duplicate of another, filtering these out is not an expensive operation.\\
+Conjecture \ref{conj:lnfn-approach-binary} is the foundation of the following rule extraction algorithm, it was derived from experimental evidence by training LNFNs over complete truth tables and inspecting the weights. Ideally Conjecture \ref{conj:lnfn-approach-binary} would be proved, but that is out of scope for this report.
 
-When training an LNFN over the entire truth table for a boolean expression, when a low error is achieved it is possible to extract boolean formula from the network which gets can generate the original truth table. This is a necessary first step but a more important question is, can formula still be extracted from the network when the LNFN is not trained with the entire truth table? If it can then what does this formula represent?
+\begin{conjecture}
+	For an LNFN network trained on a binary classification problem with boolean inputs, as the loss approaches 0  (i.e. the correct CNF or DNF has been found) the weights $\{ w_1, ..., w_n \}$ approach $\infty$ or $-\infty$, consequently each $\epsilon_i$ approaches 0 or 1.
+	\label{conj:lnfn-approach-binary}
+\end{conjecture}
 
+The Algorithm displayed in figure \ref{alg:rule-extraction} extracts rules from CNFNs, it takes the output weights (ow) and hidden weights (hw) as input and outputs the a boolean expression. A similar algorithm can be derived for DNFNs, it is omitted but can be obtained by simply switching the logical operations around.
+
+\begin{figure}[H]
+	\begin{lstlisting}[mathescape=true]
+atoms = $\{ x_1, \lnot x_1, ... x_n, \lnot x_n, \}$
+	
+function extractRulesCNFN(ow, hw)
+  ow $= \sigma($ow$)$
+  hw $= \sigma($hw$)$
+  relvHidden = [hw[i] where ow[i] := 0]
+		
+  and = And([])
+    for weights in relvHidden
+      or = Or([atoms[i] where weights[i] := 0])
+      and.add(or)
+		
+  return and
+	\end{lstlisting}
+	\caption{Rule Extraction Algorithm (for CNFN)}
+	\label{alg:rule-extraction}
+\end{figure}
+
+In practice many clauses in the extracted expression contain redundant terms, i.e. clauses that are a tautology or a duplicate of another, filtering these out is not an expensive operation.\\
+
+Section \ref{sec:lnfn-generalization} discusses the generalization capabilities of LNFNs compared to MLPNs and shows that they are statistically equivalent. How does training over incomplete truth tables effect the generalization of extracted rules and what factors could influence this?\\
+
+Consider $B$ to be the set of all boolean problems with $n$ inputs. What is the cardinality of $B$, there are $2^n$ rows in the truth table and $2^{2^n}$ ways to assign true/false values to these rows, each way corresponding to a different boolean function, consequently $|B| = 2^{2^n}$. So consider some $b \in B$ represented by $2^n$ rows of a truth table, removing one row from the training data means there are now two possible functions that could be learnt, one where the removed row corresponds to true and the other to false. As more rows are removed this problem is compounded, if $m$ rows are taken then there are $2^m$ possible functions.\\
+
+When constructing a CNF or DNF from a truth table as discussed in Section \ref{subsec:construct-cnfdnf}, in the case of CNF only the rows corresponding to false are considered and for the DNF only rows corresponding to true. Despite the fact that if $m$ rows are removed from the training set then there are $2^m$ possible functions that could represent the partial truth table, learning the CNF and DNF may alleviate some of the issues caused by it, another possibility is to combine the CNF and DNF formulas to create a better rule set.\\
+
+Figure \ref{fig:cnf-descrete-generalizatiion} shows how the rule set of an CNFN generalizes as examples are removed, figure \ref{fig:dnf-descrete-generalizatiion} shows the same but for DNFNs.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{cnf-descrete-generalization.png}
+		\caption{}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{dnf-descrete-generalization.png}
+		\caption{}
+		\label{fig:dnf-descrete-generalizatiion}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+In figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-generalizatiion} the training examples which are removed get randomly selected, how is the performance effected if the removed examples are chosen more carefully. In the next experiment only examples corresponding to false are removed and the resultant training set is given to a DNFN.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{cnf-descrete-generalization-partial.png}
+		\caption{}
+		\label{fig:cnf-descrete-generalizatiion-partial}
+	\end{minipage}
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{dnf-descrete-generalization-partial.png}
+		\caption{}
+		\label{fig:dnf-descrete-generalizatiion-partial}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+Figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-generalizatiion} demontrait CNFNs and DNFNs trainined over partial data retrospectively. In the case of CNFNs only true entries of the truth table are removed and for the DNFNs only false entries. For the most part the minimum line is lower however the average line is roughly the same, this would indicate that initial conditions have an effect on the generalization performance.
 
 \chapter{Investigation of Logical Normal Form Networks} \label{C:investigation-of-lnfns}
-\section{Developing Applications}
+\section{Developing Applications} \label{sec:developing-applications}
 The LNFNs presented in Chapter \ref{C:foundation-of-lnfns} have very limited applications, the class of problems they can be applied to all have the form of binary classification where the features are Boolean. To make LNFNs more useful they need a broader scope.
 
 \subsection{Multi-class Classification}
@@ -181,7 +253,7 @@ How does an LNFN network perform when compared to a MLPN on the Lenses problem. 
 	\begin{center}
 		\begin{tabular}{| c | c | c |}
 			\hline
-			& Error (SSE) & Confidence Interval (95\%) \\
+			& Error (Cross Entropy) & Confidence Interval (95\%) \\
 			\hline
 			CNF Net & 6.663 & (6.468, 7.198) \\
 			\hline
@@ -220,8 +292,7 @@ These DNF formula do not correspond to the CNF give above but this is to be expe
 One possible issue that could arrive here is that the CNFN is now attempting to learn three CNF expressions with the same number of hidden neurons. The fact that meaningful rules where able to be extracted in this case could of been a coincidence, intuitively if we are learning a problem with $k$ classes then we could need $k \cdot 2^n$ hidden neurons which is becoming impractical.
 
 \subsection{Features with Continuous Domains}
-The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? Secondly what can be achieved by discretizing the continuous inputs and then using an LNFN to learn this new boolean problem. A simple 
-benchmark to use is the Iris problem \cite{Lichman:2013}
+The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? Secondly what can be achieved by discretizing the continuous inputs and then using an LNFN to learn this new boolean problem. A simple benchmark to use is the Iris problem \cite{Lichman:2013}
 
 \subsubsection{LNFNs and Continuous Features} \label{subsubsec:lnfns-cont-features}
 If the features are continuous it no longer makes sense to extract rules but it could still be possible to see what inputs are considered in making a decision about the class. When training an LNFN on the Iris problem (over all problem instances) the network converges to a solution with a loss of $96.932$, poor performance when compared to a perceptron network that can achieve an accuracy of $0.0$. \\
@@ -237,4 +308,13 @@ There are a number of method for discretizing continuous features, there are man
 Results from training LNFNs with descretized data results in the same issue as before, the network has problems with classifying classes that are not linearly separable.
 
 \subsubsection{Discussion of Application to Continuous Domains}
-The ideas explored in Sections \ref{subsubsec:lnfns-cont-features} \& \ref{subsubsec:lnfns-desc-cont-features} demonstrate that applying LNFNs to problems with continous inputs is not viable.
+The ideas explored in Sections \ref{subsubsec:lnfns-cont-features} \& \ref{subsubsec:lnfns-desc-cont-features} demonstrate that applying LNFNs to problems with continuous inputs is not viable.
+
+
+\section{Evaluation of LNFN Intepretability}
+LNFNs are more interpretable than standard MLPNs, demonstrated by the ability to directly extract rules from the neurons by observing the weights. Being able to understand LNFNs comes at a cost of reducing the functions which they can approximate, as shown in Section \ref{sec:developing-applications}. How does the information extracted from LNFNs compare to the rules which can be obtained from MLPNs using existing techniques?
+
+\subsection{Evaluation of LNFN Rules}
+
+\subsection{Comparason Between Rules from LNFNs and MLPNs}
+To determine the usefulness of LNFNs and the rules which can be extracted from them a comparison to existing methods must be preformed. The rules extracted from MLPNs will be comparared to thoughs from LNFNs.
