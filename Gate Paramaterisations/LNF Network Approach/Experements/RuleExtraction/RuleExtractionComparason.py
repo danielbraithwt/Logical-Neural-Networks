@@ -94,11 +94,11 @@ for N in range(N_min, N_max+1):
         data = expression[0]
         targets = expression[1]
 
-        cnf_net = train_cnf_network(N, data, targets, 0)#100000)
+        cnf_net = train_cnf_network(N, data, targets, 100000)
         print("\tCNF Acuracy: ", cnf_net[2])
-        dnf_net = train_dnf_network(N, data, targets, 0)#100000)
+        dnf_net = train_dnf_network(N, data, targets, 100000)
         print("\tDNF Acuracy: ", dnf_net[2])
-        pcep_net = train_perceptron_network_general(N, data, targets, 0)#100000)
+        pcep_net = train_perceptron_network_general(N, data, targets, 100000)
         print("\tMLPN Acuracy: ", pcep_net[2])
 
         mlpn_rule = extractMLPNRules(N, pcep_net)
