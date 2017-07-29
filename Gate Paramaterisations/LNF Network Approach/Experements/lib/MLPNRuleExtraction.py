@@ -202,22 +202,22 @@ def test(cnf, data, targets):
     return wrong
 
 
-N = 6
-expression = generateExpressions(N)[0]
-data = expression[0]
-targets = expression[1]
-
-res = NeuralNetwork.train_perceptron_network_general(N, data, targets, 1000000, 1)
-
-hidden_weights = res[1][0][0]
-hidden_bias = res[1][0][1]
-output_weights = res[1][1][0]
-output_bias = res[1][1][1]
-
-rule = ExtractRules(N, hidden_weights, hidden_bias, output_weights, output_bias)
-print(rule)
-
-print(data)
-print(targets)
-
-print(test(rule, data, targets))
+##N = 6
+##expression = generateExpressions(N)[0]
+##data = expression[0]
+##targets = expression[1]
+##
+##res = NeuralNetwork.train_perceptron_network_general(N, data, targets, 1000000, 1)
+##
+##hidden_weights = res[1][0][0]
+##hidden_bias = res[1][0][1]
+##output_weights = res[1][1][0]
+##output_bias = res[1][1][1]
+##
+##rule = ExtractRules(N, hidden_weights, hidden_bias, output_weights, output_bias)
+##print(rule)
+##
+##print(data)
+##print(targets)
+##
+##print(test(rule, data, targets))

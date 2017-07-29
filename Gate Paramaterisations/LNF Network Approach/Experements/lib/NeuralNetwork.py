@@ -140,8 +140,8 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         for i in range(iterations):
             session.run(train_op, feed_dict={x:data, y:targets})
 
-            if i % 100 == 0:
-                print(session.run(error, feed_dict={x:data, y:targets}))
+            #if i % 100 == 0:
+            #    print(session.run(error, feed_dict={x:data, y:targets}))
 
         error = session.run(error, feed_dict={x:data, y:targets})
         w_hidden_value = session.run(w_hidden)
