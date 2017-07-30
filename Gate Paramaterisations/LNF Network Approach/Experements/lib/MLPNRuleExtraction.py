@@ -132,52 +132,91 @@ def transform_input(iput):
         transformed.append(1-i)
     return transformed
 
-def ExtractRules(n, hidden_weights, hidden_bias, output_weights, output_bias):
+def ExtractRules(n, network):
     atoms = []
     for i in range(n):
         atoms.append(Atom("{}".format(i)))
         atoms.append(Atom("NOT {}".format(i)))
     atoms = np.array(atoms)
+
+
+    expressions = atoms
+
+    for i in range(len(network)):
+        print(i)
+        layer = network[i]
+        #print(layer)
+        #print(expressions)
+        #print()
+        weights = layer[0]
+        bias = layer[1]
+
+        size = len(weights[0])
+        if i == 0:
+            size = int(size/2)
+
+        inputs = np.array(__perms(size))
+        if i == 0:
+            inputs = np.array(list(map(lambda x: transform_input(x), inputs)))
     
-    inputs = np.array(__perms(n))
-    hidden_inputs = np.array(list(map(lambda x: transform_input(x), inputs)))
+        formulas = []
+        for idx in range(len(weights)):
+            w = weights[idx]
+            b = bias[idx]
 
+            rp = []
 
+            for iput in inputs:
+                #print(iput)
+                #print(w)
+                #print(b)
+                #print(np.dot(w, iput))
+                z = np.dot(w, iput) + b
+                if sigmoid(z) > 0.5:
+                    rp.append(iput)
+
+            ands = []
+            for pattern in rp:
+                ands.append(And(expressions[pattern == 1]))
+            formulas.append(Or(ands))
+        expressions = np.array(formulas)
+
+    return expressions[0]
     
-    hidden_formulas = []
-    for idx in range(len(hidden_weights)):
-        weights = hidden_weights[idx]
-        bias = hidden_bias[0][idx]
-        rp = []
-
-        for iput in hidden_inputs:
-            z = np.dot(weights, iput) + bias
-            if sigmoid(z) > 0.5:
-                rp.append(iput)
-
-        ands = []
-        for pattern in rp:
-            #print(pattern)
-            #print(pattern == 1)
-            #print(atoms[pattern == 1])
-            ands.append(And(atoms[pattern == 1]))
-
-        hidden_formulas.append(Or(ands))
-
-    hidden_formulas = np.array(hidden_formulas)
-
-    output_rp = []
-    for iput in inputs:
-        z = np.dot(output_weights, iput) + output_bias
-        if sigmoid(z) > 0.5:
-            output_rp.append(iput)
-
-    ands = []
-    for pattern in output_rp:
-        ands.append(And(hidden_formulas[pattern == 1]))
-
-
-    return Or(ands)
+##    hidden_formulas = []
+##    for idx in range(len(hidden_weights)):
+##        weights = hidden_weights[idx]
+##        bias = hidden_bias[0][idx]
+##        rp = []
+##
+##        for iput in hidden_inputs:
+##            z = np.dot(weights, iput) + bias
+##            if sigmoid(z) > 0.5:
+##                rp.append(iput)
+##
+##        ands = []
+##        for pattern in rp:
+##            #print(pattern)
+##            #print(pattern == 1)
+##            #print(atoms[pattern == 1])
+##            ands.append(And(atoms[pattern == 1]))
+##
+##        hidden_formulas.append(Or(ands))
+##
+##    hidden_formulas = np.array(hidden_formulas)
+##
+##    output_rp = []
+##    for iput in inputs:
+##        z = np.dot(output_weights, iput) + output_bias
+##        if sigmoid(z) > 0.5:
+##            output_rp.append(iput)
+##
+##    ands = []
+##    for pattern in output_rp:
+##        ands.append(And(hidden_formulas[pattern == 1]))
+##
+##
+##    return Or(ands)
             
 
 def get_inputs(row):
@@ -202,22 +241,23 @@ def test(cnf, data, targets):
     return wrong
 
 
-##N = 6
-##expression = generateExpressions(N)[0]
-##data = expression[0]
-##targets = expression[1]
-##
-##res = NeuralNetwork.train_perceptron_network_general(N, data, targets, 1000000, 1)
-##
-##hidden_weights = res[1][0][0]
-##hidden_bias = res[1][0][1]
-##output_weights = res[1][1][0]
-##output_bias = res[1][1][1]
-##
-##rule = ExtractRules(N, hidden_weights, hidden_bias, output_weights, output_bias)
-##print(rule)
-##
-##print(data)
-##print(targets)
-##
-##print(test(rule, data, targets))
+N = 3
+expression = generateExpressions(N)[0]
+data = expression[0]
+targets = expression[1]
+
+res = NeuralNetwork.train_perceptron_network_general(N, data, targets, 50000, 1)
+
+#hidden_weights = res[1][0][0]
+#hidden_bias = res[1][0][1]
+#output_weights = res[1][1][0]
+#output_bias = res[1][1][1]
+
+rule = ExtractRules(N, res[1])
+print(rule)
+
+print(res[2])
+print(data)
+print(targets)
+
+print(test(rule, data, targets))
