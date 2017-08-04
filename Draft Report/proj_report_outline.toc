@@ -21,5 +21,6 @@
 \contentsline {section}{\numberline {4.2}Evaluation of LNFN Intepretability}{19}
 \contentsline {subsection}{\numberline {4.2.1}Evaluation of LNFN Rules}{20}
 \contentsline {subsection}{\numberline {4.2.2}Comparason Between Rules from LNFNs and MLPNs}{20}
-\contentsline {chapter}{Appendices}{22}
-\contentsline {chapter}{\numberline {A}Tables}{23}
+\contentsline {chapter}{\numberline {5}Logical Neural Networks}{21}
+\contentsline {chapter}{Appendices}{23}
+\contentsline {chapter}{\numberline {A}Tables}{24}

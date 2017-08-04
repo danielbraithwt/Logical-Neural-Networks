@@ -18,6 +18,7 @@ A \textbf{DNF-Network} is a three layer network where neurons in the hidden laye
 \theoremstyle{definition}
 \begin{definition}
 A \textbf{LNF-Network} is a DNF or CNF Network
+\label{def:lnfn}
 \end{definition}
 
 A CNF or DNF formula contains clauses of literals which is either an atom or a negation of an atom. To account for this the number of inputs to the network will be doubled, the inputs will be all the atoms and negations of the atoms, i.e. if $x_1, x_2$ are the atoms then $x_1, \lnot x_1, x_2, \lnot x_2$ are the inputs to the network.\\ 
@@ -230,7 +231,7 @@ In figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-gener
 	\hfill
 \end{figure}
 
-Figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-generalizatiion} demontrait CNFNs and DNFNs trainined over partial data retrospectively. In the case of CNFNs only true entries of the truth table are removed and for the DNFNs only false entries. For the most part the minimum line is lower however the average line is roughly the same, this would indicate that initial conditions have an effect on the generalization performance.
+Figures \ref{fig:cnf-descrete-generalizatiion-partial} \& \ref{fig:dnf-descrete-generalizatiion-partial} demontrait CNFNs and DNFNs trainined over partial data retrospectively. In the case of CNFNs only true entries of the truth table are removed and for the DNFNs only false entries. For the most part the minimum line is lower however the average line is roughly the same, this would indicate that initial conditions have an effect on the generalization performance.
 
 \chapter{Investigation of Logical Normal Form Networks} \label{C:investigation-of-lnfns}
 \section{Developing Applications} \label{sec:developing-applications}
@@ -317,4 +318,21 @@ LNFNs are more interpretable than standard MLPNs, demonstrated by the ability to
 \subsection{Evaluation of LNFN Rules}
 
 \subsection{Comparason Between Rules from LNFNs and MLPNs}
-To determine the usefulness of LNFNs and the rules which can be extracted from them a comparison to existing methods must be preformed. The rules extracted from MLPNs will be comparared to thoughs from LNFNs.
+To determine the usefulness of LNFNs and the rules which can be extracted from them a comparison to existing methods must be preformed. The rules extracted from MLPNs will be compared to thoughs from LNFNs.
+
+\chapter{Logical Neural Networks}
+The algorythm shown in Figure \ref{alg:rule-extraction} presents a method for extracting rules from LNFNs, there is no reason why this algorithm cant be applied to Logical Neural Networks (LNNs) \cite{LearningLogicalActivations} which can take on any configuration.\\
+
+An issue with LNFNs is that the number of hidden units allows for the possibility to memorise the input data, using LNNs consisting of more layers with a smaller width could force the learning of better rules.\\
+
+Before investigating this there are two key issues caused by removing the restrictions imposed by the LNFN definition (Definition \ref{def:lnfn}) which must be addressed 
+
+\begin{enumerate}
+	\item Noisy neurons do not have the capacity to consider the presence of the negation of an input. This was a problem for LNFNs as well, however given that only the negations of atoms need to be considered to learn a CNF or DNF it was easily fixed by presenting the network with each atom and its negation. The problem can not be solved so easily for LNNs. A boolean formula can not always be represented by only AND and OR gate, i.e the set of operations $\{AND, OR\}$ is not functionally complete. 
+	
+	\item Another problem faced by LLNs that are not restricted to be ether a CNFN or DNFN is that the structure of the network will have a higher impact on whether the problem can be learnt. 
+\end{enumerate}
+
+Despite the issues outlined above being able to implement LNNs with layers that are not required to be $2^n$ hidden units wide would be alot more practical, in practice the number of features could be upwards of 100 and $2^100$ is a huge number of hidden neurons.\\
+
+Resolving Issue 1 involves making our operation set functionally complete, this requires the $NOT$ operation. There are two ways to include the $NOT$ operation in the LNNs, one is to simply perform the augment the inputs to each layer to include each input and its negation, a more complicated but more elegant solution is to derive a parametrisation of Noisy gates which can learn to negate inputs.

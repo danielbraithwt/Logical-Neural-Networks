@@ -147,7 +147,7 @@ def ExtractRules(n, network):
         layer = network[i]
         #print(layer)
         #print(expressions)
-        #print()
+        print()
         weights = layer[0]
         bias = layer[1]
 
@@ -156,6 +156,8 @@ def ExtractRules(n, network):
             size = int(size/2)
 
         inputs = np.array(__perms(size))
+        print(inputs)
+        print()
         if i == 0:
             inputs = np.array(list(map(lambda x: transform_input(x), inputs)))
     
@@ -241,12 +243,12 @@ def test(cnf, data, targets):
     return wrong
 
 
-N = 3
+N = 4
 expression = generateExpressions(N)[0]
 data = expression[0]
 targets = expression[1]
 
-res = NeuralNetwork.train_perceptron_network_general(N, data, targets, 50000, 1)
+res = NeuralNetwork.train_perceptron_network_general(N, data, targets, 200000, 1)
 
 #hidden_weights = res[1][0][0]
 #hidden_bias = res[1][0][1]
@@ -254,7 +256,7 @@ res = NeuralNetwork.train_perceptron_network_general(N, data, targets, 50000, 1)
 #output_bias = res[1][1][1]
 
 rule = ExtractRules(N, res[1])
-print(rule)
+#print(rule)
 
 print(res[2])
 print(data)

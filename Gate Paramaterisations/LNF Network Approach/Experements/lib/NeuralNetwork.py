@@ -133,9 +133,9 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         y_prime = tf.expand_dims(y, 1)#tf.nn.softmax(tf.transpose(y))
 
         # Compute error
-        error = tf.reduce_sum(tf.square(y - y_hat_prime))#tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=y_hat_prime)#tf.reduce_sum(tf.square(tf.expand_dims(y, 1) - y_hat))
+        error = tf.reduce_sum(tf.square(y_prime - y_hat))#tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=y_hat_prime)#tf.reduce_sum(tf.square(tf.expand_dims(y, 1) - y_hat))
 
-        train_op = tf.train.AdamOptimizer(0.02).minimize(error)
+        train_op = tf.train.AdamOptimizer(0.002).minimize(error)
 
     model = tf.global_variables_initializer()
 
