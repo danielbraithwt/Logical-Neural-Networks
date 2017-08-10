@@ -153,6 +153,10 @@ def transform_input(iput):
         #transformed.append(1-i)
     return transformed
 
+def gen_weights(shape):
+    eps = 0.99 * np.clip(1e-10, 0.9999999999, np.abs(np.random.normal(0, 1, shape)))
+    return np.log(-(eps/(eps-1)))
+
 def construct_network(num_inputs, hidden_layers, num_outputs):
     network = []
     
@@ -161,8 +165,11 @@ def construct_network(num_inputs, hidden_layers, num_outputs):
 
     layer_ins = num_inputs
     for l in layers:
-        weights = tf.Variable(np.random.uniform(-1.0, 1.0, (l, 2 * layer_ins)), dtype='float32')
-        bias = tf.Variable(np.random.uniform(-1.0, 1.0, (1, l)), dtype='float32')
+        #weights = tf.Variable(np.random.uniform(-1.0, 1.0, (l, 2 * layer_ins)), dtype='float32')
+        #bias = tf.Variable(np.random.uniform(-1.0, 1.0, (1, l)), dtype='float32')
+
+        weights = tf.Variable(gen_weights((l, 2 * layer_ins)), dtype='float32')
+        bias = tf.Variable(gen_weights((1, l)), dtype='float32')
 
         network.append([weights, bias])
         layer_ins = l
@@ -203,16 +210,19 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
 
     y_hat = prev_out
 
-    #big_weights = 0.0
-    #for layer in network:
-    #    w = layer[0]
-    #    big_weights = tf.add(big_weights, tf.reduce_max(tf.abs(w)))
-    #big_weights = 0.00005 * (-tf.log(big_weights))
+    big_weights = 0.0
+    for layer in network:
+        w = layer[0]
+        big_weights = tf.add(big_weights, tf.reduce_max(tf.abs(w)))
+    big_weights = 0.0000001 * (-tf.log(big_weights))
 
-    y_hat_prime = tf.reduce_sum(y_hat)
-    y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-10, 1)
-    y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-10, 1)
-    errors = -(y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1))#tf.pow(y - y_hat, 2)#
+    #y_hat_prime = tf.reduce_sum(y_hat)
+    #y_hat_prime_0 = y_hat_prime
+    #y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
+    #errors = y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1)#
+    #error = -tf.reduce_sum(errors)
+
+    errors = tf.pow(y - y_hat, 2)
     error = tf.reduce_sum(errors)
 
     minimize = error #+ big_weights
@@ -316,12 +326,12 @@ def ExtractRules(n, net, types):
 np.random.seed(1234)
 random.seed(1234)
 
-N = 4
+N = 3
 expression = generateExpressions(N)[0]
 data = expression[0]
 targets = expression[1]
 #200000
-res = train_lnn(data, targets, 50000, N, [2*N, N], 1, [noisy_or_activation, noisy_or_activation, noisy_and_activation])
+res = train_lnn(data, targets, 80000, N, [9], 1, [noisy_or_activation, noisy_and_activation])
 for layer in res:
     print(layer)
     print()
@@ -331,7 +341,7 @@ for layer in res:
 #output_weights = res[1][1][0]
 #output_bias = res[1][1][1]
 
-rule = ExtractRules(N, res, ["OR", "OR", "AND"])
+rule = ExtractRules(N, res, ["OR", "AND"])
 print(len(rule))
 rule = rule[0]
 print(rule)

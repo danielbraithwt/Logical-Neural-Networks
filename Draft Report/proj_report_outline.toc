@@ -18,9 +18,13 @@
 \contentsline {subsubsection}{LNFNs and Continuous Features}{19}
 \contentsline {subsubsection}{LNFNs and Discretized Continuous Features}{19}
 \contentsline {subsubsection}{Discussion of Application to Continuous Domains}{19}
-\contentsline {section}{\numberline {4.2}Evaluation of LNFN Intepretability}{19}
+\contentsline {section}{\numberline {4.2}Evaluation of LNFN Intepretability}{20}
 \contentsline {subsection}{\numberline {4.2.1}Evaluation of LNFN Rules}{20}
 \contentsline {subsection}{\numberline {4.2.2}Comparason Between Rules from LNFNs and MLPNs}{20}
 \contentsline {chapter}{\numberline {5}Logical Neural Networks}{21}
-\contentsline {chapter}{Appendices}{23}
-\contentsline {chapter}{\numberline {A}Tables}{24}
+\contentsline {section}{\numberline {5.1}Modified Logical Neural Network Structure}{22}
+\contentsline {section}{\numberline {5.2}Modified Logical Neural Network Experiments}{22}
+\contentsline {subsection}{\numberline {5.2.1}Boolean Problem Experiments}{22}
+\contentsline {subsection}{\numberline {5.2.2}MNIST Experiments}{22}
+\contentsline {chapter}{Appendices}{24}
+\contentsline {chapter}{\numberline {A}Tables}{25}

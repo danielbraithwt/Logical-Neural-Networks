@@ -155,7 +155,7 @@ These networks are able to perform as well as standard perceptron networks but s
 
 Figure \ref{fig:generalization-peformance-6} shows a comparison between the generalization ability of CNF, DNF and Perceptron networks. The graph shows the performance over all training data when successively removing elements from the training set. It demonstrates that the CNF and DNF networks generalize as well as the perceptron networks when the boolean formula has 6 inputs, this trend continues as n increases up to 9.
 
-\section{LNF Network Rule Extraction}
+\section{LNF Network Rule Extraction} \label{sec:lnfn-rule-extraction}
 Given the logical nature of LNFNs, is it possible to extract boolean rules. Consider the weights for a logical neuron $W = \{w_1, ..., w_n\}$, These can be converted to $\epsilon_i = \sigma(w_i)$ where $\epsilon_i \in [0, 1]$ and represents the relevance input $x_i$ has on the neurons output.\\
 
 To extract meaningful rules from the network using $\{ \epsilon_1, ..., \epsilon_n \}$ it is important that at the conclusion of training each $\epsilon_i \approxeq 1$ or $\epsilon_i \approxeq 0$. If this is the case then it is possible to interpret the neuron as a purely logical function, say that the neuron in question was a Noisy-OR, then the neuron can be seen as performing a logical OR on all the inputs with corresponding $\epsilon \approxeq 0$.\\
@@ -231,7 +231,7 @@ In figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-gener
 	\hfill
 \end{figure}
 
-Figures \ref{fig:cnf-descrete-generalizatiion-partial} \& \ref{fig:dnf-descrete-generalizatiion-partial} demontrait CNFNs and DNFNs trainined over partial data retrospectively. In the case of CNFNs only true entries of the truth table are removed and for the DNFNs only false entries. For the most part the minimum line is lower however the average line is roughly the same, this would indicate that initial conditions have an effect on the generalization performance.
+Figures \ref{fig:cnf-descrete-generalizatiion-partial} \& \ref{fig:dnf-descrete-generalizatiion-partial} demontrait CNFNs and DNFNs trainined over partial data retrospectively. In the case of CNFNs only true entries of the truth table are removed and for the DNFNs only false entries. For the most part the minimum line is lower however the average line is roughly the same, this would indicate that while the choice of examples removed has an effect  initial conditions have a more significant influence on the generalization performance.
 
 \chapter{Investigation of Logical Normal Form Networks} \label{C:investigation-of-lnfns}
 \section{Developing Applications} \label{sec:developing-applications}
@@ -309,19 +309,28 @@ There are a number of method for discretizing continuous features, there are man
 Results from training LNFNs with descretized data results in the same issue as before, the network has problems with classifying classes that are not linearly separable.
 
 \subsubsection{Discussion of Application to Continuous Domains}
-The ideas explored in Sections \ref{subsubsec:lnfns-cont-features} \& \ref{subsubsec:lnfns-desc-cont-features} demonstrate that applying LNFNs to problems with continuous inputs is not viable.
+The ideas explored in Sections \ref{subsubsec:lnfns-cont-features} \& \ref{subsubsec:lnfns-desc-cont-features} demonstrate that applying LNFNs to problems with continuous inputs is not viable.\\
+
+Another thing to consider is that it becomes difficult to justify what the input features mean in the context of Noisy gates. In terms of the iris problem each feature represents a length, sure its possible to normalize the features to $[0,1]$ and train an LNFN anyway but essentially the lengths are being forced to be some sort of truth value.
 
 
 \section{Evaluation of LNFN Intepretability}
 LNFNs are more interpretable than standard MLPNs, demonstrated by the ability to directly extract rules from the neurons by observing the weights. Being able to understand LNFNs comes at a cost of reducing the functions which they can approximate, as shown in Section \ref{sec:developing-applications}. How does the information extracted from LNFNs compare to the rules which can be obtained from MLPNs using existing techniques?
 
 \subsection{Evaluation of LNFN Rules}
+The rule extraction algorithm given in Figure \ref{alg:rule-extraction} is an electic algorithm as this category describes algorithms that examine the network at the unit level but extract rules which represent the network as a whole. The algorithm is certainly not portable as it can only be applied to networks with the LNFN architecture.\\
+
+Finally what is the quality of the rules extracted from LNFNs, this is measured by the Accuracy, Fedelity, Consistency and Comprehensibility \cite{andrews1995survey}.
+
+\begin{enumerate}
+	\item \textbf{Accurate:} As demonstrated in 
+\end{enumerate}
 
 \subsection{Comparason Between Rules from LNFNs and MLPNs}
 To determine the usefulness of LNFNs and the rules which can be extracted from them a comparison to existing methods must be preformed. The rules extracted from MLPNs will be compared to thoughs from LNFNs.
 
 \chapter{Logical Neural Networks}
-The algorythm shown in Figure \ref{alg:rule-extraction} presents a method for extracting rules from LNFNs, there is no reason why this algorithm cant be applied to Logical Neural Networks (LNNs) \cite{LearningLogicalActivations} which can take on any configuration.\\
+The algorithm shown in Figure \ref{alg:rule-extraction} presents a method for extracting rules from LNFNs, there is no reason why this algorithm cant be applied to Logical Neural Networks (LNNs) \cite{LearningLogicalActivations} which can take on any configuration.\\
 
 An issue with LNFNs is that the number of hidden units allows for the possibility to memorise the input data, using LNNs consisting of more layers with a smaller width could force the learning of better rules.\\
 
@@ -333,6 +342,35 @@ Before investigating this there are two key issues caused by removing the restri
 	\item Another problem faced by LLNs that are not restricted to be ether a CNFN or DNFN is that the structure of the network will have a higher impact on whether the problem can be learnt. 
 \end{enumerate}
 
-Despite the issues outlined above being able to implement LNNs with layers that are not required to be $2^n$ hidden units wide would be alot more practical, in practice the number of features could be upwards of 100 and $2^100$ is a huge number of hidden neurons.\\
+Despite the issues outlined above being able to implement LNNs with layers that are not required to be $2^n$ hidden units wide would be a lot more practical, in practice the number of features could be upwards of 100 and $2^{100}$ is a huge number of hidden neurons.\\
 
-Resolving Issue 1 involves making our operation set functionally complete, this requires the $NOT$ operation. There are two ways to include the $NOT$ operation in the LNNs, one is to simply perform the augment the inputs to each layer to include each input and its negation, a more complicated but more elegant solution is to derive a parametrisation of Noisy gates which can learn to negate inputs.
+Resolving Issue 1 involves making our operation set functionally complete, this requires the $NOT$ operation. There are two ways to include the $NOT$ operation in the LNNs, one is to simply augment the inputs to each layer appending so it receives the input and its negation, a more complicated but more elegant solution is to derive a parametrisation of Noisy gates which can learn to negate inputs. However both these have no way to enforce mutual exclusivity between an input and its negation.\\
+
+An LNN, consisting of Noisy-OR hidden units and Noisy-AND outputs, with without any modification was shown to achieve a classification accuracy of $8.67$ on the MNIST data set, it was also conjectured that using an LNN with an AND layer followed by OR does not learn well \cite{LearningLogicalActivations}. 
+
+
+Before running any tests on the MNIST dataset LNNs with and without not operations will be compared.
+
+\section{Modified Logical Neural Network Structure} \label{sec:modified-lnn-structure}
+A new structure for LNNs is provided in Figure \ref{fig:modified-lnn-structure}
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[b]{0.9\textwidth}
+		\includegraphics[width=\textwidth]{Modified-LNN-Structure.png}
+		\caption{}
+		\label{fig:modified-lnn-structure}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+
+Figure \ref{fig:modified-lnn-structure} shows the new LNN structure which includes an implicit NOT operation. The input to each layer consists of the true output of the previous plus the negated output from the last layer. If a layer has 20 outputs then there are 40 inputs to the following layer.
+
+\section{Modified Logical Neural Network Experiments}
+The new LNN structure outlined in Section \ref{sec:modified-lnn-structure} is trained over a number of generated boolean problems along with the MNIST data set.
+
+\subsection{Boolean Problem Experiments}
+The aim of these experiments are to demonstration that ANDs can be effectively used in the first layer of an LNN. An OR-AND and AND-OR networks are compared.
+
+\subsection{MNIST Experiments}

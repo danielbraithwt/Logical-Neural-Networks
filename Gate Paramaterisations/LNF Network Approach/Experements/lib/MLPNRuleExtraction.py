@@ -243,7 +243,7 @@ def test(cnf, data, targets):
     return wrong
 
 
-N = 4
+N = 8
 expression = generateExpressions(N)[0]
 data = expression[0]
 targets = expression[1]

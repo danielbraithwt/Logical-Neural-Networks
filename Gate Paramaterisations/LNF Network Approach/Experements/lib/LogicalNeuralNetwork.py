@@ -44,15 +44,8 @@ class Atom():
     def __eq__(self, other):
         return self.name == other.get_name()
 
-    def negate(self):
-        if self.name.startswith("NOT"):
-            a = self.name.split(' ')[1]
-            return Atom(a)
-
-        return Atom("NOT {}".format(self.name))
-
     def apply(self, vals):
-        return vals[self.name]
+        return (self.name in vals)
 
     def __repr__(self):
         return self.name
@@ -115,6 +108,20 @@ class Or():
 
         return s
 
+class Not():
+    def __init__(self, literal):
+        self.literal = literal
+
+    def apply(self, vals):
+        return not self.literal.apply(vals)
+
+    def get_literals(self):
+        return self.literals
+
+    def __repr__(self):
+        return "NOT (" + str(self.literal) + ")"
+
+
 def generateExpressions(n):
     inputs = __perms(n)
     outputs = __n_rand_perms(len(inputs), 1)
@@ -143,7 +150,7 @@ def transform_input(iput):
     transformed = []
     for i in iput:
         transformed.append(i)
-        transformed.append(1-i)
+        #transformed.append(1-i)
     return transformed
 
 def construct_network(num_inputs, hidden_layers, num_outputs):
@@ -167,7 +174,7 @@ def sigmoid(z):
 
 def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs, activations):
     data = list(map(lambda x: transform_input(x), data))
-    network = construct_network(2 * num_inputs, hidden_layers, num_outputs)
+    network = construct_network(num_inputs, hidden_layers, num_outputs)
 
     examples = tf.constant(data)
     labels = tf.constant(targets.tolist())
@@ -178,30 +185,44 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
     example_batch, label_batch = tf.train.batch([random_example, random_label],
                                           batch_size=1)
 
-    x = tf.placeholder("float32", [None, None])
+    x = tf.placeholder("float32", )
     y = tf.placeholder("float32", )
 
     prev_out = x
     for idx in range(len(network)):
+        #prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
+        
         layer = network[idx]
         act = activations[idx]
         
         w = layer[0]
         b = layer[1]
 
-        prev_out = act(prev_out, w, b)
+        out = act(prev_out, w, b)
+        prev_out = out
 
     y_hat = prev_out
 
-    errors = tf.pow(y - y_hat, 2)#-(y * tf.log(y_hat) + (1-y) * tf.log(1 - y_hat))#
-    error = tf.reduce_sum(errors)
+    big_weights = 0.0
+    for layer in network:
+        w = layer[0]
+        big_weights = tf.add(big_weights, tf.reduce_max(tf.abs(w)))
+    big_weights = 0.0000001 * (-tf.log(big_weights))
 
-    train_op = tf.train.AdamOptimizer(0.01).minimize(error)
+    y_hat_prime = tf.reduce_sum(y_hat)
+    y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-20, 1)
+    y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
+    errors = y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1)#
+    error = -tf.reduce_sum(errors)
+
+    minimize = error + big_weights
+
+    #train_op = tf.train.AdamOptimizer(0.01).minimize(error)
+    train_op = tf.train.AdamOptimizer(0.01).minimize(minimize)
     model = tf.global_variables_initializer()
 
     with tf.Session() as session:
         session.run(model)
-        #print(session.run(prev_out, feed_dict={x:[data[0]], y:targets[0]}))
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=session,coord=coord)
 
@@ -209,15 +230,25 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
             batch_ex, batch_l = session.run([example_batch, label_batch])
             session.run([train_op], feed_dict={x:batch_ex, y:batch_l})
     
-            if i % 10 == 0:
+            if i % 100 == 0:
+                #session.run(train_op_big_weights)
+                #reg = session.run(big_weights)
                 er = 0
                 for d in range(len(data)):
+                    #print(session.run(y_hat_prime, feed_dict={x:[data[d]], y:targets[d]}))
                     er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
+                print()
+                print(i)
                 print(er)
+                #print(reg)
+
+                #if er < 0.0000000001:
+                #    break
 
         final_network = []
         for layer in network:
             weights, bias = session.run(layer)
+            print(sigmoid(weights))
             final_network.append([np.round(sigmoid(weights)), np.round(sigmoid(bias))])
 
         coord.request_stop()
@@ -240,10 +271,10 @@ def test(cnf, data, targets):
     return wrong
 
 def get_inputs(row):
-    atoms = {}
+    atoms = []
     for i in range(len(row)):
-        atoms["{}".format(i)] = row[i] == 1
-        atoms["NOT {}".format(i)] = (1 - row[i]) == 1
+        if row[i] == 1:
+            atoms.append("{}".format(i))
 
     return atoms
 
@@ -251,13 +282,17 @@ def ExtractRules(n, net, types):
     atoms = []
     for i in range(n):
         atoms.append(Atom("{}".format(i)))
-        atoms.append(Atom("NOT {}".format(i)))
     atoms = np.array(atoms)
 
 
     expressions = atoms
 
     for idx in range(len(net)):
+        #num_expr = len(expressions)
+        #for i in range(num_expr):
+            #expressions = np.append(expressions, Not(expressions[i]))
+        print(expressions)
+        
         t = types[idx]
         l = net[idx]
         w = l[0]
@@ -278,23 +313,27 @@ def ExtractRules(n, net, types):
 
 
 
-np.random.seed(1234)
-random.seed(1234)
+#np.random.seed(1234)
+#random.seed(1234)
 
-N = 5
+N = 4
 expression = generateExpressions(N)[0]
 data = expression[0]
 targets = expression[1]
-
-res = train_lnn(data, targets, 200000, N, [N, N], 1, [noisy_and_activation, noisy_or_activation, noisy_and_activation])
-print(res)
+#200000
+res = train_lnn(data, targets, 80000, N, [30], 1, [noisy_or_activation, noisy_and_activation])
+for layer in res:
+    print(layer)
+    print()
 
 #hidden_weights = res[1][0][0]
 #hidden_bias = res[1][0][1]
 #output_weights = res[1][1][0]
 #output_bias = res[1][1][1]
 
-rule = ExtractRules(N, res, ["AND", "OR", "AND"])[0]
+rule = ExtractRules(N, res, ["OR","AND"])
+print(len(rule))
+rule = rule[0]
 print(rule)
 
 print(data)

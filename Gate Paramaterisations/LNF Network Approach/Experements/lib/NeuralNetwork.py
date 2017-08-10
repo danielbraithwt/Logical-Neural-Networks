@@ -111,14 +111,14 @@ def train_perceptron_network_general(N, data, targets, iterations, num_out=1):
         y = tf.placeholder("float32", [None])
             
         # Set up weights
-        w_hidden = tf.Variable(np.random.rand(N, 2*N), dtype='float32')
-        b_hidden = tf.Variable(np.random.rand(1, N), dtype='float32')
+        w_hidden = tf.Variable(np.random.normal(0, 1, (N, 2*N)), dtype='float32')
+        b_hidden = tf.Variable(np.zeros((1, N)), dtype='float32')
         
-        w_l1 = tf.Variable(np.random.rand(N, N), dtype='float32')
-        b_l1 = tf.Variable(np.random.rand(1, N), dtype='float32')
+        w_l1 = tf.Variable(np.random.normal(0, 1, (N, N)), dtype='float32')
+        b_l1 = tf.Variable(np.zeros((1, N)), dtype='float32')
         
-        w_out = tf.Variable(np.random.rand(num_out, N), dtype='float32')
-        b_out = tf.Variable(np.random.rand(num_out), dtype='float32')
+        w_out = tf.Variable(np.random.normal(0, 1, (num_out, N)), dtype='float32')
+        b_out = tf.Variable(np.zeros(num_out), dtype='float32')
 
         # Compute output of hidden layer
         hidden_out = perceptron_activation(x, tf.transpose(w_hidden), b_hidden)
