@@ -1,6 +1,9 @@
+import sys
+import time
 import tensorflow as tf
 import random
 import numpy as np
+
 
 def __perms(n):
     if not n:
@@ -128,11 +131,24 @@ def generateExpressions(n):
 
     return np.array(list(map(lambda x: (inputs, x), outputs)))
 
+##def noisy_or_activation(inputs, weights, bias):
+##    t_w = transform_weights(weights)
+##    t_b = transform_weights(bias)
+##    
+##    z = tf.add(tf.reduce_sum(tf.multiply(inputs, t_w), axis=1), t_b)
+##    return 1 - tf.exp(-z)
+##
+##def noisy_and_activation(inputs, weights, bias):
+##    t_w = transform_weights(weights)
+##    t_b = transform_weights(bias)
+##
+##    z = tf.add(tf.reduce_sum(tf.multiply(1 - inputs, t_w), axis=1), t_b)
+##    return tf.exp(-z)
 
 def noisy_or_activation(inputs, weights, bias):
     t_w = transform_weights(weights)
     t_b = transform_weights(bias)
-
+    
     z = tf.add(tf.matmul(inputs, tf.transpose(t_w)), t_b)
     return 1 - tf.exp(-z)
 
@@ -153,35 +169,12 @@ def transform_input(iput):
         #transformed.append(1-i)
     return transformed
 
-def construct_network(num_inputs, hidden_layers, num_outputs):
-    network = []
+def sigmoid(weights):
+    return 1.0/(1 + tf.exp(-weights))
     
-    layers = hidden_layers
-    layers.append(num_outputs)
 
-    layer_ins = num_inputs
-    for l in layers:
-        weights = tf.Variable(np.random.uniform(-1.0, 1.0, (l, 2*layer_ins)), dtype='float32')
-        bias = tf.Variable(np.random.uniform(-1.0, 1.0, (1, l)), dtype='float32')
-
-        #weights = tf.Variable(gen_weights((l, 2 * layer_ins)), dtype='float32')
-        #bias = tf.Variable(gen_weights((1, l)), dtype='float32')
-
-        network.append([weights, bias])
-        layer_ins = l
-
-    return network
-
-def sigmoid(z):
-    return 1.0/(1.0 + np.exp(-z))
-
-def gen_weights(shape):
-    eps = 0.99 * np.clip(1e-10, 0.9999999999, np.abs(np.random.normal(0, 1, shape)))
-    return np.log(-(eps/(eps-1)))
-
-def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs, activations):
+def _train_network(N, data, targets, iterations, hidden_activation, output_activation):
     data = list(map(lambda x: transform_input(x), data))
-    network = construct_network(num_inputs, hidden_layers, num_outputs)
 
     examples = tf.constant(data)
     labels = tf.constant(targets.tolist())
@@ -191,144 +184,94 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
 
     example_batch, label_batch = tf.train.batch([random_example, random_label],
                                           batch_size=1)
+    
+    # Data and target variables
+    x = tf.placeholder("float64", [None, None])
+    y = tf.placeholder("float64", )
 
-    x = tf.placeholder("float32", )
-    y = tf.placeholder("float32", )
 
-    prev_out = x
-    for idx in range(len(network)):
-        prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
-        
-        layer = network[idx]
-        act = activations[idx]
-        
-        w = layer[0]
-        b = layer[1]
+    w_hidden = tf.Variable(np.random.normal(0.0, 1.0, (N, N)), dtype='float64')
+    g_hidden = tf.Variable(np.random.normal(0.0, 1.0, (N, 1)), dtype='float64')
+    b_hidden = tf.Variable(np.transpose(np.random.normal(0.0, 1.0, (N, 1))), dtype='float64')
 
-        out = act(prev_out, w, b)
-        prev_out = out
+    w_out = tf.Variable(np.random.normal(0.0, 1.0, (1, N)), dtype='float64')
+    g_out = tf.Variable(np.random.normal(0.0, 1.0, (1)), dtype='float64')
+    b_out = tf.Variable(np.random.normal(0.0, 1.0, (1)), dtype='float64')
 
-    y_hat = prev_out
 
-    big_weights = 0.0
-    for layer in network:
-        w = layer[0]
-        big_weights = tf.add(big_weights, tf.reduce_max(tf.abs(w)))
-    big_weights = 0.0000001 * (-tf.log(big_weights))
+    g_h = sigmoid(g_hidden)
+    g_o = sigmoid(g_out)
 
-    y_hat_prime = tf.reduce_sum(y_hat)
-    y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-20, 1)
-    y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
-    errors = y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1)#
-    error = -tf.reduce_sum(errors)
+    hidden_out = hidden_activation(x, w_hidden, b_hidden)
+    hidden_out = g_h * hidden_out + (1-g_h) * (1-hidden_out)
+    y_hat = output_activation(hidden_out, w_out, b_out)
+    y_hat = g_o * y_hat + (1-g_o) * (1-y_hat)
 
-    minimize = error + big_weights
+    errors = -(y * tf.log(y_hat) + (1-y) * tf.log(1-y_hat))#tf.pow(y - y_hat, 2)
+    error = tf.reduce_sum(errors)
 
-    #train_op = tf.train.AdamOptimizer(0.01).minimize(error)
-    train_op = tf.train.AdamOptimizer(0.01).minimize(minimize)
+    train_op_error = tf.train.AdamOptimizer(0.005).minimize(error)
+    #train_op_gate = tf.train.AdamOptimizer(0.5).minimize(error, var_list=[g_hidden, g_out])
+
+    #t_w_hidden = sigmoid(w_hidden)
+    #t_w_out = sigmoid(w_out)
+
+    #r_w_hidden = tf.round(t_w_hidden)
+    #r_w_out = tf.round(t_w_out)
+
     model = tf.global_variables_initializer()
+    start = time.time()
 
     with tf.Session() as session:
         session.run(model)
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=session,coord=coord)
 
-        for i in range(iterations):
+        for i in range(iterations):      
             batch_ex, batch_l = session.run([example_batch, label_batch])
-            session.run([train_op], feed_dict={x:batch_ex, y:batch_l})
-    
-            if i % 100 == 0:
-                #session.run(train_op_big_weights)
-                #reg = session.run(big_weights)
+            session.run([train_op_error], feed_dict={x:batch_ex, y:batch_l})
+
+            if i % 10 == 0:
                 er = 0
                 for d in range(len(data)):
-                    #print(session.run(y_hat_prime, feed_dict={x:[data[d]], y:targets[d]}))
                     er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
-                print()
-                print(i)
                 print(er)
-                #print(reg)
+                print(session.run(g_h))
+            
+        er = 0
+        for d in range(len(data)):
+            er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
 
-                #if er < 0.0000000001:
-                #    break
-
-        final_network = []
-        for layer in network:
-            weights, bias = session.run(layer)
-            print(sigmoid(weights))
-            final_network.append([np.round(sigmoid(weights)), np.round(sigmoid(bias))])
+        end = time.time()
 
         coord.request_stop()
         coord.join(threads)
-
-    return final_network
-
-
-def test(cnf, data, targets):
-    wrong = 0
-
-    for i in range(len(data)):
-        row = data[i]
-        inputs = get_inputs(row)
-        t_hat = cnf.apply(inputs)
-
-        if not t_hat == targets[i]:
-            wrong += 1
-
-    return wrong
-
-def get_inputs(row):
-    atoms = []
-    for i in range(len(row)):
-        if row[i] == 1:
-            atoms.append("{}".format(i))
-
-    return atoms
-
-def ExtractRules(n, net, types):
-    atoms = []
-    for i in range(n):
-        atoms.append(Atom("{}".format(i)))
-    atoms = np.array(atoms)
-
-
-    expressions = atoms
-
-    for idx in range(len(net)):
-        num_expr = len(expressions)
-        for i in range(num_expr):
-            expressions = np.append(expressions, Not(expressions[i]))
-        print(expressions)
         
-        t = types[idx]
-        l = net[idx]
-        w = l[0]
+        r_hidden_final = session.run(r_w_hidden)
+        r_out_final = session.run(r_w_out)
 
-        formulas = []
-        for neuron in w:
-            considered = expressions[neuron == 0]
-            
-            if t == "AND":
-                formulas.append(And(considered))
-            else:
-                formulas.append(Or(considered))
+        total_time = end - start
 
-        expressions = np.array(formulas)
+        w_hidden_final = session.run(w_hidden)
+        b_hidden_final = session.run(b_hidden)
 
-    return expressions
+        w_out_final = session.run(w_out)
+        b_out_final = session.run(b_out)
+    
+    return (r_hidden_final, r_out_final), ((w_hidden_final, b_hidden_final), (w_out_final, b_out_final)), er, total_time
 
 
 
 
-#np.random.seed(1234)
-#random.seed(1234)
+np.random.seed(1234)
+random.seed(1234)
 
-N = 4
+N = 9
 expression = generateExpressions(N)[0]
 data = expression[0]
 targets = expression[1]
 #200000
-res = train_lnn(data, targets, 80000, N, [2**N], 1, [noisy_or_activation, noisy_and_activation])
+res = _train_network(N, data, targets, 100000, noisy_and_activation, noisy_or_activation)
 for layer in res:
     print(layer)
     print()
@@ -338,15 +281,13 @@ for layer in res:
 #output_weights = res[1][1][0]
 #output_bias = res[1][1][1]
 
-rule = ExtractRules(N, res, ["OR","AND"])
-print(len(rule))
-rule = rule[0]
-print(rule)
 
 print(data)
 print(targets)
 
+rule = ExtractRules(N, res, ["AND","OR"])
+print(len(rule))
+rule = rule[0]
+print(rule)
+
 print(test(rule, data, targets))
-
-
-        

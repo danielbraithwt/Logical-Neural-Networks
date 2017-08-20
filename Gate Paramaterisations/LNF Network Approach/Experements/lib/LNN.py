@@ -1,3 +1,5 @@
+import sys
+import time
 import tensorflow as tf
 import random
 import numpy as np
@@ -128,19 +130,18 @@ def generateExpressions(n):
 
     return np.array(list(map(lambda x: (inputs, x), outputs)))
 
-
 def noisy_or_activation(inputs, weights, bias):
     t_w = transform_weights(weights)
     t_b = transform_weights(bias)
-
     z = tf.add(tf.matmul(inputs, tf.transpose(t_w)), t_b)
+    #z = tf.add(tf.reduce_sum(tf.multiply(t_w, inputs), axis=1), t_b)
     return 1 - tf.exp(-z)
 
 def noisy_and_activation(inputs, weights, bias):
     t_w = transform_weights(weights)
     t_b = transform_weights(bias)
-
     z = tf.add(tf.matmul(1 - inputs, tf.transpose(t_w)), t_b)
+    #z = tf.add(tf.reduce_sum(tf.multiply(t_w, 1-inputs), axis=1), t_b)
     return tf.exp(-z)
 
 def transform_weights(weights):
@@ -153,35 +154,44 @@ def transform_input(iput):
         #transformed.append(1-i)
     return transformed
 
-def construct_network(num_inputs, hidden_layers, num_outputs):
+def sigmoid(weights):
+    return 1.0/(1 + tf.exp(-weights))
+
+def np_sigmoid(weights):
+    return 1.0/(1 + np.exp(-weights))
+
+#def gen_weights(shape):
+#    eps = 0.99 * np.clip(1e-10, 0.9999999999, np.abs(np.random.normal(0, 1, shape)))
+#    return np.log(-(eps/(eps-1)))
+
+
+def create_network(num_inputs, hidden_layers, num_outputs):
     network = []
-    
     layers = hidden_layers
     layers.append(num_outputs)
 
     layer_ins = num_inputs
     for l in layers:
-        weights = tf.Variable(np.random.uniform(-1.0, 1.0, (l, 2*layer_ins)), dtype='float32')
-        bias = tf.Variable(np.random.uniform(-1.0, 1.0, (1, l)), dtype='float32')
+        w = tf.Variable(np.random.uniform(-1.0, 1.0, (l, 2*layer_ins)), dtype='float32')
+        wn = tf.Variable(np.random.uniform(-1.0, 1.0, (l, 2*layer_ins)), dtype='float32')
+        #g = tf.Variable(np.random.uniform(-4.0, 4.0, (1, l)), dtype='float32')
+        b = tf.Variable(np.random.uniform(-1.0, 1.0, (1, l)), dtype='float32')
 
-        #weights = tf.Variable(gen_weights((l, 2 * layer_ins)), dtype='float32')
-        #bias = tf.Variable(gen_weights((1, l)), dtype='float32')
+        #w = tf.Variable(gen_weights((l, layer_ins)), dtype='float32')
+        #g = tf.Variable(gen_weights((l, layer_ins)), dtype='float32')
 
-        network.append([weights, bias])
+        network.append([w, wn, b])
         layer_ins = l
 
     return network
 
-def sigmoid(z):
-    return 1.0/(1.0 + np.exp(-z))
-
 def gen_weights(shape):
-    eps = 0.99 * np.clip(1e-10, 0.9999999999, np.abs(np.random.normal(0, 1, shape)))
+    eps = 0.5 * np.clip(1e-10, 0.9999999999, np.abs(np.random.normal(0, 1, shape)))
     return np.log(-(eps/(eps-1)))
 
 def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs, activations):
+    network = create_network(num_inputs, hidden_layers, num_outputs)
     data = list(map(lambda x: transform_input(x), data))
-    network = construct_network(num_inputs, hidden_layers, num_outputs)
 
     examples = tf.constant(data)
     labels = tf.constant(targets.tolist())
@@ -191,77 +201,129 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
 
     example_batch, label_batch = tf.train.batch([random_example, random_label],
                                           batch_size=1)
-
-    x = tf.placeholder("float32", )
+    
+    # Data and target variables
+    x = tf.placeholder("float32", [None, None])
     y = tf.placeholder("float32", )
 
-    prev_out = x
-    for idx in range(len(network)):
-        prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
-        
-        layer = network[idx]
-        act = activations[idx]
-        
-        w = layer[0]
-        b = layer[1]
 
-        out = act(prev_out, w, b)
-        prev_out = out
+    layer_input = x
+    layer_input = tf.concat([layer_input, 1-layer_input], axis=1)
+##    for i in range(len(network)):
+##        layer = network[i]
+##        w = layer[0]
+##        g = sigmoid(layer[1])
+##        b = layer[2]
+##        act = activations[i]
+##
+##        gated_input = tf.add(g * layer_input, (1 - g) * (1 - layer_input))
+##
+##        layer_input = act(gated_input, w, b)
+##        break;
 
-    y_hat = prev_out
+    layer = network[0]
+    w = layer[0]
+    wn = layer[1]
+    #g = sigmoid(layer[1])
+    b = layer[2]
+    act = activations[0]
 
-    big_weights = 0.0
-    for layer in network:
-        w = layer[0]
-        big_weights = tf.add(big_weights, tf.reduce_max(tf.abs(w)))
-    big_weights = 0.0000001 * (-tf.log(big_weights))
+    #out1 = act(layer_input, w, b)
+    #out2 = act(1-layer_input, wn, b)
 
-    y_hat_prime = tf.reduce_sum(y_hat)
-    y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-20, 1)
-    y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
-    errors = y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1)#
-    error = -tf.reduce_sum(errors)
+    out = act(layer_input, w, b)
+    layer_input = out
 
-    minimize = error + big_weights
+    #gated_input = layer_input#tf.add(g * layer_input, (1 - g) * (1 - layer_input))
 
-    #train_op = tf.train.AdamOptimizer(0.01).minimize(error)
-    train_op = tf.train.AdamOptimizer(0.01).minimize(minimize)
+    layer_input = tf.concat([layer_input, 1-layer_input], axis=1)#out#act(gated_input, w, b)
+
+    layer = network[1]
+    w = layer[0]
+    wn = layer[1]
+    #g = sigmoid(layer[1])
+    b = layer[2]
+    act = activations[1]
+
+    #out1 = act(layer_input, w, b)
+    #out2 = act(1-layer_input, wn, b)
+
+    out = act(layer_input, w, b)#tf.concat([out1, out2], axis=1)#tf.add(g * out1, (1-g) * out2)
+
+    #gated_input = layer_input#tf.add(g * layer_input, (1 - g) * (1 - layer_input))
+
+    layer_input = out#act(gated_input, w, b)
+
+    y_hat = tf.reduce_sum(layer_input)
+
+    #penalty = 0.0
+    #for l in network:
+    #    penalty = tf.add(penalty, tf.exp(-15 * tf.reduce_sum(tf.pow((sigmoid(l[1]) - 0.5), 2))))
+
+    y_prime = tf.reduce_sum(y)
+    errors = tf.pow(y_prime - y_hat, 2)#-(y * tf.log(y_hat) + (1-y) * tf.log(1-y_hat))#
+    error = tf.reduce_sum(errors)
+
+    train_op_error = tf.train.AdamOptimizer(0.01).minimize(error)
+
+    #t_w_hidden = sigmoid(w_hidden)
+    #t_w_out = sigmoid(w_out)
+
+    #r_w_hidden = tf.round(t_w_hidden)
+    #r_w_out = tf.round(t_w_out)
+
     model = tf.global_variables_initializer()
+    start = time.time()
 
     with tf.Session() as session:
         session.run(model)
+
+##        print(session.run(g, feed_dict={x:[data[1]], y:targets[1]}))
+##        print(session.run(out1, feed_dict={x:[data[1]], y:targets[1]}))
+##        print(session.run(out2, feed_dict={x:[data[1]], y:targets[1]}))
+##        print(session.run(out, feed_dict={x:[data[1]], y:targets[1]}))
+
+        
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=session,coord=coord)
 
-        for i in range(iterations):
+        for i in range(iterations):      
             batch_ex, batch_l = session.run([example_batch, label_batch])
-            session.run([train_op], feed_dict={x:batch_ex, y:batch_l})
-    
+            session.run(train_op_error, feed_dict={x:batch_ex, y:batch_l})
+
             if i % 100 == 0:
-                #session.run(train_op_big_weights)
-                #reg = session.run(big_weights)
                 er = 0
                 for d in range(len(data)):
-                    #print(session.run(y_hat_prime, feed_dict={x:[data[d]], y:targets[d]}))
+                    #print(session.run(y, feed_dict={x:[data[d]], y:targets[d]}))
+                    #print(session.run(y_hat, feed_dict={x:[data[d]], y:targets[d]}))
                     er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
-                print()
-                print(i)
                 print(er)
-                #print(reg)
+                #print(session.run(penalty, feed_dict={x:[data[0]], y:targets[0]}))
+                #print(session.run(gated_input, feed_dict={x:[data[0]], y:targets[0]}))
+                print()
+                #_, gate, _ = session.run(network[0])
+                #print(session.run(g, feed_dict={x:[data[0]], y:targets[0]}))
+            
+        er = 0
+        for d in range(len(data)):
+            print(session.run(y_hat, feed_dict={x:[data[d]], y:targets[d]}))
+            er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
 
-                #if er < 0.0000000001:
-                #    break
-
-        final_network = []
-        for layer in network:
-            weights, bias = session.run(layer)
-            print(sigmoid(weights))
-            final_network.append([np.round(sigmoid(weights)), np.round(sigmoid(bias))])
+        end = time.time()
 
         coord.request_stop()
         coord.join(threads)
 
-    return final_network
+        total_time = end - start
+##
+##        final_network = []
+##        for layer in network:
+##            weights, gate = session.run(layer)
+##            #print(np_sigmoid(weights))
+##            final_network.append([np.round(np_sigmoid(weights)), np.round(np_sigmoid(gate))])#, np.round(sigmoid(bias))])
+##
+##    
+##    return final_network
 
 
 def test(cnf, data, targets):
@@ -285,50 +347,56 @@ def get_inputs(row):
 
     return atoms
 
-def ExtractRules(n, net, types):
+def ExtractRules(N, network, types):
     atoms = []
-    for i in range(n):
+    for i in range(N):
         atoms.append(Atom("{}".format(i)))
     atoms = np.array(atoms)
 
-
     expressions = atoms
 
-    for idx in range(len(net)):
-        num_expr = len(expressions)
-        for i in range(num_expr):
-            expressions = np.append(expressions, Not(expressions[i]))
-        print(expressions)
-        
+    for idx in range(len(network)):
+        negated_expressions = np.array(list(map(lambda x: Not(x), expressions)))
+
         t = types[idx]
-        l = net[idx]
+        l = network[idx]
         w = l[0]
+        g = l[1]
+
+        print(g)
 
         formulas = []
-        for neuron in w:
-            considered = expressions[neuron == 0]
-            
+        for neuron_id in range(len(w)):
+            inputs = []
+            gate = g[neuron_id]
+            for i in range(len(gate)):
+                if gate[i] == 1:
+                    inputs.append(expressions[i])
+                else:
+                    inputs.append(negated_expressions[i])
+
+            considered = np.array(inputs)[w[neuron_id] == 0]
+
             if t == "AND":
                 formulas.append(And(considered))
             else:
                 formulas.append(Or(considered))
 
         expressions = np.array(formulas)
-
     return expressions
+    
 
 
+np.random.seed(1234)
+random.seed(1234)
 
-
-#np.random.seed(1234)
-#random.seed(1234)
-
-N = 4
+N = 70
 expression = generateExpressions(N)[0]
 data = expression[0]
 targets = expression[1]
 #200000
-res = train_lnn(data, targets, 80000, N, [2**N], 1, [noisy_or_activation, noisy_and_activation])
+print("Training")
+res = train_lnn(data, targets, 80000, N, [3], 1, [noisy_and_activation, noisy_or_activation])
 for layer in res:
     print(layer)
     print()
@@ -338,15 +406,13 @@ for layer in res:
 #output_weights = res[1][1][0]
 #output_bias = res[1][1][1]
 
-rule = ExtractRules(N, res, ["OR","AND"])
-print(len(rule))
-rule = rule[0]
-print(rule)
 
 print(data)
 print(targets)
 
+rule = ExtractRules(N, res, ["AND","OR"])
+print(len(rule))
+rule = rule[0]
+print(rule)
+
 print(test(rule, data, targets))
-
-
-        

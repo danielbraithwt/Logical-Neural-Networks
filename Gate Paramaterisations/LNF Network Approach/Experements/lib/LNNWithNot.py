@@ -154,7 +154,9 @@ def transform_input(iput):
     return transformed
 
 def gen_weights(shape):
-    eps = 0.99 * np.clip(1e-10, 0.9999999999, np.abs(np.random.normal(0, 1, shape)))
+    #print(np.abs(np.random.normal(0.5, 0.25, shape)))
+    eps = np.clip(np.abs(np.random.normal(0.5, 0.25, shape)), 1e-10, 0.9999999999)
+    #print(eps)
     return np.log(-(eps/(eps-1)))
 
 def construct_network(num_inputs, hidden_layers, num_outputs):
@@ -213,28 +215,31 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
     big_weights = 0.0
     for layer in network:
         w = layer[0]
-        big_weights = tf.add(big_weights, tf.reduce_max(tf.abs(w)))
-    big_weights = 0.0000001 * (-tf.log(big_weights))
+        big_weights = tf.add(big_weights, tf.reduce_min(tf.abs(w)))
 
-    #y_hat_prime = tf.reduce_sum(y_hat)
-    #y_hat_prime_0 = y_hat_prime
-    #y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
-    #errors = y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1)#
-    #error = -tf.reduce_sum(errors)
+    big_weights = big_weights/len(network)
+    big_weights = 0.01 * (-tf.log(big_weights + 0.00000001))
 
-    errors = tf.pow(y - y_hat, 2)
-    error = tf.reduce_sum(errors)
+    y_hat_prime = tf.reduce_sum(y_hat)
+    y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-20, 1)
+    y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
+    errors = y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1)#
+    error = -tf.reduce_sum(errors)
 
-    minimize = error #+ big_weights
+    #errors = tf.pow(y - y_hat, 2)
+    #error = tf.reduce_sum(errors)
+
+    minimize = error + big_weights
 
     #train_op = tf.train.AdamOptimizer(0.01).minimize(error)
-    train_op = tf.train.AdamOptimizer(0.01).minimize(minimize)
+    train_op = tf.train.AdamOptimizer(0.0005).minimize(minimize)
     model = tf.global_variables_initializer()
 
     with tf.Session() as session:
         session.run(model)
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=session,coord=coord)
+        print(session.run(layer[0]))
 
         for i in range(iterations):
             batch_ex, batch_l = session.run([example_batch, label_batch])
@@ -242,15 +247,15 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
     
             if i % 100 == 0:
                 #session.run(train_op_big_weights)
-                #reg = session.run(big_weights)
+                reg = session.run(big_weights)
                 er = 0
                 for d in range(len(data)):
-                    #print(session.run(y_hat_prime, feed_dict={x:[data[d]], y:targets[d]}))
+                    #print(session.run(y_hat, feed_dict={x:[data[d]], y:targets[d]}))
                     er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
                 print()
                 print(i)
                 print(er)
-                #print(reg)
+                print(reg)
 
                 #if er < 0.0000000001:
                 #    break
@@ -301,7 +306,7 @@ def ExtractRules(n, net, types):
         num_expr = len(expressions)
         for i in range(num_expr):
             expressions = np.append(expressions, Not(expressions[i]))
-        print(expressions)
+        #print(expressions)
         
         t = types[idx]
         l = net[idx]
@@ -322,34 +327,35 @@ def ExtractRules(n, net, types):
 
 
 
+if __name__ == "__main__":
 
-np.random.seed(1234)
-random.seed(1234)
+    np.random.seed(1234)
+    random.seed(1234)
 
-N = 3
-expression = generateExpressions(N)[0]
-data = expression[0]
-targets = expression[1]
-#200000
-res = train_lnn(data, targets, 80000, N, [9], 1, [noisy_or_activation, noisy_and_activation])
-for layer in res:
-    print(layer)
-    print()
+    N = 7
+    expression = generateExpressions(N)[0]
+    data = expression[0]
+    targets = expression[1]
+    #200000
+    res = train_lnn(data, targets, 500000, N, [35], 1, [noisy_or_activation, noisy_and_activation])
+    for layer in res:
+        print(layer)
+        print()
 
-#hidden_weights = res[1][0][0]
-#hidden_bias = res[1][0][1]
-#output_weights = res[1][1][0]
-#output_bias = res[1][1][1]
+    #hidden_weights = res[1][0][0]
+    #hidden_bias = res[1][0][1]
+    #output_weights = res[1][1][0]
+    #output_bias = res[1][1][1]
 
-rule = ExtractRules(N, res, ["OR", "AND"])
-print(len(rule))
-rule = rule[0]
-print(rule)
+    rule = ExtractRules(N, res, ["OR", "AND"])
+    print(len(rule))
+    rule = rule[0]
+    print(rule)
 
-print(data)
-print(targets)
+    print(data)
+    print(targets)
 
-print(test(rule, data, targets))
+    print(test(rule, data, targets))
 
 
         
