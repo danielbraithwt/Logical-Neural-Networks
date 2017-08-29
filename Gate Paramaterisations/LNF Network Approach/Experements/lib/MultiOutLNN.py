@@ -166,24 +166,28 @@ def transform(weights):
 
 
 def gen_weights(shape):
-    initial = np.abs(np.random.normal(np.log(4)/shape[1], 1/shape[1], shape))
+    initial = np.abs(np.random.normal(np.log(4)/shape[1], np.log(4)/shape[1], shape))
     w = inv_transform(initial)
 
 
     return w
 
-def construct_network(num_inputs, hidden_layers, num_outputs):
+def construct_network(num_inputs, hidden_layers, num_outputs, names, addNot):
     network = []
     
     layers = hidden_layers
     layers.append(num_outputs)
 
     layer_ins = num_inputs
-    for l in layers:
+    for idx in range(len(layers)):
+        l = layers[idx]
         #weights = tf.Variable(np.random.uniform(-1.0, 1.0, (l, 2 * layer_ins)), dtype='float32')
         #bias = tf.Variable(np.random.uniform(-1.0, 1.0, (1, l)), dtype='float32')
-
-        weights = tf.Variable(gen_weights((l, 2 * layer_ins)), dtype='float32')
+        weights = None
+        if addNot:
+            weights = tf.Variable(gen_weights((l, 2 * layer_ins)), dtype='float32')
+        else:
+            weights = tf.Variable(gen_weights((l, layer_ins)), dtype='float32')
         bias = tf.Variable(np.zeros((1, l)) + 27.6309, dtype='float32')
 
         network.append([weights, bias])
@@ -194,9 +198,9 @@ def construct_network(num_inputs, hidden_layers, num_outputs):
 def sigmoid(z):
     return 1.0/(1.0 + np.exp(-z))
 
-def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs, activations):
-    data = list(map(lambda x: transform_input(x), data))
-    network = construct_network(num_inputs, hidden_layers, num_outputs)
+def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs, names, activations, addNot=True):
+    #data = list(map(lambda x: transform_input(x), data))
+    network = construct_network(num_inputs, hidden_layers, num_outputs, names, addNot)
 
     examples = tf.constant(data)
     labels = tf.constant(targets.tolist())
@@ -212,7 +216,8 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
 
     prev_out = x
     for idx in range(len(network)):
-        prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
+        if addNot:
+            prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
         
         layer = network[idx]
         act = activations[idx]
@@ -225,53 +230,56 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
 
     y_hat = prev_out
 
-    big_weights = 0.0
-    for layer in network:
-        w = layer[0]
-        big_weights = tf.add(big_weights, tf.reduce_min(tf.abs(w)))
-
-    big_weights = big_weights/len(network)
-    big_weights = 0.01 * (-tf.log(big_weights + 0.00000001))
-
-    y_hat_prime = tf.reduce_sum(y_hat)
-    y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-20, 1)
-    y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
-    errors = y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1)#
-    error = -tf.reduce_sum(errors)
+##    y_hat_prime = y_hat
+##    y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-20, 1)
+##    y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
+##    errors = -(y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1))#
+##    error = tf.reduce_sum(errors)
 
     #errors = tf.pow(y - y_hat, 2)
     #error = tf.reduce_sum(errors)
 
+    error = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=y_hat)
+
     minimize = error #+ big_weights
 
     #train_op = tf.train.AdamOptimizer(0.01).minimize(error)
-    train_op = tf.train.AdamOptimizer(0.001).minimize(minimize)
+    train_op = tf.train.AdamOptimizer(0.001).minimize(error)
     model = tf.global_variables_initializer()
+
+    savable = []
+    for l in network:
+        savable.append(l[0])
+        savable.append(l[1])
+        
+    saver = tf.train.Saver(savable)
 
     with tf.Session() as session:
         session.run(model)
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=session,coord=coord)
-        print(session.run(layer[0]))
 
         for i in range(iterations):
             batch_ex, batch_l = session.run([example_batch, label_batch])
             session.run([train_op], feed_dict={x:batch_ex, y:batch_l})
+            #print(session.run(y, feed_dict={y:batch_l}))
     
             if i % len(data) == 0:
                 #session.run(train_op_big_weights)
-                reg = session.run(big_weights)
                 er = 0
+
+                
                 for d in range(len(data)):
                     #print(session.run(y_hat, feed_dict={x:[data[d]], y:targets[d]}))
                     er += session.run(error, feed_dict={x:[data[d]], y:targets[d]})
                 print()
                 print(i)
                 print(er)
-                print(reg)
 
                 #if er < 0.0000000001:
                 #    break
+        saver.save(session, 'model')
+
 
         final_network = []
         for layer in network:
@@ -285,13 +293,14 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
     return final_network
 
 
-def run_lnn(data, targets, network, num_inputs, hidden_layers, num_outputs, activations):
+def run_lnn(data, targets, network, num_inputs, hidden_layers, num_outputs, activations, addNot=True):
     x = tf.placeholder("float32", )
     y = tf.placeholder("float32", )
 
     prev_out = x
     for idx in range(len(network)):
-        prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
+        if addNot:
+            prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
         
         layer = network[idx]
         act = activations[idx]
@@ -303,19 +312,32 @@ def run_lnn(data, targets, network, num_inputs, hidden_layers, num_outputs, acti
         prev_out = out
 
     y_hat = prev_out
-    y_hat_prime = tf.reduce_sum(y_hat)
     model = tf.global_variables_initializer()
 
     wrong = 0
     with tf.Session() as session:
         for i in range(len(data)):
             session.run(model)
-            pred = np.round(session.run(y_hat_prime, feed_dict={x:[data[i]], y:targets[i]}))
-            if not (pred == targets[i]):
+            pred = session.run(y_hat, feed_dict={x:[data[i]], y:targets[i]})[0]
+            #print(pred)
+
+            actual = -1
+
+            predicted_prob = 0
+            predicted = -1
+            for j in range(len(pred)):
+                if pred[j] > predicted_prob:
+                    predicted = j
+                    predicted_prob = pred[j]
+
+                if targets[i][j] == 1:
+                    actual = j
+
+            if not (actual == predicted):
                 wrong += 1
-                break
 
         return wrong
+            
 
 
 def test(cnf, data, targets):
@@ -324,10 +346,19 @@ def test(cnf, data, targets):
     for i in range(len(data)):
         row = data[i]
         inputs = get_inputs(row)
-        t_hat = cnf.apply(inputs)
 
-        if not t_hat == targets[i]:
-            wrong += 1
+        res = np.zeros(len(targets[0]))
+        for j in range(len(cnf)):
+            t_hat = cnf[j].apply(inputs)
+            res[j] = t_hat
+
+        #print(res)
+
+        
+        for j in range(len(res)):
+            if not (res[j] == targets[i][j]):
+                wrong += 1
+                break
 
     return wrong
 
@@ -383,7 +414,7 @@ if __name__ == "__main__":
     data = expression[0]
     targets = expression[1]
     #200000
-    res = train_lnn(data, targets, 800000, N, [35], 1, [noisy_or_activation, noisy_and_activation])
+    res = train_lnn(data, targets, 800000, N, [128], 1, [noisy_or_activation, noisy_and_activation], True)
     for layer in res:
         print(layer)
         print()

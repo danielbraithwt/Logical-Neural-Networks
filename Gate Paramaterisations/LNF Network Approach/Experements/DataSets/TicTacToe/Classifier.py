@@ -39,10 +39,46 @@ def to_one_hot(val, m):
     vec[val] = 1
     return vec
 
+def split_data(data, targets, ratio):
+    idx = np.random.choice(len(data), int(ratio * len(data)), replace=False)
+
+    X_train = []
+    Y_train = []
+
+    X_test = []
+    Y_test = []
+
+    for i in range(len(data)):
+        if i in idx:
+            X_train.append(data[i])
+            Y_train.append(targets[i])
+        else:
+            X_test.append(data[i])
+            Y_test.append(targets[i])
+
+    return X_train, Y_train, X_test, Y_test
+
+
+acts = [LNNWithNot.noisy_and_activation, LNNWithNot.noisy_or_activation]
+acts_name = ["AND", "OR"]
 
 targets, examples = read_data()
-print(examples[0])
-res = LNNWithNot.train_lnn(examples, np.array(targets), 70000, len(examples[0]), [30, 20], 1, [LNNWithNot.noisy_or_activation, LNNWithNot.noisy_and_activation, LNNWithNot.noisy_or_activation])
-rule = LNNWithNot.ExtractRules(len(examples[0]), res, ["OR", "AND", "OR"])
-print(rule[0])
-print(LNNWithNot.test(rule[0], examples, targets))
+
+X_train, Y_train, X_test, Y_test = split_data(examples, targets, 0.7)
+
+res = LNNWithNot.train_lnn(X_train, np.array(Y_train), 600000, len(examples[0]), [30], 1, acts)
+
+rule = LNNWithNot.ExtractRules(len(examples[0]), res, acts_name)
+print(rule)
+
+
+print("-- Evaluating --")
+print("Training Set, Size = ", len(X_train))
+print("Network Wrong: ", LNNWithNot.run_lnn(X_train, Y_train, res,  len(examples[0]), [30], 1, acts))
+print("Rule Wrong: ", LNNWithNot.test(rule[0], X_train, Y_train))
+print()
+print("Testing Set, Size = ", len(X_test))
+print("Network Wrong: ", LNNWithNot.run_lnn(X_test, Y_test, res,  len(examples[0]), [30], 1, acts))
+print("Rule Wrong: ", LNNWithNot.test(rule[0], X_test, Y_test))
+
+

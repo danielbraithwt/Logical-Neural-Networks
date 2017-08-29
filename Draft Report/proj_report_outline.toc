@@ -23,8 +23,10 @@
 \contentsline {subsection}{\numberline {4.2.2}Comparason Between Rules from LNFNs and MLPNs}{20}
 \contentsline {chapter}{\numberline {5}Logical Neural Networks}{21}
 \contentsline {section}{\numberline {5.1}Modified Logical Neural Network Structure}{22}
-\contentsline {section}{\numberline {5.2}Modified Logical Neural Network Experiments}{22}
-\contentsline {subsection}{\numberline {5.2.1}Boolean Problem Experiments}{22}
-\contentsline {subsection}{\numberline {5.2.2}MNIST Experiments}{22}
-\contentsline {chapter}{Appendices}{24}
-\contentsline {chapter}{\numberline {A}Tables}{25}
+\contentsline {section}{\numberline {5.2}Modified Logical Neural Network Experiments}{23}
+\contentsline {subsection}{\numberline {5.2.1}Boolean Problem Experiments}{23}
+\contentsline {subsection}{\numberline {5.2.2}Tic Tac Toe}{23}
+\contentsline {subsection}{\numberline {5.2.3}MNIST}{24}
+\contentsline {chapter}{\numberline {6}Application to Convolutional Neural Networks}{26}
+\contentsline {chapter}{Appendices}{28}
+\contentsline {chapter}{\numberline {A}Tables}{29}

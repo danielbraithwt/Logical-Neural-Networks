@@ -132,15 +132,15 @@ def generateExpressions(n):
 def noisy_or_activation(inputs, weights, bias):
     t_w = transform_weights(weights)
     t_b = transform_weights(bias)
-
-    z = tf.add(tf.matmul(inputs, tf.transpose(t_w)), t_b)
+    
+    z = tf.add(tf.reduce_sum(tf.multiply(inputs, t_w), axis=1), t_b)
     return 1 - tf.exp(-z)
 
 def noisy_and_activation(inputs, weights, bias):
     t_w = transform_weights(weights)
     t_b = transform_weights(bias)
 
-    z = tf.add(tf.matmul(1 - inputs, tf.transpose(t_w)), t_b)
+    z = tf.add(tf.reduce_sum(tf.multiply(1 - inputs, t_w), axis=1), t_b)
     return tf.exp(-z)
 
 def transform_weights(weights):
@@ -183,10 +183,11 @@ def construct_network(num_inputs, hidden_layers, num_outputs):
         #weights = tf.Variable(np.random.uniform(-1.0, 1.0, (l, 2 * layer_ins)), dtype='float32')
         #bias = tf.Variable(np.random.uniform(-1.0, 1.0, (1, l)), dtype='float32')
 
-        weights = tf.Variable(gen_weights((l, 2 * layer_ins)), dtype='float32')
+        weights = tf.Variable(gen_weights((l, layer_ins)), dtype='float32')
+        gate = tf.Variable(np.random.normal(0, 1, (l, layer_ins)), dtype='float32')
         bias = tf.Variable(np.zeros((1, l)) + 27.6309, dtype='float32')
 
-        network.append([weights, bias])
+        network.append([weights, gate, bias])
         layer_ins = l
 
     return network
@@ -212,15 +213,17 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
 
     prev_out = x
     for idx in range(len(network)):
-        prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
         
         layer = network[idx]
         act = activations[idx]
         
         w = layer[0]
-        b = layer[1]
+        g = tf.nn.sigmoid(layer[1])
+        b = layer[2]
 
-        out = act(prev_out, w, b)
+        actual_in = g * prev_out + (1-g) * (1-prev_out)
+
+        out = act(actual_in, w, b)
         prev_out = out
 
     y_hat = prev_out
@@ -245,7 +248,7 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
     minimize = error #+ big_weights
 
     #train_op = tf.train.AdamOptimizer(0.01).minimize(error)
-    train_op = tf.train.AdamOptimizer(0.001).minimize(minimize)
+    train_op = tf.train.AdamOptimizer(0.01).minimize(minimize)
     model = tf.global_variables_initializer()
 
     with tf.Session() as session:
@@ -276,7 +279,7 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
         final_network = []
         for layer in network:
             weights, bias = session.run(layer)
-            #print(sigmoid(weights))
+            print(sigmoid(weights))
             final_network.append([np.round(sigmoid(weights)), np.round(sigmoid(bias))])
 
         coord.request_stop()
@@ -371,7 +374,65 @@ def ExtractRules(n, net, types):
 
     return expressions
 
+def test(cnf, data, targets):
+    wrong = 0
 
+    for i in range(len(data)):
+        row = data[i]
+        inputs = get_inputs(row)
+        t_hat = cnf.apply(inputs)
+
+        if not t_hat == targets[i]:
+            wrong += 1
+
+    return wrong
+
+def get_inputs(row):
+    atoms = []
+    for i in range(len(row)):
+        if row[i] == 1:
+            atoms.append("{}".format(i))
+
+    return atoms
+
+def ExtractRules(N, network, types):
+    atoms = []
+    for i in range(N):
+        atoms.append(Atom("{}".format(i)))
+    atoms = np.array(atoms)
+
+    expressions = atoms
+
+    for idx in range(len(network)):
+        negated_expressions = np.array(list(map(lambda x: Not(x), expressions)))
+
+        t = types[idx]
+        l = network[idx]
+        w = l[0]
+        g = l[1]
+
+        print(g)
+
+        formulas = []
+        for neuron_id in range(len(w)):
+            inputs = []
+            gate = g[neuron_id]
+            for i in range(len(gate)):
+                if gate[i] == 1:
+                    inputs.append(expressions[i])
+                else:
+                    inputs.append(negated_expressions[i])
+
+            considered = np.array(inputs)[w[neuron_id] == 0]
+
+            if t == "AND":
+                formulas.append(And(considered))
+            else:
+                formulas.append(Or(considered))
+
+        expressions = np.array(formulas)
+    return expressions
+    
 
 if __name__ == "__main__":
 
@@ -383,7 +444,7 @@ if __name__ == "__main__":
     data = expression[0]
     targets = expression[1]
     #200000
-    res = train_lnn(data, targets, 800000, N, [35], 1, [noisy_or_activation, noisy_and_activation])
+    res = train_lnn(data, targets, 800000, N, [50], 1, [noisy_or_activation, noisy_and_activation])
     for layer in res:
         print(layer)
         print()

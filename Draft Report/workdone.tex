@@ -365,7 +365,49 @@ A new structure for LNNs is provided in Figure \ref{fig:modified-lnn-structure}
 \end{figure}
 
 
-Figure \ref{fig:modified-lnn-structure} shows the new LNN structure which includes an implicit NOT operation. The input to each layer consists of the true output of the previous plus the negated output from the last layer. If a layer has 20 outputs then there are 40 inputs to the following layer.
+Figure \ref{fig:modified-lnn-structure} shows the new LNN structure which includes an implicit NOT operation. The input to each layer consists of the true output of the previous plus the negated output from the last layer. If a layer has 20 outputs then there are 40 inputs to the following layer.\\
+
+This new structure is a super set of LNFNs, it should be possible to create and train an CNFN or DNFN with the modified LNN, however this is not the case. There are many more weights in the network now, this specifically causes an issue when the output neuron is a Noisy-AND, the current weight initialization technequic causes the output to saturate and nothing is able to be learnt when there exist to many neurons in the network. Before proceeding to experiment with the modified LNN a method to initialize the weights must be developed.\\
+
+To develop this process it helps to consider the LNNs as a stochastic process. The inputs to a neuron represent the probability that the connected node is on, and the output of a neuron is the probability that the neuron is on. A good place to start for learning is that the average output activation of each neuron is $\frac{1}{2}$, in other words each neuron has a 50\% probability of being on and is equally likely to be off.
+
+Let $X = \{x_i, ..., x_n\}$ be the input vector to a given neuron. Assume $x_n \sim \mathcal{U}(0, 1)$, consequently on average $X = \{\frac{1}{2}, ..., \frac{1}{2}\}$.\\
+
+Firstly consider the Noisy-AND activation, $e^{-W^{'} \cdot (1 - X) + b^{'}} = e^{-W^{'} \cdot X + b^{'}}$, i.e. the weight initialization for Noisy-AND and Noisy-OR can be done in the same manner. Write the activation as $e^{-z}$. The goal is to find $W^{'} = \{w_1^{'}, ..., w_m^{'}\}$ such that $e^{-z} \approxeq \frac{1}{2}$ which gives $z \approxeq \log(2)$.\\
+
+For simplicity let $b^{'} = 0$
+
+\begin{align*}
+& W^{'} \cdot X \approxeq \log(2)\\
+&= \sum_{i=0}^{n} \frac{1}{2} \cdot w^{'}_i \approxeq \log(2)\\
+&= \sum_{i=0}^{n} W^{'}_i \approxeq \log(4)
+\end{align*}
+
+The weights can then be found by applying the inverse operation that takes $W \rightarrow W^{'}$. Consequently the biases need to be set such that $ln(1 + e^b) = 0$, giving
+
+\begin{align*}
+	0 &= \ln(1 + e^{(-b)})\\
+	e^0 &= 1 + e^{-b}\\
+	e^{-b} &= 0
+\end{align*}
+
+No such value for $b$ exists so in practice a large value can be used in its place. The process for generating the weights can be given as $W^{'} \sim \mathcal{N}(\frac{\log(4)}{inputs}, \frac{1}{inputs})$, then $W = -\log(e^{W^{'}} - 1)$.
+
+This network configuration has some convenient properties, based on experimental evidence the following two conjectures can be made.
+
+
+\begin{conjecture}
+	If the given network structure is unable to learn the formula it gets stuck.
+	\label{conjecture:lnn-stuck}
+\end{conjecture}
+
+\begin{conjecture}
+	If the loss is small enough then similarly to LNFNs rules can be extracted directly from the weights.
+	\label{conjecture:lnn-rule-extraction}
+\end{conjecture}
+
+The LNN structure is significant when it comes to the learnability of problems so conjectures \ref{conjecture:lnn-stuck} \& \ref{conjecture:lnn-rule-extraction} allow for determining whether a network configuration is correct.
+
 
 \section{Modified Logical Neural Network Experiments}
 The new LNN structure outlined in Section \ref{sec:modified-lnn-structure} is trained over a number of generated boolean problems along with the MNIST data set.
@@ -373,4 +415,58 @@ The new LNN structure outlined in Section \ref{sec:modified-lnn-structure} is tr
 \subsection{Boolean Problem Experiments}
 The aim of these experiments are to demonstration that ANDs can be effectively used in the first layer of an LNN. An OR-AND and AND-OR networks are compared.
 
-\subsection{MNIST Experiments}
+\subsection{Tic Tac Toe}
+This problem involves classifying tic-tac-toe endgame boards and determining whether 'x' can win \cite{Lichman:2013}. There are 9 categorical attributes, representing each cell of the board, each cell can have 'x', 'o' or 'b' for blank.\\
+
+This gives a total of 27 attributes, if using an LNFN then the hidden layer would consist of 134217728 neurons, an intractable number, if the computer did not run out of memory then computing the gradients would be very slow.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[b]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{Tic-Tac-Toe-Net.png}
+		\caption{}
+		\label{fig:tic-tac-toe-net}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+There are a total of 958 instances, 70\% of which will be used for training, the rest for testing. Using the new LNN with the structure described in Figure \ref{fig:tic-tac-toe-net} is able to achieve an error rate of $0.1\%$ on the training set and $0.3\%$ on the test set. The rules extracted from the network have an error rate of $1.7\%$ on the training set and $6.3\%$ on the test set.\\
+
+What about the performance of the same network but swap around the activations? It was conjectured that networks of this form have poor learning \cite{LearningLogicalActivations} but with these new LNNs it might not be true any more.\\
+
+Changing the configuration so that the AND activation is before the OR obtains a result which is better than the previous. The network has the same performance but the rule set extracted has a $0\%$ error rate on the training set and a $2\%$ error on the test.\\
+
+It can be concluded that the conjecture saying that an LNN with an AND-OR configuration does not learn no longer holds.
+
+\subsection{MNIST}
+To determine if this new LNN structure can out perform the old it will be tested on the MNIST problem. The old LNN structure was able to achieve a classification accuracy of 8.67\% on a test set.\\
+
+There are 784 features per example and each will lie in the range $[0, 1]$. In Section \ref{sec:developing-applications} it was discussed why these networks should not be applied to continuous domains, however in this case the inputs still make sense, each feature can be interpreted as the probability that the corresponding pixel in the image is white.\\
+
+Given that the features are continuous the rules no longer make sense but it is still possible to visualise the weight to get an understanding of what the network has learnt.\\
+
+Three different LNNs will be tested,
+
+\begin{enumerate}
+	\item \textbf{OR-AND LNN without NOT}, this is because the Noisy parametrisation has been changed and while it should be equivalent it is possible that it is not.
+	
+	\item \textbf{OR-AND LNN with NOT}
+\end{enumerate}
+
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| c | c | c |}
+			\hline
+			LNN (With out NOT) OR-AND & LNN (With NOT) OR-AND & LNN (With NOT) AND-OR \\
+			\hline
+			\hline
+			0 & 0 & 0 \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{}
+	\label{tab:lnn-peformance-comparason}
+\end{table}
+
+\chapter{Application to Convolutional Neural Networks}
+Convolutional Neural Networks (CNNs) are widely used with image recognition tasks and are also diffcut to interpret, there exsist a number of methods to try to visulise the knowledge represented in a CNN but 
