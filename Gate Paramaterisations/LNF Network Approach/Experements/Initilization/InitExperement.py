@@ -1,6 +1,7 @@
 import tensorflow as tf
 import random
 import numpy as np
+from scipy import stats
 
 def __perms(n):
     if not n:
@@ -44,14 +45,14 @@ def generateExpressions(n):
 
 def noisy_or_activation(inputs, weights, bias):
     t_w = transform_weights(weights)
-    t_b = transform_weights(bias)
+    t_b = 0#transform_weights(bias)
 
     z = tf.add(tf.matmul(inputs, tf.transpose(t_w)), t_b)
     return 1 - tf.exp(-z)
 
 def noisy_and_activation(inputs, weights, bias):
     t_w = transform_weights(weights)
-    t_b = transform_weights(bias)
+    t_b = 0#transform_weights(bias)
 
     z = tf.add(tf.matmul(1 - inputs, tf.transpose(t_w)), t_b)
     return tf.exp(-z)
@@ -79,17 +80,21 @@ def transform(weights):
 
 def gen_weights(shape):
 
-    #initial = np.abs(np.random.normal(np.log(4)/shape[1], np.log(4)/(shape[1]), shape))
+    #initial = np.abs(np.random.normal(-np.log(1/2)/shape[1], -np.log(1/2)/shape[1], shape))
+    var = np.sqrt(np.log(4 * (4 + 3*shape[1])))
+    mean = -(1.0/2.0) * np.log(shape[1]**2 * (4 + 3*shape[1]))
+    
+    #initial = np.random.lognormal(mean, var, shape)
+    #initial = np.random.poisson((2.0/shape[1]), shape) + 0.0000000001
     #w = inv_transform(initial)
 
-    initial = []
-    for i in range(shape[0]):
-        y = np.random.uniform(0, 1)
-        z = np.log(1/y)
-        weights = np.repeat(z, shape[1]) * (1.0/shape[1])
-        initial.append(weights)
+    #initial = []
+    #for i in range(shape[0]):
+    #    z_mean = np.random.exponential(1)
+    #    weights = np.random.uniform(0, 2*(z_mean/shape[1]), shape[1])
+    #    initial.append(weights)
 
-    #print(initial)
+    initial = stats.betaprime.rvs((14.0/(3.0 * shape[1])), (10.0/3.0), size=shape)
     w = inv_transform(np.array(initial))
     print(w)
     
@@ -112,7 +117,7 @@ def construct_network(num_inputs, hidden_layers, num_outputs):
         #weights = tf.Variable(np.random.uniform(-1.0, 1.0, (l, 2 * layer_ins)), dtype='float32')
         #bias = tf.Variable(np.random.uniform(-1.0, 1.0, (1, l)), dtype='float32')
 
-        weights = tf.Variable(gen_weights((l, 2 * layer_ins)), dtype='float32')
+        weights = tf.Variable(gen_weights((l, layer_ins)), dtype='float32')
         bias = tf.Variable(np.zeros((1, l)) + 27.6309, dtype='float32')
         #bias = tf.Variable(gen_weights((1, l)), dtype='float32')
 
@@ -131,7 +136,7 @@ def test_lnn(data, num_inputs, hidden_layers, num_outputs, activations):
 
     prev_out = x
     for idx in range(len(network)):
-        prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
+        #prev_out = tf.concat([prev_out, 1 - prev_out], axis=1)
         
         layer = network[idx]
         act = activations[idx]
@@ -156,15 +161,16 @@ def test_lnn(data, num_inputs, hidden_layers, num_outputs, activations):
         
 
 
-np.random.seed(1234)
-random.seed(1234)
+#np.random.seed(1234)
+#random.seed(1234)
 
 N = 10
 expression = generateExpressions(N)[0]
 data = expression[0]
 
-acti = test_lnn(data, N, [30], 1, [noisy_or_activation, noisy_or_activation, noisy_and_activation])
+acti = test_lnn(data, N, [30], 1, [noisy_or_activation, noisy_and_activation])
 print(acti)
 print("RESULTS")
 print(acti.mean())
 print(acti.std())
+print(acti.var())

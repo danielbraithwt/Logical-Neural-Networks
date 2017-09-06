@@ -166,7 +166,10 @@ def transform(weights):
 
 
 def gen_weights(shape):
-    initial = np.abs(np.random.normal(np.log(4)/shape[1], np.log(4)/shape[1], shape))
+    var = np.sqrt(np.log(4 * (4 + 3*shape[1])))
+    mean = -(1.0/2.0) * np.log(shape[1]**2 * (4 + 3*shape[1]))
+    
+    initial = np.random.lognormal(mean, var, shape)
     w = inv_transform(initial)
 
 
