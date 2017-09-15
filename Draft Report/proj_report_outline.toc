@@ -18,15 +18,24 @@
 \contentsline {subsubsection}{LNFNs and Continuous Features}{19}
 \contentsline {subsubsection}{LNFNs and Discretized Continuous Features}{19}
 \contentsline {subsubsection}{Discussion of Application to Continuous Domains}{19}
-\contentsline {section}{\numberline {4.2}Evaluation of LNFN Intepretability}{20}
-\contentsline {subsection}{\numberline {4.2.1}Evaluation of LNFN Rules}{20}
-\contentsline {subsection}{\numberline {4.2.2}Comparason Between Rules from LNFNs and MLPNs}{20}
-\contentsline {chapter}{\numberline {5}Logical Neural Networks}{21}
-\contentsline {section}{\numberline {5.1}Modified Logical Neural Network Structure}{22}
-\contentsline {section}{\numberline {5.2}Modified Logical Neural Network Experiments}{23}
-\contentsline {subsection}{\numberline {5.2.1}Boolean Problem Experiments}{23}
-\contentsline {subsection}{\numberline {5.2.2}Tic Tac Toe}{23}
-\contentsline {subsection}{\numberline {5.2.3}MNIST}{24}
-\contentsline {chapter}{\numberline {6}Application to Convolutional Neural Networks}{26}
-\contentsline {chapter}{Appendices}{28}
-\contentsline {chapter}{\numberline {A}Tables}{29}
+\contentsline {chapter}{\numberline {5}Logical Neural Networks}{20}
+\contentsline {section}{\numberline {5.1}Modified Logical Neural Network Structure}{21}
+\contentsline {subsection}{\numberline {5.1.1}Connections Between Layers \& Parameters}{21}
+\contentsline {subsection}{\numberline {5.1.2}Softmax Output Layer}{21}
+\contentsline {section}{\numberline {5.2}Weight Initialization}{21}
+\contentsline {paragraph}{Deriving a Distribution For The Weights}{22}
+\contentsline {paragraph}{Fitting To Beta Prime}{23}
+\contentsline {paragraph}{Fitting To Log Normal}{24}
+\contentsline {paragraph}{Weight Initialization for LNNs}{24}
+\contentsline {section}{\numberline {5.3}Conjectures Concerning Performance of LNNs}{24}
+\contentsline {chapter}{\numberline {6}Evaluation Of Logical Neural Networks}{25}
+\contentsline {section}{\numberline {6.1}Tic Tac Toe}{25}
+\contentsline {subsection}{\numberline {6.1.1}Evaluation of LNN Rules}{26}
+\contentsline {section}{\numberline {6.2}Application to MNIST}{26}
+\contentsline {subsection}{\numberline {6.2.1}OR-AND Modified LNN}{27}
+\contentsline {subsection}{\numberline {6.2.2}AND-OR Modified LNN}{28}
+\contentsline {subsection}{\numberline {6.2.3}AND-AND Modified LNN}{28}
+\contentsline {subsection}{\numberline {6.2.4}Discussion Of Results}{30}
+\contentsline {chapter}{\numberline {7}Application to *}{31}
+\contentsline {chapter}{Appendices}{33}
+\contentsline {chapter}{\numberline {A}Tables}{34}
