@@ -5,9 +5,18 @@ The growing number of situations in which ANN systems are used has lead to an in
 
 Safety and ethics are two concrete examples of such situations where explanations of reasoning would provide a method to ensure an ANN can be implement with mitigated risk \cite{doshi2017towards}. In the context of Safety an ML system often can not be tested against all possible situations as it is computationally infeasible, the reasoning the ML system uses could be examined for flaws that could be result in a failure \textbf{Example Here}. On the other hand it is important to consider the implications of an ANN being biased towards a protected class of people, \textbf{Example Here}\\
 
-Another pressure causing the development of this field is changing laws, in 2018 a European Union (EU) regulation will come into effect requiring algorithms which make decisions based on user level predictors must provide an explanation \cite{goodman2016european}. This EU regulation is heavily related to non-discrimination, and requires that measures be implemented which prevent discriminatory effects \cite{goodman2016european}.\\
+Another pressure causing the development of this field is changing laws, in 2018 a European Union (EU) regulation will come into effect requiring algorithms which  profile users based on their personal information have the right to "Meaningful information about the logic involved" \cite{goodman2016european} \textbf{Cite LAW HERE}.\\
 
-\textbf{Explain Why Neural Networks Are Difficult To Interpret}\\
+Growing applications and changing laws are applying pressure to the field of Machine Learning to develop more intepretable systems. This report develops a new network archetchure which yields an intepretable trained model. This model is derived by first considering the descrete space of boolean algeabra and defining a class of networks to learn Conjunctive and Disjunctive Normal Forms of boolean formula,
+
+ANNs are black-boxes \textbf{REFERNECE}
+
+
+
+
+
+
+
 
 Consider some function $f$, then the operation of restricting a neuron to $f$ is given by only allowing a function given by $f$ operating on the set of weighted inputs (each input multiplied by a corresponding weight) to be learnt. By restricting the function set that each neuron can learn is it possible to create a more interpretable network? This report develops a class of networks where the function space of each neuron is restricted to be a predefined operation which can be interpreted as Boolean expression i.e. an AND or OR of its inputs.\\
 
