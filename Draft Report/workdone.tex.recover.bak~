@@ -1,46 +1,27 @@
 \chapter{Foundation of Logical Normal Form Networks}\label{C:foundation-of-lnfns}
-Consider the set of binary classification problems which have boolean inputs. Consider some problem $p$ in this set, with $X_p$ and $Y_p$ being the examples and targets retrospectively. Let $B_p$ be the set of all boolean functions which take an $x \in X_p$ and take it to either a 1 or 0. Then finding the optimal boolean function to solve the problem $p$ corresponds to expression \ref{equ:arg-max-boolean-function}.
+Consider problems with a boolean expression describing the relation ship between binary inputs and outputs. This is certainly a restricted space of problems, however its a logical place to start if defining the activation functions of neurons as a "boolean like" function.\\
 
-\begin{equation}
-\label{equ:arg-max-boolean-function}
-\begin{aligned}
-& \underset{f \in B_p}{\text{arg min}}
-& & -\sum_{0 \leq i \leq |X_p|} (Y_{p_i} \cdot \log f(X_{p_i})) + ((1 - Y_{p_i}) \cdot \log(1 - f(X_{p_i})))  \\
-\end{aligned}
-\end{equation}
+With this restriction in place any problem must be described by a boolean expression, this information alone does not help with constructing interpretable networks. It is known that any boolean expression has a CNF and DNF. It is possible to construct networks which can learn the underlying CNF or DNF, such networks are called Logical Normal Form Networks (LNFNs) \cite{herrmann1996backpropagation}. The research developing LNFNs has little justification for key decisions, consequently is difficult to understand and reproduce.\\
 
-How might a interpretable network architecture that can learn these functions be constructed? The following facts will be helpful, any boolean function has a unique Conjunctive and Disjunctive Normal Form (CNF \& DNF), both the CNF and DNF are described by the boolean operations NOT, OR and AND, in a CNF or DNF a not can only occur on a literal and the maximum number of clauses in a CNF or DNF is $2^n$ where n is th number of inputs.\\
-
-One option is to use a standard Multi-Layer Perceptron Network (MLPN). MLPNs have been shown to be universal function approximators but are not interpretable. Learning the CNF or DNF of the optimal function is an equivalent problem. For now consider the problem of learning the CNF. This can be done with hidden layer of size $k$ () and an output layer with a single neuron. The hidden neurons only need to perform the OR operation on a subset of inputs. The output layer only need perform an AND of a subset of the hidden neurons.\\
-
-Using Noisy-OR and Noisy-AND (See Section \ref{sec:background-noisy-neurons}) such a network can be constructed. Noisy neurons can not compute the not of inputs so the input layer must be modified to include the negation of each input. Figure \ref{fig:cnf-network-structure} is the structure that has been derived.
-
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[b]{0.6\textwidth}
-		\includegraphics[width=\textwidth]{CNF-Network-Structure.png}
-		\caption{Network Archetchure for Learning CNF}
-		\label{fig:cnf-network-structure}
-	\end{minipage}
-	\hfill
-\end{figure}
-
-By the same logic a network architecture for learning the DNF can be derived, the hidden layer consists of ANDs and the output of a single OR. These networks for learning CNF and DNF formulae are a new derivation of Logical Normal Form Networks (LNFNs) \cite{herrmann1996backpropagation}, the difference being Noisy neurons are used instead of the previously derived Conjunctive and Disjunctive neurons. Definitions of CNF Networks, DNF Networks and LNFNs are now given.
+Using the idea of LNFNs \cite{herrmann1996backpropagation} and Pure Logical Neural Networks \cite{LearningLogicalActivations} new definitions are given for LNFNs in terms of Noisy-OR and Noisy-AND neurons.
 
 \theoremstyle{definition}
-\begin{definition} \label{def:cnf-network}
+\begin{definition}
 A \textbf{CNF-Network} is a three layer network where neurons in the hidden layer consist solely of Noisy-OR's and the output layer is a single Noisy-AND. 
 \end{definition}
 
 \theoremstyle{definition}
-\begin{definition} \label{def:dnf-network}
+\begin{definition}
 A \textbf{DNF-Network} is a three layer network where neurons in the hidden layer consist solely of Noisy-AND's and the output layer is a single Noisy-OR. 
 \end{definition}
 
 \theoremstyle{definition}
-\begin{definition} \label{def:lnfn}
+\begin{definition}
 A \textbf{LNF-Network} is a DNF or CNF Network
+\label{def:lnfn}
 \end{definition}
+
+A CNF or DNF formula contains clauses of literals which is either an atom or a negation of an atom. To account for this the number of inputs to the network will be doubled, the inputs will be all the atoms and negations of the atoms, i.e. if $x_1, x_2$ are the atoms then $x_1, \lnot x_1, x_2, \lnot x_2$ are the inputs to the network.\\ 
 
 It must also be determined how many hidden units the LNFN will have, it is known that $2^n$, n being the number of atoms, is an upper bound on the number of clauses needed in a CNF and DNF formula (see Theorem \ref{thm:max-clause-cnfdnf}).
 
@@ -121,12 +102,7 @@ The function taking $w_i$ to $w_i^{'}$ is the soft ReLU function which is perfor
 \section{Training LNF Networks}
 Using equations \ref{equ:real-noisy-or-activation} and \ref{equ:real-noisy-and-activation} for the Noisy-OR, Noisy-AND activations retrospectively allows LNFNs to be trained without the need to clip the weights.\\
 
-\comment{
-Provide a discussion as to why single example training works best
-}
-Training the networks on all input patterns at the same time lead to poor learning, whereas training on a single example at a time had significantly better results.\\
-
-The ADAM Optimizer is the learning algorithm used, firstly for the convenience of an adaptive learning rate but also because it includes the advantages of RMSProp which works well with on-line (single-example) learning \cite{kingma2014adam}, which LNFNs respond well to.\\
+Training the networks on all input patterns at the same time lead to poor learning, whereas training on a single example at a time had significantly better results. The ADAM Optimizer is the learning algorithm used, firstly for the convenience of an adaptive learning rate but also because it includes the advantages of RMSProp which works well with on-line (single-example) learning \cite{kingma2014adam}, which LNFNs respond well to.\\
 
 Preliminary testing showed that LNFN's are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. It is also possible to inspect the trained weights and see that the networks have learnt the correct CNF or DNF representation.
 
@@ -139,10 +115,6 @@ How do LNFNs perform against standard perceptron networks which we know to be un
 \end{enumerate}
 
 The testing will consist of selecting 5 random boolean expressions for $2 \leq n \leq 9$ and training each network 5 times, each with random initial conditions. Figure \ref{fig:peformance-comparason-all} shows a comparison between all 4 of the networks and figure \ref{fig:peformance-comparason-cnfdnf} shows just the LNFN's.
-
-\comment{
-Re Run Performance Comparison Experiment
-}
 
 \begin{figure}[H]
   \centering
@@ -170,10 +142,6 @@ What causes some expressions to be harder to learn for one type of LNFN compared
 
 \section{LNF Network Generalization} \label{sec:lnfn-generalization}
 These networks are able to perform as well as standard perceptron networks but so far they have been getting the complete set of data, in practice this will almost never be the case. Standard ANN's are widely used because of their ability to generalize, for LNFN's to be useful they must also be able to generalize.
-
-\comment{
-	Re Run Performance Comparison Experiment
-}
 
 \begin{figure}[H]
 	\centering
@@ -325,9 +293,6 @@ These DNF formula do not correspond to the CNF give above but this is to be expe
 One possible issue that could arrive here is that the CNFN is now attempting to learn three CNF expressions with the same number of hidden neurons. The fact that meaningful rules where able to be extracted in this case could of been a coincidence, intuitively if we are learning a problem with $k$ classes then we could need $k \cdot 2^n$ hidden neurons which is becoming impractical.
 
 \subsection{Features with Continuous Domains}
-\comment{
-Might be good to talk about context in this section, i.e. the inputs dont make alot of sense if they are not probabilities
-}
 The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? Secondly what can be achieved by discretizing the continuous inputs and then using an LNFN to learn this new boolean problem. A simple benchmark to use is the Iris problem \cite{Lichman:2013}
 
 \subsubsection{LNFNs and Continuous Features} \label{subsubsec:lnfns-cont-features}
@@ -349,15 +314,11 @@ The ideas explored in Sections \ref{subsubsec:lnfns-cont-features} \& \ref{subsu
 Another thing to consider is that it becomes difficult to justify what the input features mean in the context of Noisy gates. In terms of the iris problem each feature represents a length, sure its possible to normalize the features to $[0,1]$ and train an LNFN anyway but essentially the lengths are being forced to be some sort of truth value.
 
 \chapter{Logical Neural Networks}
-There are two key issues with LNFNs. Firstly the number of hidden units becomes unfeasable as the number of inputs increases. The volume of hidden neurons allows for the possibility to memorise the input data.\\
+The algorithm shown in Figure \ref{alg:rule-extraction} presents a method for extracting rules from LNFNs, there is no reason why this algorithm cant be applied to Logical Neural Networks (LNNs) \cite{LearningLogicalActivations} which can take on any configuration.\\
 
-Using what has been learnt about LNFNs the class of Logical Neural Networks (LNNs) can be defined.
+An issue with LNFNs is that the number of hidden units allows for the possibility to memorise the input data, using LNNs consisting of more layers with a smaller width could force the learning of better rules.\\
 
-\begin{definition}
-	A \text{Logical Neural Network} is an ANN where each neuron has a noisy activation.
-\end{definition}
-
-LNNs have a more flexabile structure, allowing for deeper networks and hidden layers with a variable number of hidden neurons. There are two key issues caused by removing the restrictions imposed by the LNFN definition (Definition \ref{def:lnfn}) which must be addressed 
+Before investigating this there are two key issues caused by removing the restrictions imposed by the LNFN definition (Definition \ref{def:lnfn}) which must be addressed 
 
 \begin{enumerate}
 	\item Noisy neurons do not have the capacity to consider the presence of the negation of an input. This was a problem for LNFNs as well, however given that only the negations of atoms need to be considered to learn a CNF or DNF it was easily fixed by presenting the network with each atom and its negation. The problem can not be solved so easily for LNNs. A boolean formula can not always be represented by only AND and OR gate, i.e the set of operations $\{AND, OR\}$ is not functionally complete. 
@@ -396,14 +357,10 @@ The old LNN structure does not include a Softmax layer for the output. On the on
 
 Consider the following vector of probabilities $P = \{p_1, ..., p_n\}$ where $p_i$ is the probability the given example belongs to class $i$. Then define $p_i^{'} = \frac{p_i}{\sum_j p_j}$, performing this action to generate a vector $P^{'}$ where each of the classes are mutually exclusive.
 
-\comment{
-Might be nice to discuss what the ouput probabilities (before softmax) actually mean
-}
-
 
 \section{Weight Initialization}
 
-This new structure is a super set of LNFNs, it should be possible to create and train an CNFN or DNFN with the modified LNN, however this is not the case. There are many more weights in the network now. The current weight initialization technequic causes the output to saturate and nothing is able to be learnt when there exist to many neurons in the network. Before proceeding to experiment with the modified LNN a method to initialize the weights must be developed.\\
+This new structure is a super set of LNFNs, it should be possible to create and train an CNFN or DNFN with the modified LNN, however this is not the case. There are many more weights in the network now, this specifically causes an issue when the output neuron is a Noisy-AND, the current weight initialization technequic causes the output to saturate and nothing is able to be learnt when there exist to many neurons in the network. Before proceeding to experiment with the modified LNN a method to initialize the weights must be developed.\\
 
 \paragraph{Deriving a Distribution For The Weights}
 Before a weight initialization algorithm can be derived good learning conditions must be identified. Ideally the output of each neuron would be varied for each training example, i.e. $y \sim U(0,1)$. Each training example $X = \{x_1, ..., x_n\}$ has each component $x_i \in (0,1]$, it will be assumed that $x_i \sim U(0,1)$. If the input vectors and output of each neuron are both distributed $U(0,1)$ then the input to any layer is distributed $U(0,1)$, based on this fact it can be argued that the weight initialization is the same for both Noisy-OR and Noisy-AND. Recall the activations for Noisy neurons\\
@@ -475,38 +432,11 @@ From the above arguments $E[w_i] = \frac{2}{n}$ and $var(w_i) = \frac{3}{n}$. Th
 
 \paragraph{Fitting To Log Normal}
 
-A LogNormal distribution has two parameters $\mu$ and $\sigma^2$, by the definition of lognormal $E[w_i] = \frac{2}{n} = e^{\mu + \frac{\sigma^2}{2}}$ and $var(w_i) = \frac{3}{n} = \big[e^{\sigma^2} - 1\big] \cdot e^{2\mu + \sigma^2}$. Consequently
-
+\textbf{ADD MATH HERE}
 \begin{align*}
-	\frac{2}{n} &= e^{\mu + \frac{\sigma^2}{2}}\\
-	\log(\frac{2}{n}) &= \mu + \frac{\sigma^2}{2}\\
-	\log(\frac{4}{n^2}) &= 2\mu + \sigma^2
+	\sigma^2 &= \log (4(4 + 3n)))\\
+	\mu &= -\frac{1}{2}\log (n^2(4 + 3n))
 \end{align*}
-
-From here this can be substituted into the other fomula to give
-
-\begin{align*}
-	\frac{3}{n} &= \big[e^{\sigma^2} - 1\big] \cdot e^{2\mu + \sigma^2}\\
-	&= \big[e^{\sigma^2} - 1\big] \cdot e^{\log(\frac{4}{n^2})}\\
-	&= \big[e^{\sigma^2} - 1\big] \cdot \frac{4}{n^2}\\
-	3n &= 4 \cdot e^{\sigma^2} - 4\\
-	\frac{3n + 4}{4} &= e^{\sigma^2}\\
-	\sigma^2 = \log \frac{3n + 4}{4}
-\end{align*}
-
-Finally this substituted back gives the mean
-
-\begin{align*}
-	\log(\frac{4}{n^2}) &= 2\mu + \log \frac{3n + 4}{4}\\
-	2\mu &= \log(\frac{4}{n^2}) - \log \frac{3n + 4}{4}\\
-	\mu &= \frac{1}{2} \cdot \log \frac{16}{n^2(3n + 4)}
-\end{align*}
-
-Giving the parameters for the log normal distribution below
-\begin{align}
-	\sigma^2 &= \log \frac{3n + 4}{4}\\
-	\mu &= \frac{1}{2} \cdot \log \frac{16}{n^2(3n + 4)}
-\end{align}
 
 
 \paragraph{Weight Initialization for LNNs}
@@ -522,14 +452,21 @@ Through experiments the weights sampled from a Log Normal distribution perform b
 	\label{alg:lnn-initlization}
 \end{figure}
 
-Based on experimental evidence the following Conjecture \ref{conjecture:lnn-rule-extraction} can be made. Ideally a formal argument would be given, however this is out of scope for this project.
+\section{Conjectures Concerning Performance of LNNs}
+
+Based on experimental evidence the following Conjectures \ref{conjecture:lnn-stuck} \& \ref{conjecture:lnn-rule-extraction} can be made. Ideally formal arguments would be given, however this is out of scope for this project.
 
 \begin{conjecture}
-	If the problem is boolean and the loss is "small enough" then similarly to LNFNs rules can be extracted directly from the weights.
+	If the given network structure is unable to learn the formula it gets stuck.
+	\label{conjecture:lnn-stuck}
+\end{conjecture}
+
+\begin{conjecture}
+	If the loss is small enough then similarly to LNFNs rules can be extracted directly from the weights.
 	\label{conjecture:lnn-rule-extraction}
 \end{conjecture}
 
-The LNN structure is significant when it comes to the learnability of problems so conjectures \ref{conjecture:lnn-rule-extraction} allow for determining whether a network configuration is correct.
+The LNN structure is significant when it comes to the learnability of problems so conjectures \ref{conjecture:lnn-stuck} \& \ref{conjecture:lnn-rule-extraction} allow for determining whether a network configuration is correct.
 
 
 \chapter{Evaluation Of Logical Neural Networks}
@@ -557,11 +494,6 @@ Changing the configuration so that the AND activation is before the OR obtains a
 It can be concluded that the conjecture saying that an LNN with an AND-OR configuration does not learn no longer holds.
 
 \subsection{Evaluation of LNN Rules}
-
-\comment{
-Finish this subsection
-}
-
 The rule extraction algorithm given in Figure \ref{alg:rule-extraction} is an electic algorithm as this category describes algorithms that examine the network at the unit level but extract rules which represent the network as a whole. The algorithm is certainly not portable as it can only be applied to networks with the LNN architecture.\\
 
 Finally what is the quality of the rules extracted from LNN, this is measured by the Accuracy, Fedelity, Consistency and Comprehensibility \cite{andrews1995survey}.
@@ -573,10 +505,6 @@ Finally what is the quality of the rules extracted from LNN, this is measured by
 \end{enumerate}
 
 \section{Application to MNIST}
-\comment{
-Finish Experements In This Section
-}
-
 To determine if this new LNN structure can out perform the old it will be tested on the MNIST problem. The old LNN structure was able to achieve a classification accuracy of 8.67\% on a test set.\\
 
 There are 784 features per example and each will lie in the range $[0, 1]$. In Section \ref{sec:developing-applications} it was discussed why these networks should not be applied to continuous domains, however in this case the inputs still make sense, each feature can be interpreted as the probability that the corresponding pixel in the image is white.\\
@@ -584,11 +512,13 @@ There are 784 features per example and each will lie in the range $[0, 1]$. In S
 Given that the features are continuous the rules no longer make sense but it is still possible to visualise the weight to get an understanding of what the network has learnt. A number of different architectures are trained and inspected, below is a list of each along with a justification as to why it could be effective.
 
 \begin{enumerate}
+	\item \textbf{OR-AND Original LNN}, this is because the Noisy parametrisation has been changed and while it should be equivalent it is possible that it is not.
+	
 	\item \textbf{OR-AND Modified LNN}, to compare the modified structure with the old.
 	
-	\item \textbf{AND-OR Modified LNN}, 
+	\item \textbf{AND-AND Modified LNN}, a logical way to consider a digit is as an AND of features where each feature is an AND of pixels, however a problem with this approach could be that the border of each feature is fuzzy due to the different positioning and shape of the digits.
 	
-	\item \textbf{MULTI LAYER ONE}
+	\item \textbf{AND-OR-AND Modified LNN},
 \end{enumerate}
 
 \subsection{OR-AND Modified LNN}
@@ -708,23 +638,72 @@ Figures \ref{fig:lnn-and-or-digit-2} \& \ref{fig:lnn-and-or-digit-3} \& \ref{fig
 	\end{minipage}
 	\hfill
 \end{figure}
-\subsection{OR-AND-AND Modified LNN}
+\subsection{AND-AND Modified LNN}
+Training a Modified LNN with 30 hidden neurons using an AND-AND structure was able to achieve a 3.7\% error rate on the training set and 4.1\% error rate on the test set. Similarly to the OR-AND model the hidden features are sparse but not necessary interpretable, as shown by Figures \ref{fig:lnn-and-and-neuron-0} \& \ref{fig:lnn-and-and-neuron-9} \& \ref{fig:lnn-and-and-neuron-13} \& \ref{fig:lnn-and-and-neuron-28}
 
-So far only two layer architectures have been explored but the flexibility LNNs allow for deeper networks. This OR-AND-AND architecture consists of 60 then 30 units in the first and second hidden layers retrospectively.
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{LNN-AND-AND/Neuron-0.png}
+		\caption{}
+		\label{fig:lnn-and-and-neuron-0}
+	\end{minipage}
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{LNN-AND-AND/Neuron-9.png}
+		\caption{}
+		\label{fig:lnn-and-and-neuron-9}
+	\end{minipage}
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{LNN-AND-AND/Neuron-13.png}
+		\caption{}
+		\label{fig:lnn-and-and-neuron-13}
+	\end{minipage}
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{LNN-AND-AND/Neuron-28.png}
+		\caption{}
+		\label{fig:lnn-and-and-neuron-28}
+	\end{minipage}
+	\hfill
+\end{figure}
 
-\comment{Fill this section in with results when complete}
+Figures \ref{fig:lnn-and-and-digit-2} \& \ref{fig:lnn-and-and-digit-3} \& \ref{fig:lnn-and-and-digit-5} \& \ref{fig:lnn-and-and-digit-8} show the image pixels considered for the output neurons that classify 2,3,5,8 retrospectively. While obtaining a comparable performance to the OR-AND structure these weight patterns are much less interpretable, there is no distinctive shape in any which indicate there corresponding number. The only determination which can be made is that these appear to consider the filling of each digit as opposed to the boundary, which intuitively makes sense, the boundary will be inherently noisy (as each digit is drawn slightly differently) and AND of pixels will be heavily penalised for anything missing. This is evidence that while using ANDs in a first hidden layer might provide good performance it does not lead to interpretable results.
 
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{LNN-AND-AND/Digit-2.png}
+		\caption{}
+		\label{fig:lnn-and-and-digit-2}
+	\end{minipage}
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{LNN-AND-AND/Digit-3.png}
+		\caption{}
+		\label{fig:lnn-and-and-digit-3}
+	\end{minipage}
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{LNN-AND-AND/Digit-5.png}
+		\caption{}
+		\label{fig:lnn-and-and-digit-5}
+	\end{minipage}
+	\begin{minipage}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{LNN-AND-AND/Digit-8.png}
+		\caption{}
+		\label{fig:lnn-and-and-digit-8}
+	\end{minipage}
+	\hfill
+\end{figure}
 
 \subsection{Discussion Of Results}
 These results suggest that the network structure is what influences the intepretability of the network. In the case of MNIST the OR-AND model is intepretable where AND-OR and AND-AND are not.
 
 
 \chapter{Application to Auto Encoders}
-Auto encoders \cite{baldi2012complex} are a network architecture which aim to take the input to some reduced feature space and then from this feature space back to the original input with the smallest error. The case where there is one linear layer doing the encoding and decoding is called \textbf{Linear Autoencoder}, this architecture corresponds to performing Principle Component Analysis (PCA) on the data.\\
+Auto encoders \cite{baldi2012complex} are a network architecture which aim to take the input to some reduced feature space and then from this feature space back to the original input with the smallest error. The case where here is one linear layer doing the encoding and decoding is called \textbf{Linear Autoencoder}, this architecture corresponds to performing Principle Component Analysis (PCA) on the data.\\
 
-For some data sets, such as MNIST, PCA is not an effective way to reduce the dimensions of the data \textbf{NEED CITATION}. For this reason Logical Autoencoders are proposed (Definition \ref{def:logical-autoencoder}) as an alternative means to lower the dimentions of a dataset.
+For some data sets, such as MNIST, PCA is not an effective way to reduce the dimensions of the data \textbf{NEED CITATION}. For this reason Logical Autoencoders are proposed as an alternative 
 
-\begin{definition} \label{def:logical-autoencoder}
+\begin{definition} \label{f}
 	A \textbf{Logical Autoencoder} is an Autoencoder where the encoder and decoder are LNNs
 \end{definition}
 
+Insted of using simple linear layers 

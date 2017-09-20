@@ -24,7 +24,7 @@
 \usepackage[linesnumbered,ruled]{algorithm2e}
 \usepackage[toc,page]{appendix}
 \usepackage{listings}
-\usepackage{color}
+\usepackage[usenames, dvipsnames]{color}
 
 
 \theoremstyle{definition}
@@ -40,6 +40,10 @@
 	numbers=left
 }
 \newcommand{\code}[1]{\texttt{#1}}
+
+\newcommand{\comment}[1]{
+	{\color{red} \fbox{\parbox{\textwidth}{{\color{ForestGreen} #1}}}}
+}
 
 %
 %  We don't want figures to float so we define
@@ -116,6 +120,7 @@ Artificial Neural Networks (ANN's) are powerful because of their ability to appr
 \include{introduction}
 \include{backgroundsurvey}
 \include{workdone}
+\include{conclusion}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,34 +1,36 @@
 \chapter{Introduction}\label{C:intro}
-Artificial Neural Networks (ANN's) are commonly used to model supervised learning problems. NN's often achieve higher accuracy than other methods because they are able to approximate any continuous function. A well trained NN can generalize well but it is very difficult to interpret how the network is operating, this is called the black-box problem. \\
 
-The growing number of situations in which ANN systems are used has lead to an increasing interest in systems which are not only accurate but also provide explanations of there answers \cite{doshi2017towards}. This increasing interest is driven by the verity of applications of ANNs where incorrect or biases answers can have significant effects on users.\\
+Artificial Neural Networks (ANN's) are commonly used to model supervised learning problems. A well trained ANN can generalize well but it is very difficult to interpret how the network is operating. This issue with intepretability makes ANNs black-boxes. This report aims to aliveate this problem by formalizing and developing a novel neural network archetchure.
 
-Safety and ethics are two concrete examples of such situations where explanations of reasoning would provide a method to ensure an ANN can be implement with mitigated risk \cite{doshi2017towards}. In the context of Safety an ML system often can not be tested against all possible situations as it is computationally infeasible, the reasoning the ML system uses could be examined for flaws that could be result in a failure \textbf{Example Here}. On the other hand it is important to consider the implications of an ANN being biased towards a protected class of people, \textbf{Example Here}\\
+\section{Motivation}
+The number of situations in which ANN systems are used is growing. This has lead to an increasing interest in systems which are not only accurate but also provide a means to understand the logic use to derive their answers \cite{doshi2017towards}. Interest in interpretable systems is driven by the variety of situations that utilize ANNs where incorrect or biased answers can have significant effects on users.\\
 
-Another pressure causing the development of this field is changing laws, in 2018 a European Union (EU) regulation will come into effect requiring algorithms which  profile users based on their personal information have the right to "Meaningful information about the logic involved" \cite{goodman2016european} \textbf{Cite LAW HERE}.\\
+Ensuring a system is Safe and Ethical are two things which, depending on the application, are important to verify. If an ANN was able to provide its reasoning for giving a specific output then defending the actions of the system would be more feasible \cite{doshi2017towards}.\\
 
-Growing applications and changing laws are applying pressure to the field of Machine Learning to develop more intepretable systems. This report develops a new network archetchure which yields an intepretable trained model. This model is derived by first considering the descrete space of boolean algeabra and defining a class of networks to learn Conjunctive and Disjunctive Normal Forms of boolean formula,
+In the context of safety a Machine Learning (ML) system often can not be tested against all possible situations as it is computationally infeasible, consequently, if accessible , the logic contained inside the mode could be used to verify the safety of the system.\\
 
-ANNs are black-boxes \textbf{REFERNECE}
+It is also important to consider the implications of an ANN being biased towards a protected class of people. A paper published in 2017 demonstrated that standard machine learning algorithms trained over text data learn stereotyped biases which occur in humans \cite{caliskan2017semantics}. An ANN trained with the intent to be fair could result in a system which discriminates unfairly because of biases in the data used to train it.\\
 
+Another pressure causing the development of this field is changing laws. In 2018 the European Union (EU) General Data Protection Regulation (GDPR or "right to explanation") will come into affect requiring algorithms which profile users based on their personal information be able to provide "Meaningful information about the logic involved"  \cite{eu-dgpr}. This law would effect a number of situations where ML systems are used, for example banks, which use ML systems to make loan application decisions \cite{goodman2016european}.\\
 
+Consider the following example of uncertainty bias \cite{goodman2016european}. The application is designing an ANN to make loan decisions. The decision to grant a loan is made by computing a 95\% confidence interval of the probability of repayment, then checking that the lower end of the interval is above 90\%. A number of data sets are generated for this algorithm to be trained on. The datasets are split into white and non-white individuals each with the same average probability of repayment. As the ratio of white to non-white individuals increases the algorithm is less likely to grant loans to non-white individuals despite the repayment rate being equal. This artificial situation demonstrates the effect biased data could have on an ANN.\\
 
+The argument thus far has established that being able to defend or verify the decisions made by ANNs is just an interesting academic question. It would allow for the possibility to check systems for possible safety risks or an unfair bias against a certain class of people \cite{goodman2016european}. On the other hand the GDPR could make it difficult for companies to use ML systems as breaches of the regulation could incur large fines.
 
+\section{State Of Field}
+Growing applications and changing laws are applying pressure to the field of Machine Learning to develop more interpretable systems. There exists a rich literature of methods to extract rules from ANNs, most techniques are flexible and do not place many restrictions on the network architecture \cite{andrews1995survey} \cite{duch2004computational} \cite{tsukimoto2000extracting}. The rule extraction algorithms become more complicated and computationally inefficient as the restrictions placed on architecture decrease.\\
 
+\section{Solution}
+To address the problems laid out thus far we improved upon a probability based network architecture called Logical Neural Networks which yield a simpler trained model \cite{LearningLogicalActivations} and in cases where the inputs and outputs are boolean values the network can be converted to a set of rules with little effort.\\
 
+This report presents a formal grounding for Logical Neural Networks through the following stages
+\begin{enumerate}
+	\item Motivate the concept of noisy neurons and derive them.
+	\item Motivate and derive at a very specific case of Logical Neural Networks called Logical Normal Form Networks.
+	\item Discuss the performance, generalization and interpretation capabilities of Logical Normal Form Networks.
+	\item Generalise Logical Normal Form Networks to Logical Neural Networks.
+	\item Derive modifications to the Logical Neural Network architecture to improve accuracy
+	\item Demonstrate the possible use cases of Logical Neural Networks.
+\end{enumerate}
 
-
-Consider some function $f$, then the operation of restricting a neuron to $f$ is given by only allowing a function given by $f$ operating on the set of weighted inputs (each input multiplied by a corresponding weight) to be learnt. By restricting the function set that each neuron can learn is it possible to create a more interpretable network? This report develops a class of networks where the function space of each neuron is restricted to be a predefined operation which can be interpreted as Boolean expression i.e. an AND or OR of its inputs.\\
-
-Boolean functions are by nature discrete, as such do not have a continuous differential, making them unsuitable for training with an algorithm such as Backpropagation. This report makes use of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActivations}, which are generalized continuous parametrisations of OR and AND gates.\\
-
-ANN's consisting of Noisy neurons are called Logical Neural Networks (LNN's). LNN's have been used to classify the MINST dataset with promising results, while not being able to achieve a state of the art accuracy they have been shown to yield simpler (sparser) and more interpretable weight vectors \cite{LearningLogicalActivations}. It was also shown that using Noisy neurons in combination with standard sigmoid units results in poor performing networks without the benefit of being more interpretable \cite{LearningLogicalActivations}, for this reason networks of this kind are not considered.\\
-
-This report takes a different approach to using these interpretable Noisy neurons, instead they are placed in specific configurations which allow learning Conjunctive or Disjunctive Normal Form expressions, these are called Logical Normal Form Networks (LNFN's) and are a subset of LNN's.\\
-
-This report demonstrates by experimentation that when provided a complete truth table for a boolean expression, the performance of LNFN's has no statistically significant differences to that of a Multi-Layer Perceptron (MLPN) Network. The LNFN's are also able to generalize, obtaining statistically equivalent performance to a MLPN when given incomplete truth tables.\\
-
-By inspecting the weights of each Noisy neuron it is possible to determine a relationship between the inputs and output. Rule extraction algorithms exist as a method to extract knowledge from NN's \cite{andrews1995survey}, if LNFNs are more interpretable then are rules able to be extracted from them? When first considering problems with Boolean inputs and outputs, if a low enough error is achieved when training an LNFN over a complete truth table, it is possible to extract boolean rules from each neuron, consequently it is possible to obtain a boolean expression which represents the ANN and original truth table. Training over entire a complete data set is an unlikely scenario, this report investigates what effect training with incomplete truth tables has on any extracted formula. Only being able to apply LNFNs to Boolean problems does not make them very useful, this report investigates ways these networks can be applied to problems with inputs in a continuous domain.\\
-
-The restriction placed on the function space of each neuron, while improving the interpretability, intuitively will also hinder their ability to be universal approximators. Along with the investigation of LNFNs and their potential, the limitations are also explored.
-
+ The report proposes a modified structure which is able to obtain better performance that what was previously achieved.
