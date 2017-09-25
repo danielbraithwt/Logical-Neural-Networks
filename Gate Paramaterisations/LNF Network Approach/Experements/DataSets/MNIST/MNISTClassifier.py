@@ -24,12 +24,12 @@ num_inputs = len(X_train[0])
 num_outputs = len(Y_train[0])
 
 ## CONFIGURATION ##
-hidden_layers = [30]
-activations = [MultiOutLNN.noisy_and_activation, MultiOutLNN.noisy_or_activation]
+hidden_layers = []
+activations = [MultiOutLNN.noisy_and_activation]
 iterations = len(X_train) * 30
 ## ## ## ## ## ## ##
 
-res = MultiOutLNN.train_lnn(X_train, Y_train, iterations, num_inputs, [30], num_outputs, ["OR", "AND"], activations, False)
+res = MultiOutLNN.train_lnn(X_train, Y_train, iterations, num_inputs, hidden_layers, num_outputs, ["AND", "OR"], activations, True)
 
 #rule = MultiOutLNN.ExtractRules(len(X_train[0]), res, ["OR", "AND"])
 #print(len(rule))
@@ -41,12 +41,12 @@ res = MultiOutLNN.train_lnn(X_train, Y_train, iterations, num_inputs, [30], num_
 
 print("Training")
 print("Total Number Of Samples: ", len(X_train))
-print("Network Wrong: ", MultiOutLNN.run_lnn(X_train, Y_train, res, num_inputs, [30], num_outputs, activations, False))
+print("Network Wrong: ", MultiOutLNN.run_lnn(X_train, Y_train, res, num_inputs, [30], num_outputs, activations, True))
 #print("Rule Set Wrong: ", MultiOutLNN.test(rule, X_train, Y_train))
 
 print()
 
 print("Testing")
 print("Total Number Of Samples: ", len(X_test))
-print(MultiOutLNN.run_lnn(X_test, Y_test, res, num_inputs, [30], num_outputs, activations, False))
+print(MultiOutLNN.run_lnn(X_test, Y_test, res, num_inputs, [30], num_outputs, activations, True))
 #print(MultiOutLNN.test(rule, X_test, Y_test))

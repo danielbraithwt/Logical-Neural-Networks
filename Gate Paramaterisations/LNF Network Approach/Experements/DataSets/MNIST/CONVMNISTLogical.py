@@ -35,10 +35,33 @@ def inv_transform(weights):
   return -np.log(np.exp(weights)-1)
 
 def gen_weights(shape):
-  initial = np.abs(np.random.normal(np.log(4)/shape[1], 1/shape[1], shape))
-  w = inv_transform(initial)
+    var = np.sqrt(np.log(4 * (4 + 3*shape[1])))
+    mean = -(1.0/2.0) * np.log(shape[1]**2 * (4 + 3*shape[1]))
 
-  return w
+    #w = np.random.exponential(2.31, shape) * (1.0/shape[1])
+    
+    #print(transform(w))
+    
+    initial = np.random.lognormal(mean, var, shape)
+    #initial = np.random.uniform(-0.54132, 7, shape)#
+    #initial = stats.betaprime.rvs((14.0/(3.0 * shape[1])), (10.0/3.0), size=shape) + 1e-15
+    #w = transform(initial) * 1.0/shape[1]
+    #w = inv_transform(w)
+    #w = inv_transform(initial)
+    #print(transform(w))
+    #w = inv_transform(np.abs(np.random.normal(0, 1.0/shape[1], shape)))
+
+    #beta = (4.0 + 8.0 * shape[1])/(3.0 * shape[1])
+    #alpha = (10.0 * shape[1] + 8.0)/(3.0 * shape[1] * shape[1])
+
+    #initial = stats.betaprime.rvs(alpha, beta, size=shape) + 1e-20
+    #initial = np.random.poisson(2.0/shape[1], shape) + 1e-15
+    print("I")
+    w = inv_transform(initial)
+    print("T")
+    print(transform(w))
+
+    return w
 
 def construct_network(num_inputs, hidden_layers, num_outputs):
   network = []
@@ -87,7 +110,7 @@ def cnn_model_fn(features, labels, mode):
   # Output Tensor Shape: [batch_size, 28, 28, 32]
   conv1 = tf.layers.conv2d(
       inputs=input_layer,
-      filters=32,
+      filters=8,
       kernel_size=[5, 5],
       padding="same",
       activation=tf.nn.relu)
@@ -142,21 +165,31 @@ def cnn_model_fn(features, labels, mode):
   # Input Tensor Shape: [batch_size, 1024]
   # Output Tensor Shape: [batch_size, 10]
   logits = prev_out
+  preds = logits * (1/tf.reduce_sum(logits))
+  
 
   predictions = {
       # Generate predictions (for PREDICT and EVAL mode)
       "classes": tf.argmax(input=logits, axis=1),
       # Add `softmax_tensor` to the graph. It is used for PREDICT and by the
       # `logging_hook`.
-      "probabilities": tf.nn.softmax(logits, name="softmax_tensor")
+      "probabilities": preds
   }
   if mode == tf.estimator.ModeKeys.PREDICT:
     return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
   # Calculate Loss (for both TRAIN and EVAL modes)
   onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
-  loss = tf.losses.softmax_cross_entropy(
-      onehot_labels=onehot_labels, logits=logits)
+  y = onehot_labels
+  #loss = tf.losses.softmax_cross_entropy(
+  #    onehot_labels=onehot_labels, logits=logits)
+
+  y_hat_prime_0 = tf.clip_by_value(preds, 1e-20, 1)
+  y_hat_prime_1 = tf.clip_by_value(1 - preds, 1e-20, 1)
+  errors = -(y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1))#
+  error = tf.reduce_sum(errors)
+
+  loss = error
 
   # Configure the Training Op (for TRAIN mode)
   if mode == tf.estimator.ModeKeys.TRAIN:
@@ -190,9 +223,9 @@ def main(unused_argv):
 
   # Set up logging for predictions
   # Log the values in the "Softmax" tensor with label "probabilities"
-  tensors_to_log = {"probabilities": "softmax_tensor"}
-  logging_hook = tf.train.LoggingTensorHook(
-      tensors=tensors_to_log, every_n_iter=50)
+  #tensors_to_log = {"probabilities": preds}
+  #logging_hook = tf.train.LoggingTensorHook(
+  #    tensors=tensors_to_log, every_n_iter=50)
 
   # Train the model
   train_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -203,8 +236,7 @@ def main(unused_argv):
       shuffle=False)
   mnist_classifier.train(
       input_fn=train_input_fn,
-      steps=len(train_data) * 30,
-      hooks=[logging_hook])
+      steps=len(train_data) * 30,)
 
   # Evaluate the model and print results
   eval_input_fn = tf.estimator.inputs.numpy_input_fn(
