@@ -1,11 +1,12 @@
 \chapter{Background}\label{C:backgroundsurvey}
-\section{Rule Extraction}
+\section{Related Work}
+\subsection{Rule Extraction}
 
-A survey in 1995 focuses on rule extraction algorithms \cite{andrews1995survey}, identifying the reasons for needing these algorithms along with introducing ways to categorise and compare them. Motivation behind scientific study is always crucial so why is understanding the knowledge contained inside Artificial Neural Networks's (ANN's) important? The key points identified are that the ANN might of discovered some rule or patten in the data which is currently not known, being able to extract these rules would give humans a greater understanding of the problem. Another, perhaps more significant reason is the application of ANN's to systems which can effect the safety of human lives, i.e. Aeroplanes, Cars. If using an ANN in the context of a system involving human safety it is important to be certain of the knowledge inside the ANN, to ensure that the ANN wont take any dangerous actions.\\
+A survey in 1995 focuses on rule extraction algorithms \cite{andrews1995survey}, identifying the reasons for needing these algorithms along with introducing ways to categorise and compare them.\\
 
 There are three categories that rule extraction algorithms fall into \cite{andrews1995survey}. An algorithm in the \textbf{decompositional} category focuses on extracting rules from each hidden/output unit. If an algorithm is in the \textbf{pedagogical} category then rule extraction is thought of as a learning process, the ANN is treated as a black box and the algorithm learns a relationship between the input and output vectors. The third category, \textbf{electic}, is a combination of decompositional and pedagogical. Electic accounts for algorithms which inspect the hidden/output neurons individually but extracts rules which represent the ANN globally \cite{tickle1998truth}.\\
 
-To further divide the categories two more classifications are introduced. One measures the portability of rule extraction techniques, i.e. how easily can they be applied to different types of ANN's. The second is criteria to assess the quality of the extracted rules, these are accuracy, fidelity, consistency, comprehensibility \cite{andrews1995survey}.
+To further divide the categories two more distinctions are introduced. One measures the portability of rule extraction techniques, i.e. how easily can they be applied to different types of ANN's. The second is criteria to assess the quality of the extracted rules, these are accuracy, fidelity, consistency, comprehensibility \cite{andrews1995survey}.
 
 \begin{enumerate}
 \item A rule set is \textbf{Accurate} if it can generalize, i.e. classify previously unseen examples.
@@ -53,10 +54,15 @@ function extractRulesMLPN(network)
 
 The algorithm presented in figure \ref{alg:rule-extraction-tsukimoto} is certainly exponential time in terms of $n$, a polynomial time algorithm is also presented but deriving such an algorithm is beyond the scope of this report.\\
 
+These rule extraction algorithms are all post-hoc operations. They do not place many restrictions on the structure of ANN they are applied to, resulting with complicated algorithms. The solution developed in this report builds intepretability into the ANN structure with the goal of simpler and more intuitive algorithms to interpret knowledge.
+
+\subsection{LIME}
+\comment{Talk about LIME algorithm here}
+
 \section{Noisy Neurons} \label{sec:background-noisy-neurons}
-MLPNs are universal function approximators and as such can achieve a high accuracy across a broad range of problems. There are many equivelent weight representations of an MLPN which give the same solutions, this makes interpreting the network difficult \cite{LearningLogicalActivations}. By restricting the possible relationships between a neurons inputs and outputs the problem intepretation becomes easier. The two functions OR and AND make intuative sense which is a good reason to pick them over other possible options.\\
+MLPNs are universal function approximators and as such can achieve a high accuracy across a broad range of problems. There are many equivalent weight representations of an MLPN which give the same solutions, this makes interpreting the network difficult \cite{LearningLogicalActivations}. By restricting the possible relationships between a neurons inputs and outputs the problem interpretation becomes easier. The two functions OR and AND are easy to understand, a good reason to pick them over other functions.\\
  
-In 2016 the concept of Noisy-OR and Noisy-AND neurons where described \cite{LearningLogicalActivations}. Noisy neurons are derived from the Noisy-OR relation\cite{LearningLogicalActivations}, developed by Judea Pearl \cite{russell1995modern}, a concept in Bayesian Networks. A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph.
+In 2016 the concept of Noisy-OR and Noisy-AND neurons where developed \cite{LearningLogicalActivations}. Noisy neurons are derived from the Noisy-OR relation\cite{LearningLogicalActivations}, developed by Judea Pearl \cite{russell1995modern}, a concept in Bayesian Networks. A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph.
 
 \begin{figure}[H]
 	\centering

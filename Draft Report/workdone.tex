@@ -1,5 +1,5 @@
 \chapter{Foundation of Logical Normal Form Networks}\label{C:foundation-of-lnfns}
-Consider the set of binary classification problems which have boolean inputs. Consider some problem $p$ in this set, with $X_p$ and $Y_p$ being the examples and targets retrospectively. Let $B_p$ be the set of all boolean functions which take an $x \in X_p$ and take it to either a 1 or 0. Then finding the optimal boolean function to solve the problem $p$ corresponds to expression \ref{equ:arg-max-boolean-function}.
+Consider the set of binary classification problems which have boolean inputs. Consider some problem $p$ in this set, with $X_p$ and $Y_p$ being the examples and targets retrospectively. Let $B_p$ be the set of all boolean functions which take an $x \in X_p$ and take it to either a 1 or 0. Then finding the optimal boolean function to solve the problem $p$ corresponds to expression \ref{equ:arg-max-boolean-function} which is simply the function $f$ with the smallest cross entropy loss.
 
 \begin{equation}
 \label{equ:arg-max-boolean-function}
@@ -169,7 +169,7 @@ Figure  \ref{fig:peformance-comparason-all} shows that neither of the perceptron
 What causes some expressions to be harder to learn for one type of LNFN compared to another? 
 
 \section{LNF Network Generalization} \label{sec:lnfn-generalization}
-These networks are able to perform as well as standard perceptron networks but so far they have been getting the complete set of data, in practice this will almost never be the case. Standard ANN's are widely used because of their ability to generalize, for LNFN's to be useful they must also be able to generalize.
+These networks are able to perform as well as standard perceptron networks but so far they have been trained on a complete data set, in practice this will almost never be the case. Standard ANN's are widely used because of their ability to generalize, for LNFN's to be useful they must also be able to generalize.
 
 \comment{
 	Re Run Performance Comparison Experiment
@@ -185,7 +185,7 @@ These networks are able to perform as well as standard perceptron networks but s
 	\hfill
 \end{figure}
 
-Figure \ref{fig:generalization-peformance-6} shows a comparison between the generalization ability of CNF, DNF and Perceptron networks. The graph shows the performance over all training data when successively removing elements from the training set. It demonstrates that the CNF and DNF networks generalize as well as the perceptron networks when the boolean formula has 6 inputs, this trend continues as n increases up to 9.
+Figure \ref{fig:generalization-peformance-6} shows a comparison between the generalization ability of CNF, DNF and Perceptron networks. The graph shows the performance over all training data when successively removing elements from the training set. It demonstrates that the CNF and DNF networks generalize as well as the perceptron networks when trained over boolean problems with 6 inputs, this trend continues as n increases up to 9. Training LNFNs on boolean problems with more than 9 inputs is to expensive.
 
 \section{LNF Network Rule Extraction} \label{sec:lnfn-rule-extraction}
 Given the logical nature of LNFNs, is it possible to extract boolean rules. Consider the weights for a logical neuron $W = \{w_1, ..., w_n\}$, These can be converted to $\epsilon_i = \sigma(w_i)$ where $\epsilon_i \in [0, 1]$ and represents the relevance input $x_i$ has on the neurons output.\\
@@ -320,22 +320,26 @@ The DNFN might be more applicable as the rules will be more insightful, given it
 	\item \text{Class 3:} $(\lnot a \land \lnot b \land c \land \lnot d) \lor (\lnot a \land d \land e) \lor \lnot f$
 \end{itemize}
 
-These DNF formula do not correspond to the CNF give above but this is to be expected, despite the fact that collectivity all the problem instances span the space of features once they have been converted to the boolean feature form this fact is no longer true.    there is a way to combine the knowledge from both the CNF and DNF formula to create resultant formula which perform better.\\
+\comment{Expand on paragraph below?}
 
-One possible issue that could arrive here is that the CNFN is now attempting to learn three CNF expressions with the same number of hidden neurons. The fact that meaningful rules where able to be extracted in this case could of been a coincidence, intuitively if we are learning a problem with $k$ classes then we could need $k \cdot 2^n$ hidden neurons which is becoming impractical.
+These DNF formula do not correspond to the CNF give above but this is to be expected. Despite the fact that collectivity all the problem instances span the space of features once they have been converted to the boolean feature form this fact is no longer true. This is the result of converting a categorical feature to a one-hot encoded version. By converting this categorical feature, insted of one dimension there is now three\\
+
+One possible issue that could arrive here is that the LNFN is now attempting to learn three CNF expressions with the same number of hidden neurons. The fact that meaningful rules where able to be extracted in this case could of been a coincidence, intuitively if we are learning a problem with $k$ classes then we could need $k \cdot 2^n$ hidden neurons.
 
 \subsection{Features with Continuous Domains}
 \comment{
-Might be good to talk about context in this section, i.e. the inputs dont make alot of sense if they are not probabilities
+Might be good to talk about context in this section, i.e. the inputs do not make a lot of sense if they are not probabilities
 }
 The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? Secondly what can be achieved by discretizing the continuous inputs and then using an LNFN to learn this new boolean problem. A simple benchmark to use is the Iris problem \cite{Lichman:2013}
 
 \subsubsection{LNFNs and Continuous Features} \label{subsubsec:lnfns-cont-features}
-If the features are continuous it no longer makes sense to extract rules but it could still be possible to see what inputs are considered in making a decision about the class. When training an LNFN on the Iris problem (over all problem instances) the network converges to a solution with a loss of $96.932$, poor performance when compared to a perceptron network that can achieve an accuracy of $0.0$. \\
+If the features are continuous it no longer makes sense to extract rules but it could still be possible to see what inputs are considered in making a decision about the class. Any feature space can be converted to the $[0,1]$ domain by normalization. When training an LNFN on the Iris problem (over all problem instances) the network converges to a solution with a loss of $96.932$, poor performance when compared to a perceptron network that can achieve an accuracy of $0.0$. \\
 
 Inspecting the class prediction of each reveals that for a problem instance that has a true class of Iris-virginica or Iris-versicolor then LNFN sometimes predicts multiple classes, this leads to the belief that these networks have issues with learning problems that are not linearly separable as the two classes which an LNFN has trouble differentiating between are not linearly separable.\\
 
-The LNFN is able to learn XOR so not all problems which are not linearly separable are out of reach of LNFNs. Section \ref{subsubsec:lnfns-desc-cont-features} investigates whether it is possible to descretize the variables in such a way that makes this problem learnable by LNFNs.
+The LNFN is able to learn XOR so not all problems which are not linearly separable are out of reach of LNFNs. Section \ref{subsubsec:lnfns-desc-cont-features} investigates whether it is possible to descretize the variables in such a way that makes this problem learnable by LNFNs.\\
+
+It is important to note that not only did this result in poor performance but normalization is a crude way to apply this logical model to a situation where it does not make sense to apply it. The inputs are interpret as probabilities. Normalizing the values in the Iris data set gives values in the 0 to 1 range but you cant think of them as probabilities.
 
 
 \subsubsection{LNFNs and Discretized Continuous Features} \label{subsubsec:lnfns-desc-cont-features}
@@ -348,7 +352,7 @@ The ideas explored in Sections \ref{subsubsec:lnfns-cont-features} \& \ref{subsu
 
 Another thing to consider is that it becomes difficult to justify what the input features mean in the context of Noisy gates. In terms of the iris problem each feature represents a length, sure its possible to normalize the features to $[0,1]$ and train an LNFN anyway but essentially the lengths are being forced to be some sort of truth value.
 
-\chapter{Logical Neural Networks}
+\chapter{Logical Neural Networks} \label{C:lnn}
 There are two key issues with LNFNs. Firstly the number of hidden units becomes unfeasable as the number of inputs increases. The volume of hidden neurons allows for the possibility to memorise the input data.\\
 
 Using what has been learnt about LNFNs the class of Logical Neural Networks (LNNs) can be defined.
@@ -357,7 +361,9 @@ Using what has been learnt about LNFNs the class of Logical Neural Networks (LNN
 	A \text{Logical Neural Network} is an ANN where each neuron has a noisy activation.
 \end{definition}
 
-LNNs have a more flexabile structure, allowing for deeper networks and hidden layers with a variable number of hidden neurons. There are two key issues caused by removing the restrictions imposed by the LNFN definition (Definition \ref{def:lnfn}) which must be addressed 
+LNNs have a more flexabile structure, allowing for deeper networks and hidden layers with a variable number of hidden neurons. The downsides to using the current LNN model is that performance is poor. An LNN, consisting of Noisy-OR hidden units and Noisy-AND outputs, was shown to perform worse than an MLPN \cite{LearningLogicalActivations}. 
+
+There are two key issues caused by removing the restrictions imposed by the LNFN definition (Definition \ref{def:lnfn}) which must be addressed 
 
 \begin{enumerate}
 	\item Noisy neurons do not have the capacity to consider the presence of the negation of an input. This was a problem for LNFNs as well, however given that only the negations of atoms need to be considered to learn a CNF or DNF it was easily fixed by presenting the network with each atom and its negation. The problem can not be solved so easily for LNNs. A boolean formula can not always be represented by only AND and OR gate, i.e the set of operations $\{AND, OR\}$ is not functionally complete. 
@@ -369,12 +375,7 @@ Despite the issues outlined above being able to implement LNNs with layers that 
 
 Resolving Issue 1 involves making our operation set functionally complete, this requires the $NOT$ operation. There are two ways to include the $NOT$ operation in the LNNs, one is to simply augment the inputs to each layer appending so it receives the input and its negation, a more complicated but more elegant solution is to derive a parametrisation of Noisy gates which can learn to negate inputs. However both these have no way to enforce mutual exclusivity between an input and its negation.\\
 
-An LNN, consisting of Noisy-OR hidden units and Noisy-AND outputs, with without any modification was shown to achieve a classification accuracy of $8.67$ on the MNIST data set, it was also conjectured that using an LNN with an AND layer followed by OR does not learn well \cite{LearningLogicalActivations}. 
-
-
-Before running any tests on the MNIST dataset LNNs with and without not operations will be compared.
-
-\section{Modified Logical Neural Network Structure} \label{sec:modified-lnn-structure}
+\section{Modified Logical Neural Network} \label{sec:modified-lnn}
 \subsection{Connections Between Layers \& Parameters}
 Figure \ref{fig:modified-lnn-structure} provides a new structure for the connections between the lectures.
 
@@ -394,7 +395,9 @@ Figure \ref{fig:modified-lnn-structure} shows the new LNN structure which includ
 \subsection{Softmax Output Layer}
 The old LNN structure does not include a Softmax layer for the output. On the one hand a traditional Softmax layer would not be effective as the neuron outputs are limited to the range $[0,1]$, so a different method must be employed to ensure the mutual exclusivity of the classes.\\
 
-Consider the following vector of probabilities $P = \{p_1, ..., p_n\}$ where $p_i$ is the probability the given example belongs to class $i$. Then define $p_i^{'} = \frac{p_i}{\sum_j p_j}$, performing this action to generate a vector $P^{'}$ where each of the classes are mutually exclusive.
+Consider the following vector of probabilities $P = \{p_1, ..., p_n\}$ where $p_i$ is the probability the given example belongs to class $i$. Then define $p_i^{'} = \frac{p_i}{\sum_j p_j}$, performing this action to generate a vector $P^{'}$ where each of the classes are mutually exclusive. This operation can be thought of as a "Logical Softmax"
+
+Adding this "Logical Softmax" may guarantee mutual exclusivity of each classes but will it cause the network to be less interpretable. Consider that without with no softmax then the network outputs directly represent the probabilities that the input vector is class $k$ given the parameters. Once the "Logical Softmax" has been introduced then it becomes less clear what the non softmaxed probabilities represent. The softmax introduces a dependency between the output neurons of the network which might cause a decrease in intepretability. This is a question which will be explored during experimentation with the modified LNN architecture.
 
 \comment{
 Might be nice to discuss what the ouput probabilities (before softmax) actually mean
@@ -483,7 +486,7 @@ A LogNormal distribution has two parameters $\mu$ and $\sigma^2$, by the definit
 	\log(\frac{4}{n^2}) &= 2\mu + \sigma^2
 \end{align*}
 
-From here this can be substituted into the other fomula to give
+From here this can be substituted into the other formula to give
 
 \begin{align*}
 	\frac{3}{n} &= \big[e^{\sigma^2} - 1\big] \cdot e^{2\mu + \sigma^2}\\
@@ -532,9 +535,67 @@ Based on experimental evidence the following Conjecture \ref{conjecture:lnn-rule
 The LNN structure is significant when it comes to the learnability of problems so conjectures \ref{conjecture:lnn-rule-extraction} allow for determining whether a network configuration is correct.
 
 
-\chapter{Evaluation Of Logical Neural Networks}
-\section{Application To Tic Tac Toe} \label{sec:lnn-ttt}
+\chapter{Evaluation Of Logical Neural Networks} \label{C:evaluation-lnn}
+\section{Performance of Logical Neural Networks} \label{sec:lnn-eval-peformance}
+There are two hypothesises that will be explored
+
+\begin{enumerate}
+	\item Does the modified LNN structure yield trained models with better performance than a Multilayer Perceptron Network and an LNN without the modified structure? This is without using the Logical Softmax Operation.
+	\item Does the modified LNN structure with a Logical Softmax yield better results than the modified strucure with LSO.
+\end{enumerate}
+
+To evaluate the performance of Logical Neural Networks (LNNs) a number of different configurations will be trained over the MNIST dataset. The following configurations will be tested. Given the problem is MNIST the number of input neurons will be 784 and number of output neurons will be 10. The number of training epchos will be 30.\\
+
+Each experiment running on the new LNN architecture will be performed with a LSM and without
+
+\begin{enumerate}
+	\item \textbf{(OR $\rightarrow$ AND) Old Architecture:} This will consist of 30 hidden OR neurons. \label{lnn-eval-arch-1}
+	\item \textbf{(OR $\rightarrow$ AND) Architecture:} Same as \ref{lnn-eval-arch-1} but with the new LNN architecture \label{lnn-eval-arch-2}
+	\item \textbf{(AND $\rightarrow$ OR) Architecture:} 30 hidden and neurons \label{lnn-eval-arch-3}
+	\item \textbf{(OR $\rightarrow$ AND $\rightarrow$ AND) Architecture: } 60 Or neurons, 30 AND neurons\label{lnn-eval-arch-4}
+	\item \textbf{(OR) Architecture:} \label{lnn-eval-arch-5}
+	\item \textbf{(AND) Architecture:} \label{lnn-eval-arch-6}
+\end{enumerate}
+
+\paragraph{Results}
+Each network is trained 30 to average the results over different initial conditions, significance tests are also conducted by creating a 95\% confidence interval. The error rates displayed in Table \ref{tab:mnist-peformance-results} are on the MNIST testing data.
+
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| c | c | c | c | c |}
+			\hline
+			\textbf{Network Config} & \textbf{Error Rate} & \textbf{Error Rate CI} & \textbf{Error Rate (with LSM)} & \textbf{Error Rate CI (with LSM)}\\
+			\hline
+			\hline
+			\textbf{\ref{lnn-eval-arch-1}} & 0.105 & (0.098, 0.115) & 0.048 & (0.043, 0.052)\\
+			\textbf{\ref{lnn-eval-arch-2}} & 0.088 & (0.079, 0.094) & 0.042 & (0.039, 0.046)\\
+			\textbf{\ref{lnn-eval-arch-3}} & 0.098 & (0.073, 0.141) & ? & ?\\
+			\textbf{\ref{lnn-eval-arch-4}} & 0.053 & (0.046, 0.060) & 0.032 & (0.029, 0.036)\\
+			\textbf{\ref{lnn-eval-arch-5}} & 0.382 & (0.381, 0.384) & 0.334 & (0.331, 0.336)\\
+			\textbf{\ref{lnn-eval-arch-6}} & 0.137 & (0.135, 0.139) & 0.076 & (0.075, 0.079)\\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{Results of experiments}
+	\label{tab:mnist-peformance-results}
+\end{table}
+
+\comment{Prehapse run experiment with sigmoid nets as well}
+By examining the following conclusions can be made
+\begin{enumerate}
+	\item \textit{New LNN Architecture Gives Better Performance Than the Old:} The confidence intervals for test set performance do not overlap for \textbf{\ref{lnn-eval-arch-1}} and \textbf{\ref{lnn-eval-arch-2}} (without LSM)
+	
+	\item \textit{Adding A LSM Improves Performance:} Every LNN using the new architecture gets a statistically significant performance increase when a LSM is added.
+\end{enumerate}
+
+
+\section{Intepretability of Logical Neural Networks}
+There are two instances of Intepretability in LNNs. The first occurs when the problem inputs and outputs are discrete, the other occurs when the problem domain is continuous, 
+
+\subsection{Discrete Case (Rule Extraction)}
 This problem involves classifying tic-tac-toe endgame boards and determining whether 'x' can win \cite{Lichman:2013}. There are 9 categorical attributes, representing each cell of the board, each cell can have 'x', 'o' or 'b' for blank.\\
+
+The purpous of this application is to demonstrate the rule extraction capabilities of LNN's\\
 
 This gives a total of 27 attributes, if using an LNFN then the hidden layer would consist of 134217728 neurons, an intractable number, if the computer did not run out of memory then computing the gradients would be very slow.
 
@@ -548,7 +609,7 @@ This gives a total of 27 attributes, if using an LNFN then the hidden layer woul
 	\hfill
 \end{figure}
 
-There are a total of 958 instances, 70\% of which will be used for training, the rest for testing. Using the new LNN with the structure described in Figure \ref{fig:tic-tac-toe-net} is able to achieve an error rate of $0.1\%$ on the training set and $0.3\%$ on the test set. The rules extracted from the network have an error rate of $1.7\%$ on the training set and $6.3\%$ on the test set.\\
+There are a total of 958 instances, 70\% of which will be used for training, the rest for testing. Using the new LNN with the structure described in Figure \ref{fig:tic-tac-toe-net} (using 30 hidden OR neurons) is able to achieve an error rate of $0.1\%$ on the training set and $0.3\%$ on the test set. The rules extracted from the network have an error rate of $1.7\%$ on the training set and $6.3\%$ on the test set.\\
 
 What about the performance of the same network but swap around the activations? It was conjectured that networks of this form have poor learning \cite{LearningLogicalActivations} but with these new LNNs it might not be true any more.\\
 
@@ -556,7 +617,7 @@ Changing the configuration so that the AND activation is before the OR obtains a
 
 It can be concluded that the conjecture saying that an LNN with an AND-OR configuration does not learn no longer holds.
 
-\subsection{Evaluation of LNN Rules}
+\subsubsection{Evaluation of LNN Rules}
 
 \comment{
 Finish this subsection
@@ -572,159 +633,67 @@ Finally what is the quality of the rules extracted from LNN, this is measured by
 	\item \text{Consistency:} \textbf{TEST THIS}
 \end{enumerate}
 
-\section{Application to MNIST}
+\subsection{Continuous Case}
+\comment{
+Finish Experiments In This Section
+}
+
+In the discrete case the situation is simple, the input to a neuron is either relevelent or not. This scenario allows for easy rule extraction. In the continuous case the situation is more complicated as instead of relevance being a binary decision there are degrees of relevance.\\
+
+What is the ideal case of intepretability. In terms of MNIST, being able to construct an image representing how relevant each input feature is to each of the possible output neurons would allow visual verification that the network has learnt something interesting.\\
+
+Determining the influence that the inputs to a layer have on the outputs of the layer is trivial. The definition of weights from one layer to another directly correspond to how much influence the corresponding input has. Computing the influence that a neuron has across layers is not so simple.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[b]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{NetworkExample.png}
+		\caption{Example Network}
+		\label{fig:network-example}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+Consider the problem of trying to determine how each $x_i$ effects each $o_j$. This is quivelent to trying to find $\epsilon^{'}_i$ in the following equation. Note that exponent on each $\epsilon$ refers to the neuron it belongs to
+
+\begin{align*}
+	(\epsilon^{'}_i)^{x_i} = \prod_{k = 0}^{m} (\epsilon^{o_j}_m)^{\prod_{b = 0}^{n} (\epsilon^{h_k}_b)^{x_b}}
+\end{align*}
+
+This new $\epsilon$ is dependent on all the other $x_i$'s, not just the one of interest. Consequently it is only possible to directly compute the effects of the input features on the first layer of hidden neurons.\\
+
+Without the possibility of computing the output neurons as direct functions of the input features another method to interpret the knowledge inside the LNN is needed. The approach will be to compute all the hidden neurons in the first layer as a function of the inputs, then work backwards recursively to find the most useful first layer hidden nodes.
+
+\subsubsection{Results}
+The models obtained on MNIST will be used here.
+
 \comment{
 Finish Experements In This Section
 }
 
-To determine if this new LNN structure can out perform the old it will be tested on the MNIST problem. The old LNN structure was able to achieve a classification accuracy of 8.67\% on a test set.\\
-
-There are 784 features per example and each will lie in the range $[0, 1]$. In Section \ref{sec:developing-applications} it was discussed why these networks should not be applied to continuous domains, however in this case the inputs still make sense, each feature can be interpreted as the probability that the corresponding pixel in the image is white.\\
-
-Given that the features are continuous the rules no longer make sense but it is still possible to visualise the weight to get an understanding of what the network has learnt. A number of different architectures are trained and inspected, below is a list of each along with a justification as to why it could be effective.
-
-\begin{enumerate}
-	\item \textbf{OR-AND Modified LNN}, to compare the modified structure with the old.
-	
-	\item \textbf{AND-OR Modified LNN}, 
-	
-	\item \textbf{MULTI LAYER ONE}
-\end{enumerate}
-
-\subsection{OR-AND Modified LNN}
-An OR-AND LNN with 30 hidden neurons and the modified structure is able to achieve an 4\% error rate on the training data along with a 4.5\% error rate on the test set, this is a significant improvement on previous results making LNNs a more feasible option.\\
-
-The intepretability of these weights is also something which needs to be assessed. There are two things to consider, first the individual weights but also the combinations of hidden features which make up each digit.\\
-
-Figures \ref{fig:lnn-or-and-neuron-0} \& \ref{fig:lnn-or-and-neuron-9} \& \ref{fig:lnn-or-and-neuron-13} \& \ref{fig:lnn-or-and-neuron-28} show the weights of 4 distinct neurons in the LNN model. Each image, while sparse, is not necessarily any more interpretable, it is not obvious what each represents.
-
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-OR-AND/Neuron-0.png}
-		\caption{}
-		\label{fig:lnn-or-and-neuron-0}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-OR-AND/Neuron-9.png}
-		\caption{}
-		\label{fig:lnn-or-and-neuron-9}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-OR-AND/Neuron-13.png}
-		\caption{}
-		\label{fig:lnn-or-and-neuron-13}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-OR-AND/Neuron-28.png}
-		\caption{}
-		\label{fig:lnn-or-and-neuron-28}
-	\end{minipage}
-	\hfill
-\end{figure}
-
-In terms of the pixels considered in deciding between digits, Figures \ref{fig:lnn-or-and-digit-2} \& \ref{fig:lnn-or-and-digit-3} \& \ref{fig:lnn-or-and-digit-5} \& \ref{fig:lnn-or-and-digit-8} show the pixel weightings with respect to digit 2,3,5,8 retrospectively. The results are promising as there are cerntialy noticeable similarity with the digits they are attempting to represent, inpeticular the outlines of each of the digits are certainly present. These visualisations indicate that this trained network is using the outlines of the numbers to make its determination.
-
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-OR-AND/Digit-2.png}
-		\caption{}
-		\label{fig:lnn-or-and-digit-2}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-OR-AND/Digit-3.png}
-		\caption{}
-		\label{fig:lnn-or-and-digit-3}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-OR-AND/Digit-5.png}
-		\caption{}
-		\label{fig:lnn-or-and-digit-5}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-OR-AND/Digit-8.png}
-		\caption{}
-		\label{fig:lnn-or-and-digit-8}
-	\end{minipage}
-	\hfill
-\end{figure}
-
-The model is certainly interpretable, however only once the features have been combined do they make sense. In an ideal world each of the individual features would correspond to something which represents part of a digit. In an effort to make the hidden features more interpretable another OR-AND model is learnt but with fewer hidden neurons.
-
-\subsection{AND-OR Modified LNN}
-Training a Modified LNN with 30 hidden neurons using an AND-OR structure was able to achieve 9\% accuracy on the training data and 9.12\% on the testing data. This is significantly worse than the other models. Increasing the number of hidden neurons to 90 gives better performance, 4.6\% on the training data and 5.2\% on the test.\\
-
-Like with the AND-AND strucutre the hidden features are very sparse and do not appear to make any intuative sense, as shown by figures \ref{fig:lnn-and-or-neuron-0} \& \ref{fig:lnn-and-or-neuron-9} \& \ref{fig:lnn-and-or-neuron-65} \& \ref{fig:lnn-and-or-neuron-28}
-
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-AND-OR/Neuron-0.png}
-		\caption{}
-		\label{fig:lnn-and-or-neuron-0}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-AND-OR/Neuron-9.png}
-		\caption{}
-		\label{fig:lnn-and-or-neuron-9}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-AND-OR/Neuron-65.png}
-		\caption{}
-		\label{fig:lnn-and-or-neuron-65}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-AND-OR/Neuron-28.png}
-		\caption{}
-		\label{fig:lnn-and-or-neuron-28}
-	\end{minipage}
-	\hfill
-\end{figure}
-
-Figures \ref{fig:lnn-and-or-digit-2} \& \ref{fig:lnn-and-or-digit-3} \& \ref{fig:lnn-and-or-digit-5} \& \ref{fig:lnn-and-or-digit-8} show the output neurons corosponding to 2,3,5,8 retrospectively, the results from this model are less intepretable than the OR-AND one.
-
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-AND-OR/Digit-2.png}
-		\caption{}
-		\label{fig:lnn-and-or-digit-2}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-AND-OR/Digit-3.png}
-		\caption{}
-		\label{fig:lnn-and-or-digit-3}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-AND-OR/Digit-5.png}
-		\caption{}
-		\label{fig:lnn-and-or-digit-5}
-	\end{minipage}
-	\begin{minipage}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{LNN-AND-OR/Digit-8.png}
-		\caption{}
-		\label{fig:lnn-and-or-digit-8}
-	\end{minipage}
-	\hfill
-\end{figure}
-\subsection{OR-AND-AND Modified LNN}
-
-So far only two layer architectures have been explored but the flexibility LNNs allow for deeper networks. This OR-AND-AND architecture consists of 60 then 30 units in the first and second hidden layers retrospectively.
-
-\comment{Fill this section in with results when complete}
+\subsubsection{Discussion Of Results}
+\comment{Once Experiments are complete fill this in}
 
 
-\subsection{Discussion Of Results}
-These results suggest that the network structure is what influences the intepretability of the network. In the case of MNIST the OR-AND model is intepretable where AND-OR and AND-AND are not.
-
-
-\chapter{Application to Auto Encoders}
+\chapter{Application to Auto Encoders} \label{C:lnn-application}
 Auto encoders \cite{baldi2012complex} are a network architecture which aim to take the input to some reduced feature space and then from this feature space back to the original input with the smallest error. The case where there is one linear layer doing the encoding and decoding is called \textbf{Linear Autoencoder}, this architecture corresponds to performing Principle Component Analysis (PCA) on the data.\\
 
-For some data sets, such as MNIST, PCA is not an effective way to reduce the dimensions of the data \textbf{NEED CITATION}. For this reason Logical Autoencoders are proposed (Definition \ref{def:logical-autoencoder}) as an alternative means to lower the dimentions of a dataset.
+For some data sets, such as MNIST, PCA is not an effective way to reduce the dimensions of the data \textbf{NEED CITATION}. For this reason Logical Autoencoders are proposed (Definition \ref{def:logical-autoencoder}) as an alternative means to lower the dimensions of a dataset.
 
 \begin{definition} \label{def:logical-autoencoder}
 	A \textbf{Logical Autoencoder} is an Autoencoder where the encoder and decoder are LNNs
 \end{definition}
+
+The experiments carried out will be to compress the MNIST feature space (784 dimintions) into 10 dimensions using different Auto encoder architectures. The accuracy and intepretability of the features will be explored. Each model was trained for 30 epochs
+
+\paragraph{Result of Logical Auto Encoder (LoAE)}
+Using a single layer OR LoAE we where able to achieve an MSE of 32.28 on training and 31.96 on testing. If instead using a single layer AND LoAE we get MSE 29.21 on the training and 29.04 on the testing. Finally if using a LoAE with an OR AND AND archetchure we get a MSE of 22.745 on training and 22.443 on testing.
+
+\paragraph{Result of Sigmoid Auto Encoder (SAE)}
+After training the SAE obtained an MSE of 29.45 on the training data and 29.47 on the test data
+
+\paragraph{Result of Linear Auto Encoder (LAE)}
+After training the LAE obtained an MSE of  on the training data and  on the test data
+
+\paragraph{Comparison}
 
