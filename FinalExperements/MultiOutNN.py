@@ -181,7 +181,7 @@ def construct_network(num_inputs, hidden_layers, num_outputs):
     for idx in range(len(layers)):
         l = layers[idx]
         weights = tf.Variable(gen_weights((l, layer_ins)), dtype='float32')
-        bias = tf.Variable(np.zeros((1, l)) + 27.6309, dtype='float32')
+        bias = tf.Variable(np.zeros((1, l)), dtype='float32')
 
         network.append([weights, bias])
         layer_ins = l
@@ -223,15 +223,16 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
     y_hat = prev_out
     
     if sm:
-        error = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=[y_hat])
-    else:
         y_hat = tf.nn.softmax(y_hat)
+        #error = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=[y_hat])
+    else:
+        y_hat = tf.nn.sigmoid(y_hat)
 
-        y_hat_prime = y_hat
-        y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-20, 1)
-        y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
-        errors = -(y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1))#
-        error = tf.reduce_sum(errors)
+    y_hat_prime = y_hat
+    y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-20, 1)
+    y_hat_prime_1 = tf.clip_by_value(1 - y_hat_prime, 1e-20, 1)
+    errors = -(y * tf.log(y_hat_prime_0) + (1-y) * tf.log(y_hat_prime_1))#
+    error = tf.reduce_sum(errors)
 
     minimize = error
 
@@ -248,7 +249,9 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
         for i in range(iterations):
             batch_ex, batch_l = session.run([example_batch, label_batch])
             session.run([train_op], feed_dict={x:batch_ex, y:batch_l})
-            #print(session.run([y_hat], feed_dict={x:batch_ex, y:batch_l}))
+            #print(session.run(y_hat, feed_dict={x:batch_ex, y:batch_l}))
+            #print(session.run(y, feed_dict={x:batch_ex, y:batch_l}))
+            #print(session.run(errors, feed_dict={x:batch_ex, y:batch_l}))
             #print(session.run(y, feed_dict={y:batch_l}))
 
             if i % len(data) == 0:
@@ -256,6 +259,17 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
                 for j in range(len(data)):
                     er += session.run(error, feed_dict={x:[data[j]], y:[targets[j]]})
                 print(er)
+
+                print()
+                print(session.run(y_hat, feed_dict={x:[data[0]], y:[targets[0]]}))
+                print(session.run(y, feed_dict={x:[data[0]], y:[targets[0]]}))
+                print()
+                print(session.run(y_hat, feed_dict={x:[data[100]], y:[targets[100]]}))
+                print(session.run(y, feed_dict={x:[data[100]], y:[targets[100]]}))
+                print()
+                print(session.run(y_hat, feed_dict={x:[data[4432]], y:[targets[4432]]}))
+                print(session.run(y, feed_dict={x:[data[4432]], y:[targets[4432]]}))
+                print()
     
         #saver.save(session, 'model.ckpt')
 
@@ -290,6 +304,7 @@ def run_lnn(data, targets, network, num_inputs, hidden_layers, num_outputs, sm):
 
         out = tf.add(tf.matmul(prev_out, tf.transpose(w)), b)
         if not idx == len(network)-1:
+            print("HELLO")
             out = tf.nn.sigmoid(out)
         prev_out = out
 
