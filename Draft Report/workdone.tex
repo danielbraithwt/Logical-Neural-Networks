@@ -11,7 +11,7 @@ Consider the set of binary classification problems which have boolean inputs. Co
 
 How might a interpretable network architecture that can learn these functions be constructed? The following facts will be helpful, any boolean function has a unique Conjunctive and Disjunctive Normal Form (CNF \& DNF), both the CNF and DNF are described by the boolean operations NOT, OR and AND, in a CNF or DNF a not can only occur on a literal and the maximum number of clauses in a CNF or DNF is $2^n$ where n is th number of inputs.\\
 
-One option is to use a standard Multi-Layer Perceptron Network (MLPN). MLPNs have been shown to be universal function approximators but are not interpretable. Learning the CNF or DNF of the optimal function is an equivalent problem. For now consider the problem of learning the CNF. This can be done with hidden layer of size $k$ () and an output layer with a single neuron. The hidden neurons only need to perform the OR operation on a subset of inputs. The output layer only need perform an AND of a subset of the hidden neurons.\\
+One option is to use a standard Multi-Layer Perceptron Network (MLPN). MLPNs have been shown to be universal function approximators but are not interpretable. Learning the CNF or DNF of the optimal function is an equivalent problem. For now consider the problem of learning the CNF. This can be done with hidden layer of size $k$ and an output layer with a single neuron. The hidden neurons only need to perform the OR operation on a subset of inputs. The output layer only need perform an AND of a subset of the hidden neurons.\\
 
 Using Noisy-OR and Noisy-AND (See Section \ref{sec:background-noisy-neurons}) such a network can be constructed. Noisy neurons can not compute the not of inputs so the input layer must be modified to include the negation of each input. Figure \ref{fig:cnf-network-structure} is the structure that has been derived.
 
@@ -267,26 +267,29 @@ Figures \ref{fig:cnf-descrete-generalizatiion-partial} \& \ref{fig:dnf-descrete-
 
 \chapter{Investigation of Logical Normal Form Networks} \label{C:investigation-of-lnfns}
 \section{Developing Applications} \label{sec:developing-applications}
-The LNFNs presented in Chapter \ref{C:foundation-of-lnfns} have very limited applications, the class of problems they can be applied to all have the form of binary classification where the features are Boolean. To make LNFNs more useful they need a broader scope.
+The LNFNs presented in Chapter \ref{C:foundation-of-lnfns} have only been shown to have application problems where the features and outputs are binary. To make LNFNs a more useful tool they need a bigger scope. 
 
 \subsection{Multi-class Classification}
-How can LNFNs be developed] to support classification of more than two classes. If attempting to learn a Multi-class Classification problem with $n$ distinct classes $c_1, ..., c_n$, then $n$ LNFNs would have to be trained, each a learning a binary classification problem $c_i$, $\lnot c_i$.\\
+To extend an MLPN to multi class classification it is enough to add more output neurons (one for each class). If output node $i$ is a 1 then the example has predicted class $i$. The networks output is now a vector representing the class distribution. \\
 
-An intuitive way to extend LNFNs to support Multi-class Classification is to add more output neurons and use One-hot encoding. If we have 3 classes then $100$, $010$ and $001$ represent class 1, 2 and 3 retrospectively, then the LNFN would have 3 output neurons, each representing a bit in the One-hot encoded string.\\
+For example if given a problem with 3 classes then ${1,0,0}$, ${0,1,0}$ and ${0,0,1}$ represent class 1, 2 and 3 retrospectively. The LNFN would have 3 output neurons, each representing a bit in the output vector. During the training process if the true class of an example was 1 then the desired output vector would be ${1,0,0}$.\\
+
+This process of converting a categorical variable to a binary string is known as \textbf{One-Hot Encoding}
 
 \begin{definition}
-	The structure of an LNFN to solve an $k$ class classification problem where each instance is described by n features has $2n$ inputs, $2^n$ hidden units and $k$ output units. A final Softmax layer is added, as is convention for these types of problems.
+	An LNFN to solve a $k$ class classification problem is unchanged apart from the number of output neurons which is $k$.
 \end{definition}
 
-A simple problem which lends its self naturally to this is the \text{Lenses} problem \cite{Lichman:2013}, a three class classification problem, each instance has 4 features, 3 of which are binary and the other has three possible values. This problem can be easily converted into one which can be used with an LNFN, each new problem instance will have 6 features, the three binary remain the same and the categorical one is expanded into 3.\\
+To evaluate the LNFN for multi class classification it will be evaluated against an MLPN. The Lenses problem \cite{Lichman:2013} is multi class and contains a natural rule system making it an ideal problem for LNFNs. Each example has four features, three are binary and one categorical (of size 3). Applying One-Hot encoding to the categorical variable yields a set of instances each with length 6.
 
-How does an LNFN network perform when compared to a MLPN on the Lenses problem. The performance of the two classifiers will be compared using Leave-One-Out (LOE) Cross-Validation. The structure of the MLPN only differs in the number of hidden layers/units, there are two hidden layers, one with $2 \cdot n$ hidden units and the other with $n$
+
+The performance of the two classifiers will be compared using Leave-One-Out (LOE) Cross-Validation. The structure of the MLPN only differs in the number of hidden layers/units, there are two hidden layers, one with $2 \cdot n$ hidden units and the other with $n$
 
 \begin{table}[H]
 	\begin{center}
 		\begin{tabular}{| c | c | c |}
 			\hline
-			& Error (Cross Entropy) & Confidence Interval (95\%) \\
+			& Loss (Cross Entropy) & Confidence Interval (95\%) \\
 			\hline
 			CNF Net & 6.663 & (6.468, 7.198) \\
 			\hline
@@ -300,9 +303,11 @@ How does an LNFN network perform when compared to a MLPN on the Lenses problem. 
 	\label{tab:lenses-peformance-comp}
 \end{table}
 
-Table \ref{tab:lenses-peformance-comp} demonstrates that the CNF \& DNF Networks perform comparably to an MLPN as the confidence intervals for the error overlap.\\ 
+Table \ref{tab:lenses-peformance-comp} demonstrates that the CNF \& DNF Networks perform comparably to an MLPN as the confidence intervals for the errors overlap.\\ 
 
-Now that the LNFN network has three output neurons it should be possible to extract three rules describing each of the classes. Consider that each problem instance is of the following form $\{a, b, c, d, e, f\}$ where $a,b,c,d,e,f$ are all atoms. The following rules can be extracted from a CNFN when trained over the complete Lenses data, any duplicate clause or Tautology has been filtered out, the resultant extracted formula has also been manually simplified (so they can be displayed and understood better).
+Now that the LNFN network has three output neurons it should be possible to extract three rules describing each of the classes. Consider that each problem instance is of the following form $\{a, b, c, d, e, f\}$ where $a,b,c,d,e,f$ are all atoms. $f$ refers to the \textit{tear production rate} being normal or reduced if $f = False$ or $True$ retrospectively. Giving a description of the other atoms is not beneficial as they refer to medical terms which are unimportant.\\
+
+The following rules have been extracted from a CNFN after being trained over the complete Lenses data set. Any duplicate clause or Tautology has been filtered out, the resultant extracted formula has also been manually simplified (so they can be displayed and understood better).
 
 \begin{itemize}
 	\item \text{Class 1:} $(a \lor b \lor e) \land (a \lor \lnot d) \land (c \lor e) \land f$
@@ -310,9 +315,9 @@ Now that the LNFN network has three output neurons it should be possible to extr
 	\item \text{Class 3:} $(\lnot a \lor b \lor c \lor \lnot f) \land (a \lor \lnot d \lor e \lor \lnot f) \land (\lnot b \lor c \lor d \lor \lnot f) \land (d \lor \lnot e \lor \lnot f)$
 \end{itemize}
 
-Immediately it is possible to find useful information about this problem that was not obvious before, namely $\lnot f = True \implies $ Class 3. Table \ref{tab:rule-classification-lenses-cnf} shows these rules applied to all the problem instances in the Lenses data set, it demonstrates that these extracted rules are able to fully describe the Lenses problem.\\
+Immediately it is possible to find useful information about this problem that was not obvious before. For example $\lnot f = True \implies $ Class 3, or \textit{if the tear reduction rate is reduced then do not fit contact lenses}. Table \ref{tab:rule-classification-lenses-cnf} shows these rules applied to all the problem instances in the Lenses data set, it demonstrates that these extracted rules are able to fully describe the Lenses problem.\\
 
-The DNFN might be more applicable as the rules will be more insightful, given its structure as an OR of ANDs.\\
+The DNFN might be more applicable as the rules will be more insightful. Each clause in the formulas represents a situation where the class is true. The formulae extracted from the DNFN confirm the previous knowledge extracted, $\lnot f = True \implies $ Class 3.
 
 \begin{itemize}
 	\item \text{Class 1:} $(a \land \lnot b \land \lnot c \land e \land f) \lor (\lnot a \land \lnot d \land e \land f)$
@@ -320,37 +325,18 @@ The DNFN might be more applicable as the rules will be more insightful, given it
 	\item \text{Class 3:} $(\lnot a \land \lnot b \land c \land \lnot d) \lor (\lnot a \land d \land e) \lor \lnot f$
 \end{itemize}
 
-\comment{Expand on paragraph below?}
-
-These DNF formula do not correspond to the CNF give above but this is to be expected. Despite the fact that collectivity all the problem instances span the space of features once they have been converted to the boolean feature form this fact is no longer true. This is the result of converting a categorical feature to a one-hot encoded version. By converting this categorical feature, insted of one dimension there is now three\\
-
-One possible issue that could arrive here is that the LNFN is now attempting to learn three CNF expressions with the same number of hidden neurons. The fact that meaningful rules where able to be extracted in this case could of been a coincidence, intuitively if we are learning a problem with $k$ classes then we could need $k \cdot 2^n$ hidden neurons.
+One possible issue that could occur is that the LNFN is attempting to learn three formulae with the same amount of hidden neurons as when it learns one.
 
 \subsection{Features with Continuous Domains}
-\comment{
-Might be good to talk about context in this section, i.e. the inputs do not make a lot of sense if they are not probabilities
-}
-The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? Secondly what can be achieved by discretizing the continuous inputs and then using an LNFN to learn this new boolean problem. A simple benchmark to use is the Iris problem \cite{Lichman:2013}
+The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? The benchmark data set is the Iris problem \cite{Lichman:2013}
 
-\subsubsection{LNFNs and Continuous Features} \label{subsubsec:lnfns-cont-features}
 If the features are continuous it no longer makes sense to extract rules but it could still be possible to see what inputs are considered in making a decision about the class. Any feature space can be converted to the $[0,1]$ domain by normalization. When training an LNFN on the Iris problem (over all problem instances) the network converges to a solution with a loss of $96.932$, poor performance when compared to a perceptron network that can achieve an accuracy of $0.0$. \\
 
 Inspecting the class prediction of each reveals that for a problem instance that has a true class of Iris-virginica or Iris-versicolor then LNFN sometimes predicts multiple classes, this leads to the belief that these networks have issues with learning problems that are not linearly separable as the two classes which an LNFN has trouble differentiating between are not linearly separable.\\
 
-The LNFN is able to learn XOR so not all problems which are not linearly separable are out of reach of LNFNs. Section \ref{subsubsec:lnfns-desc-cont-features} investigates whether it is possible to descretize the variables in such a way that makes this problem learnable by LNFNs.\\
+Not only did this result in poor performance but normalization is a crude way to apply this logical model to a situation where it does not make sense to apply it. The inputs are of an LNFN should be interpretable as probabilities. Normalizing the values in the Iris data set gives values in the 0 to 1 range but you cant think of them as probabilities.
 
-It is important to note that not only did this result in poor performance but normalization is a crude way to apply this logical model to a situation where it does not make sense to apply it. The inputs are interpret as probabilities. Normalizing the values in the Iris data set gives values in the 0 to 1 range but you cant think of them as probabilities.
-
-
-\subsubsection{LNFNs and Discretized Continuous Features} \label{subsubsec:lnfns-desc-cont-features}
-There are a number of method for discretizing continuous features, there are many algorithms for performing such an operation on some data \cite{liu2002discretization}, to many for all to be tested. Two simple methods for descretization are Equal width or frequency binning, these methods are very naive and prone to outliers, also the number of bins must be chosen before hand so this requires experimentation. A supervised partitioning method will also be tested, namely Recursive Minimal Entropy Partitioning.\\
-
-Results from training LNFNs with descretized data results in the same issue as before, the network has problems with classifying classes that are not linearly separable.
-
-\subsubsection{Discussion of Application to Continuous Domains}
-The ideas explored in Sections \ref{subsubsec:lnfns-cont-features} \& \ref{subsubsec:lnfns-desc-cont-features} demonstrate that applying LNFNs to problems with continuous inputs is not viable.\\
-
-Another thing to consider is that it becomes difficult to justify what the input features mean in the context of Noisy gates. In terms of the iris problem each feature represents a length, sure its possible to normalize the features to $[0,1]$ and train an LNFN anyway but essentially the lengths are being forced to be some sort of truth value.
+Applying LNFNs to continuous problems would work but only in the situation where each input variable can be thought of as a probability.
 
 \chapter{Logical Neural Networks} \label{C:lnn}
 There are two key issues with LNFNs. Firstly the number of hidden units becomes unfeasable as the number of inputs increases. The volume of hidden neurons allows for the possibility to memorise the input data.\\
@@ -555,10 +541,30 @@ Each experiment running on the new LNN architecture will be performed with a LSM
 	\item \textbf{(OR $\rightarrow$ AND $\rightarrow$ AND) Architecture: } 60 Or neurons, 30 AND neurons\label{lnn-eval-arch-4}
 	\item \textbf{(OR) Architecture:} \label{lnn-eval-arch-5}
 	\item \textbf{(AND) Architecture:} \label{lnn-eval-arch-6}
+	\item \textbf{(AND) Old Architecture:} \label{lnn-eval-arch-7}
 \end{enumerate}
 
 \paragraph{Results}
-Each network is trained 30 to average the results over different initial conditions, significance tests are also conducted by creating a 95\% confidence interval. The error rates displayed in Table \ref{tab:mnist-peformance-results} are on the MNIST testing data.
+Each network is trained 30 to average the results over different initial conditions, significance tests are also conducted by creating a 95\% confidence interval. The error rates displayed in Table \ref{tab:mnist-lnn-peformance-results} are on the MNIST testing data.
+
+\comment{Run experiment with sigmoid nets as well}
+
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| c | c | c | c | c |}
+			\hline
+			\textbf{Network Config} & \textbf{Error Rate} & \textbf{Error Rate CI} & \textbf{Error Rate (with SM)} & \textbf{Error Rate CI (with SM)}\\
+			\hline
+			\hline
+			\textbf{60 $\rightarrow$ 30} & - & - & 0.035 & (0.030, 0.040)\\
+			\textbf{30} & - & - & 0.045 & (0.041, 0.050)\\
+			\textbf{N/A} & - &  & 0.084 & (0.084, 0.084)\\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{Results of experiments with Sigmoid models}
+	\label{tab:mnist-sigmoid-peformance-results}
+\end{table}
 
 \begin{table}[H]
 	\begin{center}
@@ -573,14 +579,14 @@ Each network is trained 30 to average the results over different initial conditi
 			\textbf{\ref{lnn-eval-arch-4}} & 0.053 & (0.046, 0.060) & 0.032 & (0.029, 0.036)\\
 			\textbf{\ref{lnn-eval-arch-5}} & 0.382 & (0.381, 0.384) & 0.334 & (0.331, 0.336)\\
 			\textbf{\ref{lnn-eval-arch-6}} & 0.137 & (0.135, 0.139) & 0.076 & (0.075, 0.079)\\
+			\textbf{\ref{lnn-eval-arch-7}} & 0.312 & (0.311, 0.314) & 0.111 & (0.109, 0.114)\\
 			\hline
 		\end{tabular}
 	\end{center}
-	\caption{Results of experiments}
-	\label{tab:mnist-peformance-results}
+	\caption{Results of experiments with Logical Neural Network models}
+	\label{tab:mnist-lnn-peformance-results}
 \end{table}
 
-\comment{Prehapse run experiment with sigmoid nets as well}
 By examining the following conclusions can be made
 \begin{enumerate}
 	\item \textit{New LNN Architecture Gives Better Performance Than the Old:} The confidence intervals for test set performance do not overlap for \textbf{\ref{lnn-eval-arch-1}} and \textbf{\ref{lnn-eval-arch-2}} (without LSM)
@@ -662,18 +668,236 @@ Consider the problem of trying to determine how each $x_i$ effects each $o_j$. T
 
 This new $\epsilon$ is dependent on all the other $x_i$'s, not just the one of interest. Consequently it is only possible to directly compute the effects of the input features on the first layer of hidden neurons.\\
 
+\comment{
+Describe this process better
+}
+
 Without the possibility of computing the output neurons as direct functions of the input features another method to interpret the knowledge inside the LNN is needed. The approach will be to compute all the hidden neurons in the first layer as a function of the inputs, then work backwards recursively to find the most useful first layer hidden nodes.
 
 \subsubsection{Results}
-The models obtained on MNIST will be used here.
-
 \comment{
-Finish Experements In This Section
+	Finish Experements In This Section
 }
 
-\subsubsection{Discussion Of Results}
-\comment{Once Experiments are complete fill this in}
+\comment{Once Experiments are complete fill in the conclusions that can be drawn}
 
+Intepretability will be assessed by comparing various MNIST models using the new architecture again each other but also the original LNN model. Part of this assent will be to determine what effects the LSM has on the model interpretation.\\
+
+To compare the intepretability of the old and new architectures aingle layer AND model will be used, this model has been shown to have a high accuracy and it is simpler to interpret as it does not contain any hidden layers.\\
+
+An attempt will be made to interpret some multi layer models as these get better performance and therefore are more practical to use.
+
+\paragraph{AND Network Old Architecture (With and With Out LSM)}
+
+The AND Network with an LSM is somewhat interpretable, not all the the neurons appear to make sense, but the 0,2 and 7 do look like the digits they are suppose to classify. From observing these images the network using an LSM appears to be learning to classify the digits using a noisy border.\\
+
+However the network without the LSM appears to be classifying the digits by learning the common pixels of all examples of the digit. Trying to identify the common is a difficult problem as there are many different drawings of each of the digits. Consider the digit 4, there are two ways to draw it which look quite different.
+
+\comment{Include the two examples here}
+
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(LSM)/Layer0-Neuron-0.png}
+		\caption{Digit 0}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(LSM)/Layer0-Neuron-2.png}
+		\caption{Digit 2}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(LSM)/Layer0-Neuron-4.png}
+		\caption{Digit 4}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(LSM)/Layer0-Neuron-7.png}
+		\caption{Digit 7}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(LSM)/Layer0-Neuron-9.png}
+		\caption{Digit 9}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(NO-LSM)/Layer0-Neuron-0.png}
+		\caption{Digit 0}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(NO-LSM)/Layer0-Neuron-2.png}
+		\caption{Digit 2}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(NO-LSM)/Layer0-Neuron-4.png}
+		\caption{Digit 4}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(NO-LSM)/Layer0-Neuron-7.png}
+		\caption{Digit 7}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OLD(NO-LSM)/Layer0-Neuron-9.png}
+		\caption{Digit 9}
+	\end{minipage}
+	\hfill
+	\caption{Figures representing the weighted connections between the inputs and outputs in an AND network with the old archetchure. Top row is with an LSM and bottom row is with out an LSM}
+\end{figure}
+
+\paragraph{AND Network (With LSM)}
+Given that the AND network has no hidden layers it is possible to directly compute the importance that output neuron places on each of the inputs. The top row of images represent positively weighted inputs and the bottom row represents the negatively weighted inputs.\\
+
+It is possible to interpret how the network is performing its classifications by observing the inputs which are negatively weighted, consider that the network is penalizing the activation based on pixels which are just outside the border of the average digit.\\
+
+Using the classification of 0 as an example. The network does not like pixels in the middle as the center of a zero should be empty, the outer circle represents the border of the average 0.
+
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Positive/Layer0-Neuron-0.png}
+		\caption{Digit 0}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Positive/Layer0-Neuron-2.png}
+		\caption{Digit 2}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Positive/Layer0-Neuron-4.png}
+		\caption{Digit 4}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Positive/Layer0-Neuron-7.png}
+		\caption{Digit 7}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Positive/Layer0-Neuron-9.png}
+		\caption{Digit 9}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Negative/Layer0-Neuron-0.png}
+		\caption{Not Digit 0}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Negative/Layer0-Neuron-2.png}
+		\caption{Not Digit 2}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Negative/Layer0-Neuron-4.png}
+		\caption{Not Digit 4}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Negative/Layer0-Neuron-7.png}
+		\caption{Not Digit 7}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(LSM)/Negative/Layer0-Neuron-9.png}
+		\caption{Not Digit 9}
+	\end{minipage}
+	\hfill
+	\caption{Figures representing the weighted connections between the inputs and outputs.}
+\end{figure}
+
+\paragraph{AND Network (With out LSM)}
+This appears to be performing classification in the same way as to the AND Net with an LSM. However there is a key difference, this network has much harder boundaries compared to the softer and nosier boundaries for the AND network with LSM.
+
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Positive/Layer0-Neuron-0.png}
+		\caption{Digit 0}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Positive/Layer0-Neuron-2.png}
+		\caption{Digit 2}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Positive/Layer0-Neuron-4.png}
+		\caption{Digit 4}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Positive/Layer0-Neuron-7.png}
+		\caption{Digit 7}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Positive/Layer0-Neuron-9.png}
+		\caption{Digit 9}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Negative/Layer0-Neuron-0.png}
+		\caption{Not Digit 0}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Negative/Layer0-Neuron-2.png}
+		\caption{Not Digit 2}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Negative/Layer0-Neuron-4.png}
+		\caption{Not Digit 4}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Negative/Layer0-Neuron-7.png}
+		\caption{Not Digit 7}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND(NO-LSM)/Negative/Layer0-Neuron-9.png}
+		\caption{Not Digit 9}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+\paragraph{OR $\rightarrow$ AND Network (With LSM)}
+Interpreting these multilayer models is a more difficult task. Assume the goal is to verify that the digit 1 is being classified in a sensible way. First observe the hidden neurons which contribute to the digit being a 1.
+
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(1)/Like/True/Layer0-Neuron-18.png}
+		\caption{Digit 0}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(1)/Like/True/Layer0-Neuron-19.png}
+		\caption{Digit 0}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(1)/Like/False/Layer0-Neuron-18.png}
+		\caption{Digit 0}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(1)/Like/False/Layer0-Neuron-19.png}
+		\caption{Digit 0}
+		\label{fig:cnf-descrete-generalizatiion}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+\paragraph{OR $\rightarrow$ AND $\rightarrow$ AND Network (With LSM)}
+
+\paragraph{Results}
+From the above experiments and discussions the following conclusions can be made
+
+\begin{enumerate}
+	\item \textit{Adding Nots Improves Intepretability:}
+	\item \textit{Adding an Logical Soft Max does not hinder the intepretability (on the new architecture):}
+\end{enumerate}
+
+\section{Summary Of Logical Neural Network Evaluation}
+\comment{Once all conclusions have been drawn fill in this section}
 
 \chapter{Application to Auto Encoders} \label{C:lnn-application}
 Auto encoders \cite{baldi2012complex} are a network architecture which aim to take the input to some reduced feature space and then from this feature space back to the original input with the smallest error. The case where there is one linear layer doing the encoding and decoding is called \textbf{Linear Autoencoder}, this architecture corresponds to performing Principle Component Analysis (PCA) on the data.\\
@@ -687,13 +911,28 @@ For some data sets, such as MNIST, PCA is not an effective way to reduce the dim
 The experiments carried out will be to compress the MNIST feature space (784 dimintions) into 10 dimensions using different Auto encoder architectures. The accuracy and intepretability of the features will be explored. Each model was trained for 30 epochs
 
 \paragraph{Result of Logical Auto Encoder (LoAE)}
-Using a single layer OR LoAE we where able to achieve an MSE of 32.28 on training and 31.96 on testing. If instead using a single layer AND LoAE we get MSE 29.21 on the training and 29.04 on the testing. Finally if using a LoAE with an OR AND AND archetchure we get a MSE of 22.745 on training and 22.443 on testing.
+AND - 20LF
+20.5527660464
+20.2283757847
 
-\paragraph{Result of Sigmoid Auto Encoder (SAE)}
-After training the SAE obtained an MSE of 29.45 on the training data and 29.47 on the test data
+
+Using a single layer OR LoAE we where able to achieve an MSE of 32.28 on training and 31.96 on testing. \\
+
+If instead using a single layer AND LoAE we get 20.55 MSE on the training and 20.23 MSE on the testing.\\
 
 \paragraph{Result of Linear Auto Encoder (LAE)}
-After training the LAE obtained an MSE of  on the training data and  on the test data
+20LF
+21.3413061247\\
+21.2568757326
+
+After training the LAE obtained an MSE of 29.45 on the training data and 29.47 on the test data
+
+\paragraph{Result of Sigmoid Auto Encoder (SAE)}
+20LF
+14.4386194921
+14.2518036234
+
+After training the SAE obtained an MSE of  on the training data and  on the test data
 
 \paragraph{Comparison}
 
