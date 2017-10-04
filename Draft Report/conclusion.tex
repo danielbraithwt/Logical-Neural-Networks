@@ -1,11 +1,11 @@
 \chapter{Conclusion}\label{C:con}
 
-\comment{Talk about final applications here when they have been finished}
 
-This report demonstrated that Logical Normal Form Networks (LNFNs) had statistically equivalent performance and generalization to Multi-Layer Perceptron Networks when trained over a number of randomly generated truth tables. LNFNs where shown to learn a representation which corresponded to a correct boolean formula, this formula was also able to generalize.\\
+The growing number of situations where Artifical Neural Networks (ANNs) are used is driving the development of intepretable models. Being able to defend an ANNs decision can protect users from un safe or ethically biased systems and protect companies utilizing such sysems from breaching EU regulations.\\
 
-While LNFNs have these nice properties there are significant down sides which result in them being impractical. The critical issue is that they require $2^n$ hidden neurons.\\
+This report derived modifications for the LNN structure giving them stistically equivelent peformance to standard Multi-Layer Perceptron Networks and improving the intepretability of the leant models. By obesrving the weights of LNNs trainined over the MNIST data set it was possible to determin what input features contributed to each classification and verify that the logic learnt was "sensible".\\
 
-A generalized version of LNFNs called Logical Neural Networks (LNNs) where introduced and improved apon to get a improvement in performance. LNNs where then shown to have more interpretable weight by training different network structures on the MNIST data set.\\
+Logical Neural Networks where then applied to Auto Encoders, while the peformance of Logical Auto Encoders was worse than standard Sigmoid Auto Encoders it demonstraits the flexability of LNNs and the range of situations where they can be applied.\\
 
-Finally ...
+LNNs have limitations, prehapse the biggest comes down to intepreting multi layer logical neural networks. It is possible to directly extract the influence each input feature has on the ouputs in LNNs with no hidden layers. Hidden layers introduce dependencies between input features making it diffcult to find a direct influence of inputs on the outputs. Because of this limitation any future work which can develop better ways to intepret these models would increase the power of LNNs.
+

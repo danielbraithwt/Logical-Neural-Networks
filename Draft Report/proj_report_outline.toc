@@ -5,7 +5,6 @@
 \contentsline {chapter}{\numberline {2}Background}{3}
 \contentsline {section}{\numberline {2.1}Related Work}{3}
 \contentsline {subsection}{\numberline {2.1.1}Rule Extraction}{3}
-\contentsline {subsection}{\numberline {2.1.2}LIME}{4}
 \contentsline {section}{\numberline {2.2}Noisy Neurons}{4}
 \contentsline {section}{\numberline {2.3}Logical Neural Networks}{6}
 \contentsline {section}{\numberline {2.4}CNF \& DNF}{6}
@@ -31,24 +30,33 @@
 \contentsline {paragraph}{Weight Initialization for LNNs}{24}
 \contentsline {chapter}{\numberline {6}Evaluation Of Logical Neural Networks}{26}
 \contentsline {section}{\numberline {6.1}Performance of Logical Neural Networks}{26}
-\contentsline {paragraph}{Results}{26}
-\contentsline {section}{\numberline {6.2}Intepretability of Logical Neural Networks}{27}
-\contentsline {subsection}{\numberline {6.2.1}Discrete Case (Rule Extraction)}{27}
-\contentsline {subsubsection}{Evaluation of LNN Rules}{28}
+\contentsline {paragraph}{Results}{27}
+\contentsline {section}{\numberline {6.2}Intepretability of Logical Neural Networks}{28}
+\contentsline {subsection}{\numberline {6.2.1}Discrete Case (Rule Extraction)}{28}
+\contentsline {subsubsection}{Evaluation of LNN Rules}{29}
 \contentsline {subsection}{\numberline {6.2.2}Continuous Case}{29}
-\contentsline {subsubsection}{Results}{30}
-\contentsline {paragraph}{AND Network Old Architecture (With and With Out LSM)}{30}
-\contentsline {paragraph}{AND Network (With LSM)}{30}
-\contentsline {paragraph}{AND Network (With out LSM)}{31}
-\contentsline {paragraph}{OR $\rightarrow $ AND Network (With LSM)}{31}
-\contentsline {paragraph}{OR $\rightarrow $ AND $\rightarrow $ AND Network (With LSM)}{32}
-\contentsline {paragraph}{Results}{32}
-\contentsline {section}{\numberline {6.3}Summary Of Logical Neural Network Evaluation}{32}
-\contentsline {chapter}{\numberline {7}Application to Auto Encoders}{33}
-\contentsline {paragraph}{Result of Logical Auto Encoder (LoAE)}{33}
-\contentsline {paragraph}{Result of Linear Auto Encoder (LAE)}{33}
-\contentsline {paragraph}{Result of Sigmoid Auto Encoder (SAE)}{33}
-\contentsline {paragraph}{Comparison}{33}
-\contentsline {chapter}{\numberline {8}Conclusion}{34}
-\contentsline {chapter}{Appendices}{36}
-\contentsline {chapter}{\numberline {A}Tables}{37}
+\contentsline {subsubsection}{No Hidden Layer Networks}{30}
+\contentsline {paragraph}{Sigmoid Network}{30}
+\contentsline {paragraph}{AND Network Old Architecture (With and With Out LSM)}{31}
+\contentsline {paragraph}{AND Network (With LSM)}{31}
+\contentsline {paragraph}{AND Network (With out LSM)}{32}
+\contentsline {paragraph}{Conclusion of Intepretability for LNNs with No Hidden Layer}{32}
+\contentsline {subsubsection}{Single Hidden Layer Networks}{33}
+\contentsline {paragraph}{Sigmoid Network}{33}
+\contentsline {paragraph}{OR $\rightarrow $ AND Network Old Structure (With Out LSM)}{33}
+\contentsline {paragraph}{OR $\rightarrow $ AND Network Old Structure (With LSM)}{33}
+\contentsline {paragraph}{OR $\rightarrow $ AND Network (With Out LSM)}{34}
+\contentsline {paragraph}{OR $\rightarrow $ AND (With LSM)}{35}
+\contentsline {paragraph}{AND $\rightarrow $ OR Model (With Out LSM)}{35}
+\contentsline {paragraph}{AND $\rightarrow $ OR Model (With LSM)}{36}
+\contentsline {paragraph}{Conclusion of Intepretability for LNNs with No Hidden Layer}{36}
+\contentsline {subsubsection}{Results}{36}
+\contentsline {section}{\numberline {6.3}Summary Of Logical Neural Network Evaluation}{36}
+\contentsline {chapter}{\numberline {7}Application to Auto Encoders}{38}
+\contentsline {paragraph}{Result of Logical Auto Encoder (LoAE)}{38}
+\contentsline {paragraph}{Result of Linear Auto Encoder (LAE)}{38}
+\contentsline {paragraph}{Result of Sigmoid Auto Encoder (SAE)}{39}
+\contentsline {paragraph}{Discussion}{39}
+\contentsline {chapter}{\numberline {8}Conclusion}{40}
+\contentsline {chapter}{Appendices}{42}
+\contentsline {chapter}{\numberline {A}Tables}{43}

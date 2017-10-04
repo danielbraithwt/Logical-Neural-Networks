@@ -522,17 +522,29 @@ The LNN structure is significant when it comes to the learnability of problems s
 
 
 \chapter{Evaluation Of Logical Neural Networks} \label{C:evaluation-lnn}
-\section{Performance of Logical Neural Networks} \label{sec:lnn-eval-peformance}
-There are two hypothesises that will be explored
+To evaluate Logical Neural Networks their peformance and intepretability are explored. There are \textbf{FILL IN} creteria that will be used for this evaluation.
+
+\begin{enumerate}
+	\item Peformance comparason between the old and new Logical Neural Network Structures.
+	\item Peformance comparason between Multi Layer Perceptron Network.
+	\item Peformance comparason between networks with and without Logical Softmax.
+	\item Comparason of intepretabilit between MLPNs and new and old LNNs
+\end{enumerate}
+
+Through out the evaluation of LNNs the folowing questions conserning the affects of the two new components of LNNs will be discussed.
 
 \begin{enumerate}
 	\item Does the modified LNN structure yield trained models with better performance than a Multilayer Perceptron Network and an LNN without the modified structure? This is without using the Logical Softmax Operation.
-	\item Does the modified LNN structure with a Logical Softmax yield better results than the modified strucure with LSO.
+	\item Does the modified LNN structure with a Logical Softmax yield better results than the modified strucure with out LSO.
+	\item How does the new structure effect intepretability of LNN models.
+	\item How does the Logical SoftMax affect the intepretability of LNN models.
 \end{enumerate}
 
-To evaluate the performance of Logical Neural Networks (LNNs) a number of different configurations will be trained over the MNIST dataset. The following configurations will be tested. Given the problem is MNIST the number of input neurons will be 784 and number of output neurons will be 10. The number of training epchos will be 30.\\
 
-Each experiment running on the new LNN architecture will be performed with a LSM and without
+\section{Performance of Logical Neural Networks} \label{sec:lnn-eval-peformance}
+To evaluate the performance of Logical Neural Networks (LNNs) a number of different configurations will be trained over the MNIST dataset. Given the problem is MNIST the number of input neurons will be 784 and number of output neurons will be 10. The number of training epchos will be 30.\\
+
+Each experiment running on the new LNN architecture will be performed with and without an LSM
 
 \begin{enumerate}
 	\item \textbf{(OR $\rightarrow$ AND) Old Architecture:} This will consist of 30 hidden OR neurons. \label{lnn-eval-arch-1}
@@ -547,8 +559,6 @@ Each experiment running on the new LNN architecture will be performed with a LSM
 \paragraph{Results}
 Each network is trained 30 to average the results over different initial conditions, significance tests are also conducted by creating a 95\% confidence interval. The error rates displayed in Table \ref{tab:mnist-lnn-peformance-results} are on the MNIST testing data.
 
-\comment{Run experiment with sigmoid nets as well}
-
 \begin{table}[H]
 	\begin{center}
 		\begin{tabular}{| c | c | c | c | c |}
@@ -556,9 +566,9 @@ Each network is trained 30 to average the results over different initial conditi
 			\textbf{Network Config} & \textbf{Error Rate} & \textbf{Error Rate CI} & \textbf{Error Rate (with SM)} & \textbf{Error Rate CI (with SM)}\\
 			\hline
 			\hline
-			\textbf{60 $\rightarrow$ 30} & - & - & 0.035 & (0.030, 0.040)\\
-			\textbf{30} & - & - & 0.045 & (0.041, 0.050)\\
-			\textbf{N/A} & - &  & 0.084 & (0.084, 0.084)\\
+			\textbf{60 $\rightarrow$ 30} & 0.034 & (0.031, 0.038) & 0.035 & (0.030, 0.040)\\
+			\textbf{30} & 0.046 & (0.042, 0.050) & 0.045 & (0.041, 0.050)\\
+			\textbf{N/A} & 0.085 & (0.085, 0.085) & 0.084 & (0.084, 0.084)\\
 			\hline
 		\end{tabular}
 	\end{center}
@@ -570,16 +580,16 @@ Each network is trained 30 to average the results over different initial conditi
 	\begin{center}
 		\begin{tabular}{| c | c | c | c | c |}
 			\hline
-			\textbf{Network Config} & \textbf{Error Rate} & \textbf{Error Rate CI} & \textbf{Error Rate (with LSM)} & \textbf{Error Rate CI (with LSM)}\\
+			\textbf{Network Config} & \textbf{Error Rate} & \textbf{Error Rate CI} & \textbf{Error Rate (LSM)} & \textbf{Error Rate CI (LSM)}\\
 			\hline
 			\hline
-			\textbf{\ref{lnn-eval-arch-1}} & 0.105 & (0.098, 0.115) & 0.048 & (0.043, 0.052)\\
-			\textbf{\ref{lnn-eval-arch-2}} & 0.088 & (0.079, 0.094) & 0.042 & (0.039, 0.046)\\
-			\textbf{\ref{lnn-eval-arch-3}} & 0.098 & (0.073, 0.141) & ? & ?\\
-			\textbf{\ref{lnn-eval-arch-4}} & 0.053 & (0.046, 0.060) & 0.032 & (0.029, 0.036)\\
-			\textbf{\ref{lnn-eval-arch-5}} & 0.382 & (0.381, 0.384) & 0.334 & (0.331, 0.336)\\
-			\textbf{\ref{lnn-eval-arch-6}} & 0.137 & (0.135, 0.139) & 0.076 & (0.075, 0.079)\\
-			\textbf{\ref{lnn-eval-arch-7}} & 0.312 & (0.311, 0.314) & 0.111 & (0.109, 0.114)\\
+			\textbf{(OR $\rightarrow$ AND) Old } & 0.105 & (0.098, 0.115) & 0.048 & (0.043, 0.052)\\
+			\textbf{(OR $\rightarrow$ AND) } & 0.088 & (0.079, 0.094) & 0.042 & (0.039, 0.046)\\
+			\textbf{(AND $\rightarrow$ OR) } & 0.098 & (0.073, 0.141) & ? & ?\\
+			\textbf{(OR $\rightarrow$ AND $\rightarrow$ AND) } & 0.053 & (0.046, 0.060) & 0.032 & (0.029, 0.036)\\
+			\textbf{(OR) } & 0.382 & (0.381, 0.384) & 0.334 & (0.331, 0.336)\\
+			\textbf{(AND) } & 0.137 & (0.135, 0.139) & 0.076 & (0.075, 0.079)\\
+			\textbf{(AND) Old} & 0.312 & (0.311, 0.314) & 0.111 & (0.109, 0.114)\\
 			\hline
 		\end{tabular}
 	\end{center}
@@ -589,17 +599,18 @@ Each network is trained 30 to average the results over different initial conditi
 
 By examining the following conclusions can be made
 \begin{enumerate}
-	\item \textit{New LNN Architecture Gives Better Performance Than the Old:} The confidence intervals for test set performance do not overlap for \textbf{\ref{lnn-eval-arch-1}} and \textbf{\ref{lnn-eval-arch-2}} (without LSM)
+	\item \textit{New LNN Architecture Gives Better Performance Than the Old:} The confidence intervals for test set performance do not overlap for Archetcures \textbf{(OR $\rightarrow$ AND) Old} and \textbf{(OR $\rightarrow$ AND)} (without LSM). This can also be observed from Archetchures \textbf{(AND) Old} and \textbf{AND}.
 	
 	\item \textit{Adding A LSM Improves Performance:} Every LNN using the new architecture gets a statistically significant performance increase when a LSM is added.
 \end{enumerate}
 
+The experements show that both the new archetchure and LSM give a stistically significant improvement in peformance. From observing \textbf{(OR $\rightarrow$ AND) Old} and \textbf{(OR $\rightarrow$ AND)} (with LSM) it is possible to see that when a LSM is added then the change in archetchure does not introduce an increase in peformance. However the oposite is true when comparing the (AND) and (AND) Old networks.
 
 \section{Intepretability of Logical Neural Networks}
-There are two instances of Intepretability in LNNs. The first occurs when the problem inputs and outputs are discrete, the other occurs when the problem domain is continuous, 
+There are two cases of intepretability. In the situation where input and outputs are descrete intepretablity becomes Rule Extraction. The other situation is where the inputs are continous.
 
 \subsection{Discrete Case (Rule Extraction)}
-This problem involves classifying tic-tac-toe endgame boards and determining whether 'x' can win \cite{Lichman:2013}. There are 9 categorical attributes, representing each cell of the board, each cell can have 'x', 'o' or 'b' for blank.\\
+To assess the rule extraction of LNNs the Tic Tac Toe problem will be the becnchmark \cite{Lichman:2013}. This problem involves classifying tic-tac-toe endgame boards and determining whether 'x' can win . There are 9 categorical attributes, representing each cell of the board, each cell can have 'x', 'o' or 'b' for blank.\\
 
 The purpous of this application is to demonstrate the rule extraction capabilities of LNN's\\
 
@@ -615,38 +626,60 @@ This gives a total of 27 attributes, if using an LNFN then the hidden layer woul
 	\hfill
 \end{figure}
 
-There are a total of 958 instances, 70\% of which will be used for training, the rest for testing. Using the new LNN with the structure described in Figure \ref{fig:tic-tac-toe-net} (using 30 hidden OR neurons) is able to achieve an error rate of $0.1\%$ on the training set and $0.3\%$ on the test set. The rules extracted from the network have an error rate of $1.7\%$ on the training set and $6.3\%$ on the test set.\\
+There are a total of 958 instances, 70\% of which will be used for training, the rest for testing. Using the new LNN with the structure described in Figure \ref{fig:tic-tac-toe-net} (using 30 hidden OR neurons) is able to achieve an error rates displayed in Table \ref{tab:tic-tac-toe-lnn-peformance-results}. The experement is averaged over 30 runs
 
-What about the performance of the same network but swap around the activations? It was conjectured that networks of this form have poor learning \cite{LearningLogicalActivations} but with these new LNNs it might not be true any more.\\
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| c | c | c | c | c |}
+			\hline
+			\textbf{} & \textbf{Net Error Rate} & \textbf{Net Error Rate CI} & \textbf{Rule Error Rate} & \textbf{Rule Error Rate CI}\\
+			\hline
+			\hline
+			\textbf{Training} & 0.0035 & (0.0035, 0.0035) & 0.0000 & (0.0000, 0.0000)\\
+			\textbf{Testing} & 0.0015 & (0.0015, 0.0015) & 0.0259 & (0.0104, 0.0451)\\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{Results of experiments with Logical Neural Networks on the Tic Tac Toe problem}
+	\label{tab:tic-tac-toe-lnn-peformance-results}
+\end{table}
 
-Changing the configuration so that the AND activation is before the OR obtains a result which is better than the previous. The network has the same performance but the rule set extracted has a $0\%$ error rate on the training set and a $2\%$ error on the test.\\
+What about the performance of the same network but swap around the activations? It was conjectured that networks of this form have poor learning \cite{LearningLogicalActivations} but with these new LNNs it might not be true any more. Changing the configuration so that the AND activation is before the OR obtains a result which is better than the previous, shown in Tabel \ref{tab:tic-tac-toe-lnn-peformance-results-and-or}.\\
 
-It can be concluded that the conjecture saying that an LNN with an AND-OR configuration does not learn no longer holds.
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| c | c | c | c | c |}
+			\hline
+			\textbf{} & \textbf{Net Error Rate} & \textbf{Net Error Rate CI} & \textbf{Rule Error Rate} & \textbf{Rule Error Rate CI}\\
+			\hline
+			\hline
+			\textbf{Training} & 0.0035 & (0.0035, 0.0035) & 0.0000 & (0.0000, 0.0000)\\
+			\textbf{Testing} & 0.0015 & (0.0015, 0.0015) & 0.0038 & (0.0, 0.0139)\\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{Results of experiments with Logical Neural Networks on the Tic Tac Toe problem on a AND - OR Network}
+	\label{tab:tic-tac-toe-lnn-peformance-results-and-or}
+\end{table}
+
+It can be concluded that the conjecture saying that an LNN with an AND-OR configuration does not learn no longer holds.\\
+
+
 
 \subsubsection{Evaluation of LNN Rules}
-
-\comment{
-Finish this subsection
-}
-
-The rule extraction algorithm given in Figure \ref{alg:rule-extraction} is an electic algorithm as this category describes algorithms that examine the network at the unit level but extract rules which represent the network as a whole. The algorithm is certainly not portable as it can only be applied to networks with the LNN architecture.\\
+The rule extraction algorithm given in Figure \ref{alg:rule-extraction} is an electic algorithm as this category describes algorithms that examine the network at the unit level but extract rules which represent the network as a whole. The algorithm is not portable as it can only be applied to networks with the LNN architecture.\\
 
 Finally what is the quality of the rules extracted from LNN, this is measured by the Accuracy, Fedelity, Consistency and Comprehensibility \cite{andrews1995survey}.
 
 \begin{enumerate}
 	\item \textbf{Accurate:} As demonstrated experimentally the extracted rules are able to generalise well to unseen examples.
-	\item \text{Fedelity:} The experiments also show that the rules perform very similar to the network they where extracted from.
-	\item \text{Consistency:} \textbf{TEST THIS}
+	\item \textbf{Fedelity:} The experiments show that the rules perform very similar to the network they where extracted from.
+	\item \textbf{Consistency:} Through the previous experements the extracted rules from each interation only had 8\% overlap between the ones which where incorrectly classified. This was found by taking the average proportion of the ones incorrectly classified over one interation compared to all iterations.
+	\item \textbf{Comprehensibility:} The upper limit of the size of the rules is related to the number of layers and neurons. The OR AND model obtains a complex set of rules, in total 35 of the OR clauses are considered by the output neuron. On the otherhand the AND OR model only utilizes 11. The structure also contributes to the comprehensibility of the rules. For instance each clause in the AND OR rules represent a situation where the rule set is true.
 \end{enumerate}
 
 \subsection{Continuous Case}
-\comment{
-Finish Experiments In This Section
-}
-
-In the discrete case the situation is simple, the input to a neuron is either relevelent or not. This scenario allows for easy rule extraction. In the continuous case the situation is more complicated as instead of relevance being a binary decision there are degrees of relevance.\\
-
-What is the ideal case of intepretability. In terms of MNIST, being able to construct an image representing how relevant each input feature is to each of the possible output neurons would allow visual verification that the network has learnt something interesting.\\
+In the continous case extracting bolean rules is not possible as each input no longer represents a boolean but rather a degree of truth. In terms of MNIST, being able to construct an image representing how relevant each input feature is to each of the possible output neurons would allow visual verification that the network has learnt something interesting.\\
 
 Determining the influence that the inputs to a layer have on the outputs of the layer is trivial. The definition of weights from one layer to another directly correspond to how much influence the corresponding input has. Computing the influence that a neuron has across layers is not so simple.
 
@@ -668,32 +701,52 @@ Consider the problem of trying to determine how each $x_i$ effects each $o_j$. T
 
 This new $\epsilon$ is dependent on all the other $x_i$'s, not just the one of interest. Consequently it is only possible to directly compute the effects of the input features on the first layer of hidden neurons.\\
 
-\comment{
-Describe this process better
-}
+Without the possibility of computing the output neurons as direct functions of the input features another method to interpret the knowledge inside the LNN is needed. Consider the case of a LNN with 1 hidden layer. The approach will be to compute all the hidden neurons as function of the inputs, then using the weights from the hidden neurons to outputs rank the most important hidden neurons for each classification.\\
 
-Without the possibility of computing the output neurons as direct functions of the input features another method to interpret the knowledge inside the LNN is needed. The approach will be to compute all the hidden neurons in the first layer as a function of the inputs, then work backwards recursively to find the most useful first layer hidden nodes.
-
-\subsubsection{Results}
-\comment{
-	Finish Experements In This Section
-}
-
-\comment{Once Experiments are complete fill in the conclusions that can be drawn}
-
-Intepretability will be assessed by comparing various MNIST models using the new architecture again each other but also the original LNN model. Part of this assent will be to determine what effects the LSM has on the model interpretation.\\
+Intepretability will be assessed by comparing various MNIST models using the new architecture again each other but also the original LNN model. Part of this assment will be to determine what effects the LSM has on the model interpretation.\\
 
 To compare the intepretability of the old and new architectures aingle layer AND model will be used, this model has been shown to have a high accuracy and it is simpler to interpret as it does not contain any hidden layers.\\
 
 An attempt will be made to interpret some multi layer models as these get better performance and therefore are more practical to use.
 
+\subsubsection{No Hidden Layer Networks}
+\paragraph{Sigmoid Network}
+In the depictions of weights from a sigmoid network the blue represents a negative value and the red represents are positive weights. The features do not appear to represent any intepretable features of the digits.
+
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Sigmoid(NO-Hidden)/Layer0-Neuron-0.png}
+		\caption{Digit 0}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Sigmoid(NO-Hidden)/Layer0-Neuron-2.png}
+		\caption{Digit 2}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Sigmoid(NO-Hidden)/Layer0-Neuron-4.png}
+		\caption{Digit 4}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Sigmoid(NO-Hidden)/Layer0-Neuron-7.png}
+		\caption{Digit 7}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Sigmoid(NO-Hidden)/Layer0-Neuron-9.png}
+		\caption{Digit 9}
+	\end{minipage}
+	\hfill
+	\caption{Figures representing the output neurons of a sigmoid neural network with no hidden layers}
+\end{figure}
+
+
 \paragraph{AND Network Old Architecture (With and With Out LSM)}
+The network without an LSM is using the pixles which occour in all representations of each digit. On the other hand the network with an LSM is using the average border to achieve its classifications. Both models are intepretable as it is possible to understand the logic used in their decision making.\\
 
-The AND Network with an LSM is somewhat interpretable, not all the the neurons appear to make sense, but the 0,2 and 7 do look like the digits they are suppose to classify. From observing these images the network using an LSM appears to be learning to classify the digits using a noisy border.\\
+Each of the models describe the probelm in a different way, uncovering different information. The model without an LSM shows describes what is common between every drawing of that digit. The model with an LSM demonstraits which parts of each digit vary the most and what partsare reasombley confident.\\
 
-However the network without the LSM appears to be classifying the digits by learning the common pixels of all examples of the digit. Trying to identify the common is a difficult problem as there are many different drawings of each of the digits. Consider the digit 4, there are two ways to draw it which look quite different.
-
-\comment{Include the two examples here}
+The one benefit that the model with an LSM has over the other is that more of the output neurons look to visually represent the digit they are suppose to classify.
 
 \begin{figure}[H]
 	\captionsetup{labelformat=empty}
@@ -744,11 +797,9 @@ However the network without the LSM appears to be classifying the digits by lear
 \end{figure}
 
 \paragraph{AND Network (With LSM)}
-Given that the AND network has no hidden layers it is possible to directly compute the importance that output neuron places on each of the inputs. The top row of images represent positively weighted inputs and the bottom row represents the negatively weighted inputs.\\
+The top row of images represent positively weighted inputs and the bottom row represents the negatively weighted inputs.\\
 
-It is possible to interpret how the network is performing its classifications by observing the inputs which are negatively weighted, consider that the network is penalizing the activation based on pixels which are just outside the border of the average digit.\\
-
-Using the classification of 0 as an example. The network does not like pixels in the middle as the center of a zero should be empty, the outer circle represents the border of the average 0.
+These weights are providing two sets of information. The inputs which are positively weighted are the pixles that occour in many of the representations of the digit. Negatively weighted inputs represent the border of the digit, if pixles on this border are present then the neuron is less likely to be active. Using the classification of 0 as an example. The network does not like pixels in the middle as the center of a zero should be empty. The outer circle represents the border of the average 0, if these pixles are present then its less likely to be a zero as most instances of a 0 do not have pixles present there.
 
 \begin{figure}[H]
 	\captionsetup{labelformat=empty}
@@ -795,7 +846,7 @@ Using the classification of 0 as an example. The network does not like pixels in
 		\caption{Not Digit 9}
 	\end{minipage}
 	\hfill
-	\caption{Figures representing the weighted connections between the inputs and outputs.}
+	\caption{Figures representing the weighted connections between the inputs and outputs for an AND network with an LSM. The top row shows the pixels that when present contribute to the classification as the digit while the bottom row shows the pixels which when they are not present contributes to the classification}
 \end{figure}
 
 \paragraph{AND Network (With out LSM)}
@@ -857,47 +908,326 @@ This appears to be performing classification in the same way as to the AND Net w
 	\hfill
 \end{figure}
 
-\paragraph{OR $\rightarrow$ AND Network (With LSM)}
-Interpreting these multilayer models is a more difficult task. Assume the goal is to verify that the digit 1 is being classified in a sensible way. First observe the hidden neurons which contribute to the digit being a 1.
+\paragraph{Conclusion of Intepretability for LNNs with No Hidden Layer}
+The logical soft max introduces more noise into the weights but do not diminish the intepretability of the system. Using the new structure (i.e. adding nots of inputs) appears to change the means of which the LNN classifies the digits. Without the nots the network positively weight the pixels which make-up the filling of the digits. On the other hand when the nots are added the network negatively weights pixels sitting just outside the border of the average digit.\\
+
+Compared to the Sigmoid network the LNNs are more intepretable as it is possible to make determinations about how the network is making its classification decisions. Based on this experemental evedence it is possible to conclude that in the context of LNNs with no hidden layers the new LNN archetchure and LSM improve the intepretability.
+
+\subsubsection{Single Hidden Layer Networks}
+
+Interpreting these multilayer models is a more difficult task as the hidden layer introcudes dependencies between the inputs when considering how they influence the classification. To test the intepretability of these networks assume the goal is to verify that the digit 1 is being classified in a sensible way. With each network the hidden neurons which have the most influence on the classification be 1 will be displayed.
+
+\paragraph{Sigmoid Network}
+The hidden features learnt by the Sigmoid Network do not appear to represent any meaningful information about the digit 1.
 
 \begin{figure}[H]
 	\captionsetup{labelformat=empty}
 	\centering
 	\begin{minipage}[b]{0.19\textwidth}
-		\includegraphics[width=\textwidth]{OR-AND(1)/Like/True/Layer0-Neuron-18.png}
-		\caption{Digit 0}
-		\label{fig:cnf-descrete-generalizatiion}
+		\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Layer0-Neuron-6.png}
+		%\caption{Digit 0}
+		\label{}
 	\end{minipage}
 	\begin{minipage}[b]{0.19\textwidth}
-		\includegraphics[width=\textwidth]{OR-AND(1)/Like/True/Layer0-Neuron-19.png}
-		\caption{Digit 0}
-		\label{fig:cnf-descrete-generalizatiion}
+		\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Layer0-Neuron-7.png}
+		%\caption{Digit 0}
+		\label{}
 	\end{minipage}
 	\begin{minipage}[b]{0.19\textwidth}
-		\includegraphics[width=\textwidth]{OR-AND(1)/Like/False/Layer0-Neuron-18.png}
-		\caption{Digit 0}
-		\label{fig:cnf-descrete-generalizatiion}
+		\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Layer0-Neuron-24.png}
+		%\caption{Digit 0}
+		\label{}
 	\end{minipage}
 	\begin{minipage}[b]{0.19\textwidth}
-		\includegraphics[width=\textwidth]{OR-AND(1)/Like/False/Layer0-Neuron-19.png}
-		\caption{Digit 0}
-		\label{fig:cnf-descrete-generalizatiion}
+		\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Layer0-Neuron-28.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\caption{}
+	\hfill
+\end{figure}
+
+\paragraph{OR $\rightarrow$ AND Network Old Structure (With Out LSM)}
+When considering that these hidden features represent an OR of the inputs it can be seen how they might makeup a 1. The first and last appear to be the stem of the 1 where as the middle one contains a dark bar at the bottom which could be the base.
+
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(WO-LSM)(1)/Layer0-Neuron-5.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(WO-LSM)(1)/Layer0-Neuron-15.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(WO-LSM)(1)/Layer0-Neuron-23.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\caption{}
+	\hfill
+\end{figure}
+
+\paragraph{OR $\rightarrow$ AND Network Old Structure (With LSM)}
+In a similar fashion of the OR AND Network without an LSM these features are not clearly representative of a 1. Moreover these features generally do not place a lot of emphasis on any particular input features.
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(W-LSM)(1)/Layer0-Neuron-0.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(W-LSM)(1)/Layer0-Neuron-2.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(W-LSM)(1)/Layer0-Neuron-6.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+	\includegraphics[width=\textwidth]{OR-AND(OLD)(W-LSM)(1)/Layer0-Neuron-7.png}
+	%\caption{Digit 0}
+	\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(W-LSM)(1)/Layer0-Neuron-10.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(W-LSM)(1)/Layer0-Neuron-14.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+		\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(W-LSM)(1)/Layer0-Neuron-20.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(OLD)(W-LSM)(1)/Layer0-Neuron-29.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+
+	\caption{With LSM}
+	\hfill
+\end{figure}
+
+\paragraph{OR $\rightarrow$ AND Network (With Out LSM)}
+This network is running on the new architecture and as such each feature has two "channels", one representing the inputs that feature positively likes and the other the inputs which are negatively liked (i.e. neuron is more active when these inputs are not present).
+
+The features below represent the ones which if present contribute to the classification being a 1. These features are sparse and place a high weight on the inputs which they like.
+
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/Like/True/Layer0-Neuron-0.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/Like/True/Layer0-Neuron-3.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/Like/True/Layer0-Neuron-10.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/Like/True/Layer0-Neuron-15.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+
+	\medskip
+
+		\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/Like/False/Layer0-Neuron-0.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/Like/False/Layer0-Neuron-3.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/Like/False/Layer0-Neuron-10.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/Like/False/Layer0-Neuron-15.png}
+		%\caption{Digit 0}
+		\label{}
 	\end{minipage}
 	\hfill
 \end{figure}
 
-\paragraph{OR $\rightarrow$ AND $\rightarrow$ AND Network (With LSM)}
+The folowing feature contributes to the classification of being a 1 if its not present. This would appear to represent the outer border of what could be a 1.
 
-\paragraph{Results}
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/DontLike/True/Layer0-Neuron-28.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+
+	\medskip
+	
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(WO-LSM)(1)/DontLike/False/Layer0-Neuron-28.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+\paragraph{OR $\rightarrow$ AND (With LSM)}
+The features extracted from this network do not appear to correspond to a 1, not in a way which is immedaitly interpretable. Below are the features which are positively weighted towards a 1.
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/Like/True/Layer0-Neuron-18.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/Like/True/Layer0-Neuron-19.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	
+	\medskip
+	
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/Like/False/Layer0-Neuron-18.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/Like/False/Layer0-Neuron-19.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+The folowing features are the ones which are negatively weighted towards being a 1. 
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/DontLike/True/Layer0-Neuron-2.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/DontLike/True/Layer0-Neuron-9.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/DontLike/True/Layer0-Neuron-28.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	
+	\medskip
+	
+	\begin{minipage}[b]{0.19\textwidth}
+	\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/DontLike/False/Layer0-Neuron-2.png}
+	%\caption{Digit 0}
+	\label{}
+\end{minipage}
+\begin{minipage}[b]{0.19\textwidth}
+	\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/DontLike/False/Layer0-Neuron-9.png}
+	%\caption{Digit 0}
+	\label{}
+\end{minipage}
+\begin{minipage}[b]{0.19\textwidth}
+	\includegraphics[width=\textwidth]{OR-AND(W-LSM)(1)/DontLike/False/Layer0-Neuron-28.png}
+	%\caption{Digit 0}
+	\label{}
+\end{minipage}
+	\hfill
+\end{figure}
+
+\paragraph{AND $\rightarrow$ OR Model (With Out LSM)}
+This network has a small number of features associated with each classification. In terms of the classifying the digit 1 there is only 1 hidden features. This feature appears to classify a 1 by positively liking the stem of a 1 and disliking the anything outside the average 1.
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OR(WO-LSM)(1)/Like/True/Layer0-Neuron-3.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	
+	\medskip
+
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OR(WO-LSM)(1)/Like/False/Layer0-Neuron-3.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+\paragraph{AND $\rightarrow$ OR Model (With LSM)}
+Similarly to the AND OR Model with out the LSM this model appears to positively like the inputs on the stem of a 1 and dislike any pixle outside the average border of a 1.
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OR(W-LSM)(1)/Like/True/Layer0-Neuron-9.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	
+	\medskip
+	
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{AND-OR(W-LSM)(1)/Like/False/Layer0-Neuron-9.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+\paragraph{Conclusion of Intepretability for LNNs with No Hidden Layer}
+The results of the experiments show that in the context of multi layer adding an LSM introduces more noise into the feature maps. And similarly to before the sigmoid weights do not appear to relate to digit 1 in any meaningful way.
+
+\subsubsection{Results}
 From the above experiments and discussions the following conclusions can be made
 
 \begin{enumerate}
-	\item \textit{Adding Nots Improves Intepretability:}
-	\item \textit{Adding an Logical Soft Max does not hinder the intepretability (on the new architecture):}
+	\item \textit{Adding Nots Improves Intepretability:} Using the new structure with nots allows the network to place a greater emphasis on the presence or absence of various pixles. Without the Nots not many of inputs are of great importance, rather many have a relatively small relevance.
+	\item \textit{Adding an Logical Soft Max does not hinder the intepretability (on the new architecture):} By comparing the two different network architectures with and without an LSM it is possible to see that the intepretability is not directly effected and the features representing the classification of the digit 1 are not significantly changed.
+	\item \textit{Intepretability of Network is Heavily Dependent on Structure:} As shown through the previous examples the OR $\rightarrow$ AND networks harder to interpret than the AND $\rightarrow$ OR architecture.
 \end{enumerate}
 
 \section{Summary Of Logical Neural Network Evaluation}
-\comment{Once all conclusions have been drawn fill in this section}
+Each of the Logical Neural Networks with a Logical Soft-Max has been shown to have either statistically equivalent or better performance than the corresponding Multi-Layer Perceptron Network. The addition of a Logical Soft-Max gives around a 50\% increase in performance. The new structure does not appear to make a statistically significant difference in the peformance of LNNs.\\
+
+By assessing the intepretability of LNNs it was found that the new structure (adding NOTs) promotes a more intuative learnt representation and inclusion of an LSM does not hinder the intepretability but does increase the noise in the weights.\\
+
+Using the new LNN structure and LSM yields more interpretable models with an increased performance.
 
 \chapter{Application to Auto Encoders} \label{C:lnn-application}
 Auto encoders \cite{baldi2012complex} are a network architecture which aim to take the input to some reduced feature space and then from this feature space back to the original input with the smallest error. The case where there is one linear layer doing the encoding and decoding is called \textbf{Linear Autoencoder}, this architecture corresponds to performing Principle Component Analysis (PCA) on the data.\\
@@ -911,28 +1241,139 @@ For some data sets, such as MNIST, PCA is not an effective way to reduce the dim
 The experiments carried out will be to compress the MNIST feature space (784 dimintions) into 10 dimensions using different Auto encoder architectures. The accuracy and intepretability of the features will be explored. Each model was trained for 30 epochs
 
 \paragraph{Result of Logical Auto Encoder (LoAE)}
-AND - 20LF
-20.5527660464
-20.2283757847
+A logical auto encoder, consisting of a single AND layer for both the encoder and decoder, was able to compress the feature space to 20 dimensions and achieve a Mean Square Error (MSE) of 20.55 on the training set and 20.22 on the testing set.
 
-
-Using a single layer OR LoAE we where able to achieve an MSE of 32.28 on training and 31.96 on testing. \\
-
-If instead using a single layer AND LoAE we get 20.55 MSE on the training and 20.23 MSE on the testing.\\
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/True/Feature-0.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/True/Feature-4.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/True/Feature-10.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/True/Feature-12.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/True/Feature-17.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	
+	\medskip
+	
+		\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/False/Feature-0.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/False/Feature-4.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/False/Feature-10.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/False/Feature-12.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{LoAE(AND)(20LF)/False/Feature-17.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	
+	\hfill
+\end{figure}
 
 \paragraph{Result of Linear Auto Encoder (LAE)}
-20LF
-21.3413061247\\
-21.2568757326
+A linear auto encoder obtained an MSE of 21.34 on the training and 21.25 on the test data.
 
-After training the LAE obtained an MSE of 29.45 on the training data and 29.47 on the test data
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Linear-AE/Feature-3.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Linear-AE/Feature-7.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Linear-AE/Feature-11.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Linear-AE/Feature-15.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{Linear-AE/Feature-18.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	
+	\hfill
+\end{figure}
 
 \paragraph{Result of Sigmoid Auto Encoder (SAE)}
-20LF
-14.4386194921
-14.2518036234
+A sigmoid autoencoder achieved an MSE of 14.43 on the training data and 14.25 on the testing data.
 
-After training the SAE obtained an MSE of  on the training data and  on the test data
+\begin{figure}[H]
+	\captionsetup{labelformat=empty}
+	\centering
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{SAE(20LF)/Feature-0.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{SAE(20LF)/Feature-6.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{SAE(20LF)/Feature-10.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{SAE(20LF)/Feature-12.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	\begin{minipage}[b]{0.19\textwidth}
+		\includegraphics[width=\textwidth]{SAE(20LF)/Feature-15.png}
+		%\caption{Digit 0}
+		\label{}
+	\end{minipage}
+	
+	\hfill
+\end{figure}
 
-\paragraph{Comparison}
+\paragraph{Discussion}
+While the results show that the Sigmoid Auto Encoder (AE) outpeforms the Logical one this is an example of how Logical Neural Networks can be applied to different situations in Machine Learning where the goals are different from classification. The features learnt by the Logical AE are sparse and posibley intepretable as each one can be viewed as a logical AND of the input features.\\
 
+A Logical Auto Encoder provides a means to trade off between the intepretableity of the model and the performance.
