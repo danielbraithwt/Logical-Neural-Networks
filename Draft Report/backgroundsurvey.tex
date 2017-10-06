@@ -1,12 +1,24 @@
 \chapter{Background}\label{C:backgroundsurvey}
-\section{Related Work}
-\subsection{Rule Extraction}
+This chapter presents concepts related to the study conducted in this report. After each idea is introduced and discussed the relation to this work is explored.
+
+\section{Intepretability}
+To create a system that is interpretable it is necessary to have an understanding of what it means to interpret a model and how its interpretation might be evaluated. Intepretability of Machine Learning systems has been defined as \textit{"the ability to explain or to present in understandable terms"} \cite{doshi2017towards} which is ambiguous.\\
+
+\comment{Situations where intepretability is important}
+
+\comment{How evaluation of intepretabie systems might be carried out}
+
+\subsection{Relation to Solution}
+
+
+
+\section{Rule Extraction}
 
 A survey in 1995 focuses on rule extraction algorithms \cite{andrews1995survey}, identifying the reasons for needing these algorithms along with introducing ways to categorise and compare them.\\
 
 There are three categories that rule extraction algorithms fall into \cite{andrews1995survey}. An algorithm in the \textbf{decompositional} category focuses on extracting rules from each hidden/output unit. If an algorithm is in the \textbf{pedagogical} category then rule extraction is thought of as a learning process, the ANN is treated as a black box and the algorithm learns a relationship between the input and output vectors. The third category, \textbf{electic}, is a combination of decompositional and pedagogical. Electic accounts for algorithms which inspect the hidden/output neurons individually but extracts rules which represent the ANN globally \cite{tickle1998truth}.\\
 
-To further divide the categories two more distinctions are introduced. One measures the portability of rule extraction techniques, i.e. how easily can they be applied to different types of ANN's. The second is criteria to assess the quality of the extracted rules, these are accuracy, fidelity, consistency, comprehensibility \cite{andrews1995survey}.
+To further divide the categories two more distinctions are introduced. One measures the portability of rule extraction techniques, i.e. how easily can they be applied to different types of ANN's? The second is criteria to assess the quality of the extracted rules, these are accuracy, fidelity, consistency, comprehensibility \cite{andrews1995survey}.
 
 \begin{enumerate}
 \item A rule set is \textbf{Accurate} if it can generalize, i.e. classify previously unseen examples.
@@ -52,14 +64,19 @@ function extractRulesMLPN(network)
 	\label{alg:rule-extraction-tsukimoto}
 \end{figure}
 
-The algorithm presented in figure \ref{alg:rule-extraction-tsukimoto} is certainly exponential time in terms of $n$, a polynomial time algorithm is also presented but deriving such an algorithm is beyond the scope of this report.\\
+The algorithm presented in figure \ref{alg:rule-extraction-tsukimoto} is exponential time in terms of $n$. A polynomial time algorithm is also presented but deriving it is beyond the scope of this report.\\
 
 These rule extraction algorithms are all post-hoc operations. They do not place many restrictions on the structure of ANN they are applied to, resulting with complicated algorithms. The solution developed in this report builds intepretability into the ANN structure with the goal of simpler and more intuitive algorithms to interpret knowledge.
 
+\subsection{Relation to Solution}
+These survayes provide a framework for evaluating the rules extracted using a particular technequic. The solution developed in this report allows for rule exaction in some situations. By introducing this content the reader is familiar with this approach to evaluating extracted rule sets.
+
+Rule extraction algorithms make up a large portion of the current methods to interpret knowledge inside an ANN.
+
 \section{Noisy Neurons} \label{sec:background-noisy-neurons}
-MLPNs are universal function approximators and as such can achieve a high accuracy across a broad range of problems. There are many equivalent weight representations of an MLPN which give the same solutions, this makes interpreting the network difficult \cite{LearningLogicalActivations}. By restricting the possible relationships between a neurons inputs and outputs the problem interpretation becomes easier. The two functions OR and AND are easy to understand, a good reason to pick them over other functions.\\
- 
-In 2016 the concept of Noisy-OR and Noisy-AND neurons where developed \cite{LearningLogicalActivations}. Noisy neurons are derived from the Noisy-OR relation\cite{LearningLogicalActivations}, developed by Judea Pearl \cite{russell1995modern}, a concept in Bayesian Networks. A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph.
+\hl{Multi-Layer Perceptron Networks (MLPNs) are universal function approximators} and as such can achieve a high accuracy across a broad range of problems. \hl{There are many equivalent weight representations of an MLPN which give the same solutions}, this makes interpreting the network difficult \cite{LearningLogicalActivations}. By restricting the possible relationships between a neurons inputs and outputs to be a single function then only the relevance of each feature needs to be inferred. Consequently the problem interpretation becomes easier. The two functions OR and AND are easy to understand, which is a good reason to pick them over other functions.\\
+
+In 2016 the concept of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActivations} where derived from the Noisy-OR relation \cite{russell1995modern}, a concept in Bayesian Networks developed by Judea Pearl. \hl{A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph}.
 
 \begin{figure}[H]
 	\centering
@@ -71,19 +88,27 @@ In 2016 the concept of Noisy-OR and Noisy-AND neurons where developed \cite{Lear
 	\hfill
 \end{figure}
 
-Figure \ref{fig:bayesian-network-example} is a Bayesian network, it demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies i.e. Traffic influences whether you are late to work, and it being rush hour or raining influences whether there is traffic.\\
+Figure \ref{fig:bayesian-network-example} is a Bayesian network. It demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies i.e. Traffic influences whether you are late to work,\ and it being rush hour or raining influences whether there is traffic.\\
 
-Consider a Bayesian Network having the following configuration, take some node $D$ with $S_1,..., S_n$ as parents i.e. $S_i$ influences the node $D$, each $S_i$ is independent from all others. The relationship between D and its parents is if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true. Let $\epsilon_i$ be the uncertainty that $S_i$ influence $D$ then $P(D = 1| S_1 = 1, , S_n = 1)$ can be defined.
+Consider a Bayesian Network with a node $D$ and $S_1,..., S_n$ being $D$s parents. In other words $S_i$ influences the node $D$. Each $S_i$ is independent from all others. The relationship between D and its parents is defined as if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true. Let $\epsilon_i$ be the uncertainty that $S_i$ influence $D$, then $P(D = 1| S_1 = 1, , S_n = 1)$ can be defined as Equation \ref{equ:noisy-or-relation}.
 
 \begin{align}
 P(D = 1 | S_1 = 1, ..., S_n = 1) = 1 - \prod^n_{i=1} \epsilon_i
 \label{equ:noisy-or-relation}
 \end{align}
 
-Equation \ref{equ:noisy-or-relation} shows the noisy or relation \cite{LearningLogicalActivations}. In the context of a neuron, the inputs $x_1, ..., x_n$ represent the probability that inputs $1, ..., n$ are true. Consider the output of a neuron as conditionally dependent on the inputs, in terms of a Bayesian Network each $x_i$ is a parent of the neuron. Each $\epsilon_i$ is the uncertainty as to whether $x_i$ influences the output of the neuron. How can weights and inputs be combined to create a final activation value for the neuron. First consider a function $f(\epsilon, x)$ which computes the irrelevance of input x. Some conditions that can be placed on $f$ are given in \cite{LearningLogicalActivations}. (1) $\epsilon = 1$ means that $f(\epsilon, x) = 1$, (2) $x = 1$ means that $f(\epsilon, x) = 1$, (3) Monotonically increasing in $\epsilon$ and decreasing in x. Let $f(x, \epsilon) = \epsilon^x$. The definitions for Noisy-OR and Noisy-AND gates can now be given.
+Equation \ref{equ:noisy-or-relation} shows the noisy or relation. In the context of a neuron the inputs $x_1, ..., x_n$ represent the probability that inputs $1, ..., n$ are true. The output of a neuron as conditionally dependent on its inputs, in terms of a Bayesian Network the $x_i$'s is a parent of the neuron. Each $\epsilon_i$ is the uncertainty as to whether $x_i$ influences the neurons output. How can weights and inputs be combined to create a final activation value for the neuron? First consider a function $f(\epsilon, x)$ which computes the irrelevance of input x. Some conditions \cite{LearningLogicalActivations} that can be placed on $f$ are given in the following list. 
+
+\begin{enumerate}
+	\item $\epsilon = 1$ means that $f(\epsilon, x) = 1$
+	\item $x = 1$ means that $f(\epsilon, x) = 1$
+	\item Monotonically increasing in $\epsilon$ and decreasing in x. Let $f(x, \epsilon) = \epsilon^x$. The definitions for Noisy-OR and Noisy-AND gates can now be given.
+\end{enumerate}
+
+The function $f(\epsilon, x)$ is 1 (i.e x is irrelevant) if x does not influence the output ($\epsilon = 1$) essentially cancelling these irrelevant inputs out in a AND or OR. The noisy activations can therefore be a logical function over $f(\epsilon_{x_i}, x_i)$ for all $i$.
 
 \begin{definition}
-	A \textbf{Noisy-OR} Neuron has weights $\epsilon_1, ..., \epsilon_n \in (0,1]$ which represent the irrelevance of corresponding inputs $x_1, ..., x_n \in [0,1]$. The activation of a Noisy-OR Neurons is.
+	A \textbf{Noisy-OR} Neuron has weights $\epsilon_1, ..., \epsilon_n \in (0,1]$ which represent the uncertainty that corresponding inputs $x_1, ..., x_n \in [0,1]$ influence the output. The activation of a Noisy-OR Neurons is given in Equation \ref{equ:noisy-or-activation-1}.
 	
 	\begin{align}
 	a = 1 - \prod^p_{i=1} (\epsilon_i^{x_i}) \cdot \epsilon_b
@@ -92,7 +117,7 @@ Equation \ref{equ:noisy-or-relation} shows the noisy or relation \cite{LearningL
 \end{definition}
 
 \begin{definition}
-	A \textbf{Noisy-AND} Neuron has weights $\epsilon_1, ..., \epsilon_n \in (0, 1]$ which represent the irrelevance of corresponding inputs $x_1, ..., x_n \in [0,1]$. The activation of a Noisy-AND Neurons is.
+	A \textbf{Noisy-AND} Neuron has weights $\epsilon_1, ..., \epsilon_n \in (0, 1]$ which represent the uncertainty that corresponding inputs $x_1, ..., x_n \in [0,1]$ influence the output. The activation of a Noisy-AND Neurons is given in Equation \ref{equ:noisy-and-activation-1}
 	
 	\begin{align}
 	a = \prod^p_{i=1} (\epsilon_i^{1 - x_i}) \cdot \epsilon_b
@@ -102,10 +127,11 @@ Equation \ref{equ:noisy-or-relation} shows the noisy or relation \cite{LearningL
 
 Both these parametrisations reduce to discrete logic gates when there is no noise, i.e. $\epsilon_i = 0$ for all $i$.\\
 
-\section{Logical Neural Networks}
-ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Networks (LNN's), if the network consists of only Noisy neurons then it a pure LNN. LNN's have been applied to the MINST dataset with promising results. Experiments with different combinations of logical and standard (sigmoid, soft-max) neurons have shown that pure LNN's where able to achieve an error of 8.67\%, where a standard perceptron/softmax network was able to achieve an error of 3.13\%. This reduction in performance does not come without reward, the pure LNN yields a simpler (sparser) and more interpretable network \cite{LearningLogicalActivations}. Training LNN's which are not pure have been shown to have reduced performance (compared to standard ANN's) and no interpretability benefit.\\
+\subsection{Relation to Solution}
+The noisy neurons are the building blocks for the two network architectures present in this report. Without an understanding of these concepts it would be difficult to understand the motivations for the solution developed.
 
-\section{CNF \& DNF}
+\section{Logical Normal Form Networks}
+\subsection{CNF \& DNF}
 A boolean formula is in Conjunctive Normal Form (CNF) if and only if it is a conjunction (and) of clauses. A clause in a CNF formula is given by a disjunction (or ) of literals. A literal is either an atom or the negation of an atom, an atom is one of the variables in the formula.\\
 
 Consider the boolean formula $\lnot a \lor (b \land c)$, the CNF is $(\lnot a \lor b) \land (\lnot a \lor c)$. In this CNF formula the clauses are $(\lnot a \lor b)$, $(\lnot a \lor c)$, the literals used are $\lnot a$, $b$, $c$ and the atoms are $a$, $b$, $c$.\\
@@ -130,9 +156,15 @@ Given a truth table representing a boolean formula, constructing a DNF formula i
 	A similar argument shows that the same holds for DNF.
 \end{proof}
 
-\section{Logical Normal Form Networks}
-In 1996 a class of networks, called Logical Normal Form Networks (LNFNs), where developed \cite{herrmann1996backpropagation}, focusing on learning the underlying CNF or DNF for a boolean expression which describes the problem. The approach relies on a specific network configuration along with restriction the function space of each neuron, allowing them to only perform an OR or AND on a subset of their inputs, such OR and AND neurons are called Disjunctive and Conjunctive retrospectively. If the trained network is able to achieve a low enough accuracy then rules can be extracted from the network in terms of a Boolean CNF or DNF expression \cite{herrmann1996backpropagation}.\\
+\subsection{Definition of Logical Normal Form Networks}
+In 1996 a class of networks called Logical Normal Form Networks \cite{herrmann1996backpropagation} (LNFNs) where developed. Focusing on learning the underlying CNF or DNF for a boolean expression which describes the problem. The approach relies on a specific network configuration along with restriction the function space of each neuron, allowing them to only perform an OR or AND on a subset of their inputs. Such OR and AND neurons are called Disjunctive and Conjunctive retrospectively. If the trained network is able to achieve a low enough accuracy then rules can be extracted from the network in terms of a Boolean CNF or DNF expression \cite{herrmann1996backpropagation}.\\
 
-The algorithm which extracts rules from LNFNs would be Electic and certainly is not Portable as the algorithm is specific to the LNFN architecture. It is not possible to further classify the rule extraction algorithm as the research developing it lacks any experimental results, much justification is also missing making the LNFNs difficult to reproduce.\\
+The algorithm which extracts rules from LNFNs would be Electic and certainly is not Portable as the algorithm is specific to the LNFN architecture. It is not possible to further classify the rule extraction algorithm as the research developing it lacks any experimental results. Justification is also missing making the LNFNs difficult to reproduce.\\
 
+\subsection{Relation to Solution}
+
+\section{Logical Neural Networks}
+ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Networks \cite{LearningLogicalActivations} (LNN's). If the network consists of only Noisy neurons then it a pure LNN. ANNs containing a mix of logical and standard activations where shown to not yield interpretable models and also have lower performance, consequently when LNNs are refered to it will always be in the context of Pure LNNs.
+
+\subsection{Relation to Solution}
 

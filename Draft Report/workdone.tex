@@ -266,11 +266,10 @@ In figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-gener
 Figures \ref{fig:cnf-descrete-generalizatiion-partial} \& \ref{fig:dnf-descrete-generalizatiion-partial} demontrait CNFNs and DNFNs trainined over partial data retrospectively. In the case of CNFNs only true entries of the truth table are removed and for the DNFNs only false entries. For the most part the minimum line is lower however the average line is roughly the same, this would indicate that while the choice of examples removed has an effect  initial conditions have a more significant influence on the generalization performance.
 
 \chapter{Investigation of Logical Normal Form Networks} \label{C:investigation-of-lnfns}
-\section{Developing Applications} \label{sec:developing-applications}
-The LNFNs presented in Chapter \ref{C:foundation-of-lnfns} have only been shown to have application problems where the features and outputs are binary. To make LNFNs a more useful tool they need a bigger scope. 
+The LNFNs presented in Chapter \ref{C:foundation-of-lnfns} have only been shown to be appiliciple when learning boolean truth tables. This chapter investigates extending LNFNs to support multi class classification problems and continous feature spaces.
 
-\subsection{Multi-class Classification}
-To extend an MLPN to multi class classification it is enough to add more output neurons (one for each class). If output node $i$ is a 1 then the example has predicted class $i$. The networks output is now a vector representing the class distribution. \\
+\section{Multi-class Classification}
+Extending an ANN to support multi class classification is achieved by adding more output neurons, one for each class. The value output neuron $i$ can be considered the probability of class $i$. The networks output is now a vector representing the class distribution. \\
 
 For example if given a problem with 3 classes then ${1,0,0}$, ${0,1,0}$ and ${0,0,1}$ represent class 1, 2 and 3 retrospectively. The LNFN would have 3 output neurons, each representing a bit in the output vector. During the training process if the true class of an example was 1 then the desired output vector would be ${1,0,0}$.\\
 
@@ -280,26 +279,30 @@ This process of converting a categorical variable to a binary string is known as
 	An LNFN to solve a $k$ class classification problem is unchanged apart from the number of output neurons which is $k$.
 \end{definition}
 
-To evaluate the LNFN for multi class classification it will be evaluated against an MLPN. The Lenses problem \cite{Lichman:2013} is multi class and contains a natural rule system making it an ideal problem for LNFNs. Each example has four features, three are binary and one categorical (of size 3). Applying One-Hot encoding to the categorical variable yields a set of instances each with length 6.
+\subsection{Evaluation}
+The Lenses problem \cite{Lichman:2013} is multi class and contains a natural rule system making it an ideal problem for evaluating LNFNs. Each example has four features, three are binary and one categorical (of size 3). Applying One-Hot encoding to the categorical variable yields a set of instances each with length 6.\\
 
+The LNFN will be evaulated against an MLPN with a two layer structure where the layer width are $2 \cdot n$ and $n$ retrespectively.\\
 
-The performance of the two classifiers will be compared using Leave-One-Out (LOE) Cross-Validation. The structure of the MLPN only differs in the number of hidden layers/units, there are two hidden layers, one with $2 \cdot n$ hidden units and the other with $n$
+The performance of the two classifiers will be compared using Leave-One-Out (LOE) Cross-Validation. The structure of the MLPN differs in the number of hidden layers/units, there are two hidden layers, one with $2 \cdot n$ hidden units and the other with $n$
 
+\comment{Re Run Experements}
 \begin{table}[H]
 	\begin{center}
 		\begin{tabular}{| c | c | c |}
 			\hline
-			& Loss (Cross Entropy) & Confidence Interval (95\%) \\
+			& Error Rate & Error Rate CI (95\%) \\
 			\hline
-			CNF Net & 6.663 & (6.468, 7.198) \\
 			\hline
-			DNF Net & 6.660 & (6.468, 7.197) \\
+			CNF Net & - & - \\
 			\hline
-			PCEP Net & 6.751 & (6.468, 7.997) \\
+			DNF Net & - & - \\
+			\hline
+			PCEP Net & - & - \\
 			\hline
 		\end{tabular}
 	\end{center}
-	\caption{}
+	\caption{Network Peformance On Lenses Problem}
 	\label{tab:lenses-peformance-comp}
 \end{table}
 
@@ -315,7 +318,9 @@ The following rules have been extracted from a CNFN after being trained over the
 	\item \text{Class 3:} $(\lnot a \lor b \lor c \lor \lnot f) \land (a \lor \lnot d \lor e \lor \lnot f) \land (\lnot b \lor c \lor d \lor \lnot f) \land (d \lor \lnot e \lor \lnot f)$
 \end{itemize}
 
-Immediately it is possible to find useful information about this problem that was not obvious before. For example $\lnot f = True \implies $ Class 3, or \textit{if the tear reduction rate is reduced then do not fit contact lenses}. Table \ref{tab:rule-classification-lenses-cnf} shows these rules applied to all the problem instances in the Lenses data set, it demonstrates that these extracted rules are able to fully describe the Lenses problem.\\
+Immediately it is possible to find useful information about this problem that was not obvious before. For example $\lnot f = True \implies $ Class 3, or \textit{if the tear reduction rate is reduced then do not fit contact lenses}.
+
+
 
 The DNFN might be more applicable as the rules will be more insightful. Each clause in the formulas represents a situation where the class is true. The formulae extracted from the DNFN confirm the previous knowledge extracted, $\lnot f = True \implies $ Class 3.
 
@@ -325,21 +330,40 @@ The DNFN might be more applicable as the rules will be more insightful. Each cla
 	\item \text{Class 3:} $(\lnot a \land \lnot b \land c \land \lnot d) \lor (\lnot a \land d \land e) \lor \lnot f$
 \end{itemize}
 
-One possible issue that could occur is that the LNFN is attempting to learn three formulae with the same amount of hidden neurons as when it learns one.
+Table \ref{tab:lenses-rule-peformance-comp} demontres the peformance of extracted rules over the Lenses dataset.
 
-\subsection{Features with Continuous Domains}
-The inputs to an LNFN are allowed to be continuous but must be in the rage $[0, 1]$, would it still be possible to extract meaningful rules from the network if the inputs are continuous? Here there are two things to investigate. What can be achieved by training an LNFN on problems with continuous features? The benchmark data set is the Iris problem \cite{Lichman:2013}
+\comment{Re Run Experements}
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| c | c | c |}
+			\hline
+			& Rule Error Rate & Rule Error Rate CI (95\%) \\
+			\hline
+			\hline
+			CNF Net & - & - \\
+			\hline
+			DNF Net & - & - \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{}
+	\label{tab:lenses-rule-peformance-comp}
+\end{table}
 
-If the features are continuous it no longer makes sense to extract rules but it could still be possible to see what inputs are considered in making a decision about the class. Any feature space can be converted to the $[0,1]$ domain by normalization. When training an LNFN on the Iris problem (over all problem instances) the network converges to a solution with a loss of $96.932$, poor performance when compared to a perceptron network that can achieve an accuracy of $0.0$. \\
+\section{Features with Continuous Domains}
+The input features to an LNFN are probabilities, as such they are allowed to be continous but must be in the range $[0, 1]$. Consider an abatary benchmark problem such as the Iris data set \cite{Lichman:2013}. An option would be to normalize all the variables to force them into the expected range $[0,1]$. The values of all the features after normalization are compatable with an LNFN, but consider the meaning, these normalized features do not represent probabilities.\\
+
+Forgetting the fact that the features do not represent probabilities and comparing the peformance of an LNFN to a MLPN over the Lenses data set shows poor peformance of the Logical network.The LNFN converges to a solution with a loss of $96.932$, poor performance when compared to a perceptron network that can achieve loss of $0.0$. \\
 
 Inspecting the class prediction of each reveals that for a problem instance that has a true class of Iris-virginica or Iris-versicolor then LNFN sometimes predicts multiple classes, this leads to the belief that these networks have issues with learning problems that are not linearly separable as the two classes which an LNFN has trouble differentiating between are not linearly separable.\\
 
 Not only did this result in poor performance but normalization is a crude way to apply this logical model to a situation where it does not make sense to apply it. The inputs are of an LNFN should be interpretable as probabilities. Normalizing the values in the Iris data set gives values in the 0 to 1 range but you cant think of them as probabilities.
 
-Applying LNFNs to continuous problems would work but only in the situation where each input variable can be thought of as a probability.
+\comment{Have another experement to show this}
+The experements conducted showed LNFNs can be applied to continuous problems but only in the situation where each input variable can be thought of as a probability.
 
 \chapter{Logical Neural Networks} \label{C:lnn}
-There are two key issues with LNFNs. Firstly the number of hidden units becomes unfeasable as the number of inputs increases. The volume of hidden neurons allows for the possibility to memorise the input data.\\
+There are two key issues with LNFNs. Firstly the number of hidden units becomes unfeasable as the number of inputs increases. Secondly if the problem size is small enough and the network can be trained the volume of hidden neurons allows for the possibility to memorise the input data.\\
 
 Using what has been learnt about LNFNs the class of Logical Neural Networks (LNNs) can be defined.
 
@@ -347,7 +371,7 @@ Using what has been learnt about LNFNs the class of Logical Neural Networks (LNN
 	A \text{Logical Neural Network} is an ANN where each neuron has a noisy activation.
 \end{definition}
 
-LNNs have a more flexabile structure, allowing for deeper networks and hidden layers with a variable number of hidden neurons. The downsides to using the current LNN model is that performance is poor. An LNN, consisting of Noisy-OR hidden units and Noisy-AND outputs, was shown to perform worse than an MLPN \cite{LearningLogicalActivations}. 
+LNNs have a more flexabile structure, allowing for deeper networks and hidden layers with a variable number of hidden neurons. The current LNN model has been shown to have poor peformance when compared to a Multi-Layer Perceptron Network \cite{LearningLogicalActivations}. An LNN, consisting of Noisy-OR hidden units and Noisy-AND outputs, was shown to perform worse than an MLPN. 
 
 There are two key issues caused by removing the restrictions imposed by the LNFN definition (Definition \ref{def:lnfn}) which must be addressed 
 
@@ -357,9 +381,7 @@ There are two key issues caused by removing the restrictions imposed by the LNFN
 	\item Another problem faced by LLNs that are not restricted to be ether a CNFN or DNFN is that the structure of the network will have a higher impact on whether the problem can be learnt. 
 \end{enumerate}
 
-Despite the issues outlined above being able to implement LNNs with layers that are not required to be $2^n$ hidden units wide would be a lot more practical, in practice the number of features could be upwards of 100 and $2^{100}$ is a huge number of hidden neurons.\\
-
-Resolving Issue 1 involves making our operation set functionally complete, this requires the $NOT$ operation. There are two ways to include the $NOT$ operation in the LNNs, one is to simply augment the inputs to each layer appending so it receives the input and its negation, a more complicated but more elegant solution is to derive a parametrisation of Noisy gates which can learn to negate inputs. However both these have no way to enforce mutual exclusivity between an input and its negation.\\
+Resolving Issue 1 involves making our operation set functionally complete, this requires the $NOT$ operation. There are two ways to include the $NOT$ operation in the LNNs, one is to simply augment the inputs to each layer appending so it receives the input and its negation. Another is to derive a parametrisation of Noisy gates which can learn to negate inputs. However both these have no way to enforce mutual exclusivity between an input and its negation.\\
 
 \section{Modified Logical Neural Network} \label{sec:modified-lnn}
 \subsection{Connections Between Layers \& Parameters}
@@ -379,16 +401,23 @@ Figure \ref{fig:modified-lnn-structure} provides a new structure for the connect
 Figure \ref{fig:modified-lnn-structure} shows the new LNN structure which includes an implicit NOT operation. The input to each layer consists of the true output of the previous plus the negated output from the last layer. If a layer has 20 outputs then there are 40 inputs to the following layer.\\
 
 \subsection{Softmax Output Layer}
-The old LNN structure does not include a Softmax layer for the output. On the one hand a traditional Softmax layer would not be effective as the neuron outputs are limited to the range $[0,1]$, so a different method must be employed to ensure the mutual exclusivity of the classes.\\
+The softmax function takes a vector of real values to a vector of values in the range $[0,1]$ that equal 1 when summed. The softmax function highilights the difference between the maximum and smaller values by increasing this difference. It is used in multiclass classification to generate a probability distrubution over the different outcomes and promote mutual exclisivity between the different classes.\\
 
-Consider the following vector of probabilities $P = \{p_1, ..., p_n\}$ where $p_i$ is the probability the given example belongs to class $i$. Then define $p_i^{'} = \frac{p_i}{\sum_j p_j}$, performing this action to generate a vector $P^{'}$ where each of the classes are mutually exclusive. This operation can be thought of as a "Logical Softmax"
+The old LNN structure does not include a Softmax layer as the output layer. A traditional Softmax layer would not be effective as the neuron outputs are limited to the range $[0,1]$. Figure \ref{fig:softmax-failure} shows an example of the softmax function on probabilities, insted of highilight the diffence between 0.1 and 0.9 the resuling vector has the values closer together.
 
-Adding this "Logical Softmax" may guarantee mutual exclusivity of each classes but will it cause the network to be less interpretable. Consider that without with no softmax then the network outputs directly represent the probabilities that the input vector is class $k$ given the parameters. Once the "Logical Softmax" has been introduced then it becomes less clear what the non softmaxed probabilities represent. The softmax introduces a dependency between the output neurons of the network which might cause a decrease in intepretability. This is a question which will be explored during experimentation with the modified LNN architecture.
+\begin{figure}[H]
+\begin{align*}
+A &= \{01, 0.9\}\\
+SoftMax(A) &= \{ \frac{e^{0.1}}{e^{0.1} + e^{0.9}}, \frac{e^{0.9}}{e^{0.1} + e^{0.9}} \}\\
+&\approxeq \{ 0.29, 0.71 \}
+\end{align*}
+\caption{Demonstration of Softmax on probabilities}
+\label{fig:softmax-failure}
+\end{figure}
 
-\comment{
-Might be nice to discuss what the ouput probabilities (before softmax) actually mean
-}
+Consider the following vector of probabilities $P = \{p_1, ..., p_n\}$ where $p_i$ is the probability the given example belongs to class $i$. Then define $p_i^{'} = \frac{p_i}{\sum_j p_j}$, performing this action to generate a vector $P^{'}$ where each of the classes are mutually exclusive. This operation can be thought of as a "Logical Softmax".\\
 
+Adding a "Logical Softmax" may guarantee mutual exclusivity of each classes but will it cause the network to be less interpretable? Consider that without with no softmax then the network outputs directly represent the probabilities that the input vector is class $k$ given the parameters. Once the "Logical Softmax" has been introduced then it becomes less clear what the non softmaxed probabilities represent. The softmax introduces a dependency between the output neurons of the network which might cause a decrease in intepretability. This is a question which will be explored during experimentation with the modified LNN architecture.
 
 \section{Weight Initialization}
 

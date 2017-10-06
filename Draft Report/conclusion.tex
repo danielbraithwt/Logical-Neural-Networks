@@ -1,11 +1,17 @@
 \chapter{Conclusion}\label{C:con}
-
-
 The growing number of situations where Artifical Neural Networks (ANNs) are used is driving the development of intepretable models. Being able to defend an ANNs decision can protect users from un safe or ethically biased systems and protect companies utilizing such sysems from breaching EU regulations.\\
 
-This report derived modifications for the LNN structure giving them stistically equivelent peformance to standard Multi-Layer Perceptron Networks and improving the intepretability of the leant models. By obesrving the weights of LNNs trainined over the MNIST data set it was possible to determin what input features contributed to each classification and verify that the logic learnt was "sensible".\\
+This report derived modifications for the LNN structure giving them stistically equivelent peformance to standard Multi-Layer Perceptron Networks and improving the intepretability of the leant models. Consequently this report has shown that LNNs are a sutable alternative to Multi Layer Perceptron Networks, obtaining an intepretable model and without scarfising acuracy. LNNs are however limited in the domains to which they can be applied.
 
-Logical Neural Networks where then applied to Auto Encoders, while the peformance of Logical Auto Encoders was worse than standard Sigmoid Auto Encoders it demonstraits the flexability of LNNs and the range of situations where they can be applied.\\
+By obesrving the weights of LNNs trainined over the MNIST data set it was possible to determin what input features contributed to each classification and verify that the logic learnt was "sensible".  The experementation also revealed a limitation of LNNs, obtaining an intepretable model is not as simple as using any LNN. Intepretability depends on the choice and order of the logical activations. A future study might aim to demonstrait intepretability by using LNNs to learn a verity of problems and then peform user studys on domain experts. The motivation behind LNNs is to allow verification of decisions, a person whos job is to grant or deny bank loans should be able to intepret an LNN trained to peform such a task.
 
-LNNs have limitations, prehapse the biggest comes down to intepreting multi layer logical neural networks. It is possible to directly extract the influence each input feature has on the ouputs in LNNs with no hidden layers. Hidden layers introduce dependencies between input features making it diffcult to find a direct influence of inputs on the outputs. Because of this limitation any future work which can develop better ways to intepret these models would increase the power of LNNs.
+Beyond applications to classification tasks Logical Neural Networks where applied to Auto Encoders. While the peformance of Logical Auto Encoders was worse than standard Sigmoid Auto Encoders it demonstraits the flexability of LNNs and the range of situations where they can be applied.\\
+
+Prehapse the biggest limitation of LNNs comes down to intepreting multi layer logical neural networks. It is possible to directly extract the influence each input feature has on the ouputs in LNNs with no hidden layers. However hidden layers introduce dependencies between input features making it diffcult to find a direct influence of inputs on the outputs. Because of this limitation any future work which can develop better ways to intepret these models would increase the power of LNNs.\\
+
+This report has provided a formal foundation for Logical Neural Networks and shown their ability to not only learn accurate but also intepretable models. While limitations have been identified this does not deminish potential of LNNs but rather provides avenures to increase their application.
+
+
+
+
 
