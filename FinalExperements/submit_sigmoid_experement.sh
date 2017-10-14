@@ -6,4 +6,4 @@
 #
 cd /am/phoenix/home1/braithdani/Logical-Neural-Networks/FinalExperements
 mkdir $JOB_ID
-python3 RunSigmoidNet.py sigmoid-experement3.exp $JOB_ID $SGE_TASK_ID
+python3 RunSigmoidNet.py sigmoid-experement5.exp $JOB_ID $SGE_TASK_ID

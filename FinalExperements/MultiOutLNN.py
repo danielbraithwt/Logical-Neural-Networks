@@ -239,8 +239,8 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
 
     y_hat = prev_out
     
-    if lsm:
-        y_hat = y_hat * (1/tf.reduce_sum(y_hat))
+    #if lsm:
+    #    y_hat = y_hat * (1/tf.reduce_sum(y_hat))
 
     y_hat_prime = y_hat
     y_hat_prime_0 = tf.clip_by_value(y_hat_prime, 1e-20, 1)
@@ -277,6 +277,26 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
             session.run([train_op], feed_dict={x:batch_ex, y:batch_l})
             #print(session.run([y_hat], feed_dict={x:batch_ex, y:batch_l}))
             #print(session.run(y, feed_dict={y:batch_l}))
+
+            if i % len(data) == 0:
+                er = 0
+                for j in range(len(data)):
+                    er += session.run(error, feed_dict={x:[data[j]], y:[targets[j]]})
+                print(er)
+
+                print()
+                print(session.run(prev_out, feed_dict={x:[data[0]], y:[targets[0]]}))
+                print(session.run(y_hat, feed_dict={x:[data[0]], y:[targets[0]]}))
+                print(session.run(y, feed_dict={x:[data[0]], y:[targets[0]]}))
+                print()
+                print(session.run(prev_out, feed_dict={x:[data[100]], y:[targets[100]]}))
+                print(session.run(y_hat, feed_dict={x:[data[100]], y:[targets[100]]}))
+                print(session.run(y, feed_dict={x:[data[100]], y:[targets[100]]}))
+                print()
+                print(session.run(prev_out, feed_dict={x:[data[4432]], y:[targets[4432]]}))
+                print(session.run(y_hat, feed_dict={x:[data[4432]], y:[targets[4432]]}))
+                print(session.run(y, feed_dict={x:[data[4432]], y:[targets[4432]]}))
+                print()
     
         #saver.save(session, 'model.ckpt')
 

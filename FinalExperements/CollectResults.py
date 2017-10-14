@@ -27,6 +27,8 @@ for result_dir in results_dirs:
             testing_data.append(float(results[1].strip()))
 
 
+    if len(training_data) == 0:
+        continue
     training_data = np.array(training_data)
     testing_data = np.array(testing_data)
 
