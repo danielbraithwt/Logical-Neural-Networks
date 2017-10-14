@@ -131,7 +131,7 @@
     </bcf:option>
     <bcf:option type="singlevalued">
       <bcf:key>sortscheme</bcf:key>
-      <bcf:value>nty</bcf:value>
+      <bcf:value>none</bcf:value>
     </bcf:option>
     <bcf:option type="singlevalued">
       <bcf:key>uniquelist</bcf:key>
@@ -710,30 +710,7 @@
   <bcf:sorting>
     <bcf:presort>mm</bcf:presort>
     <bcf:sort order="1">
-      <bcf:sortitem order="1">presort</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="2" final="1">
-      <bcf:sortitem order="1">sortkey</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="3">
-      <bcf:sortitem order="1">sortname</bcf:sortitem>
-      <bcf:sortitem order="2">author</bcf:sortitem>
-      <bcf:sortitem order="3">editor</bcf:sortitem>
-      <bcf:sortitem order="4">translator</bcf:sortitem>
-      <bcf:sortitem order="5">sorttitle</bcf:sortitem>
-      <bcf:sortitem order="6">title</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="4">
-      <bcf:sortitem order="1">sorttitle</bcf:sortitem>
-      <bcf:sortitem order="2">title</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="5">
-      <bcf:sortitem order="1">sortyear</bcf:sortitem>
-      <bcf:sortitem order="2">year</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="6">
-      <bcf:sortitem order="1">volume</bcf:sortitem>
-      <bcf:sortitem order="2">0</bcf:sortitem>
+      <bcf:sortitem order="1">citeorder</bcf:sortitem>
     </bcf:sort>
   </bcf:sorting>
   <!-- DATA MODEL -->
@@ -2147,40 +2124,37 @@
     <bcf:citekey order="3">caliskan2017semantics</bcf:citekey>
     <bcf:citekey order="4">eu-dgpr</bcf:citekey>
     <bcf:citekey order="5">goodman2016european</bcf:citekey>
-    <bcf:citekey order="6">andrews1995survey</bcf:citekey>
-    <bcf:citekey order="7">duch2004computational</bcf:citekey>
-    <bcf:citekey order="8">tsukimoto2000extracting</bcf:citekey>
-    <bcf:citekey order="9">LearningLogicalActivations</bcf:citekey>
-    <bcf:citekey order="10">andrews1995survey</bcf:citekey>
-    <bcf:citekey order="11">andrews1995survey</bcf:citekey>
-    <bcf:citekey order="12">tickle1998truth</bcf:citekey>
-    <bcf:citekey order="13">andrews1995survey</bcf:citekey>
-    <bcf:citekey order="14">tsukimoto2000extracting</bcf:citekey>
-    <bcf:citekey order="15">tsukimoto2000extracting</bcf:citekey>
-    <bcf:citekey order="16">tsukimoto2000extracting</bcf:citekey>
-    <bcf:citekey order="17">herrmann1996backpropagation</bcf:citekey>
-    <bcf:citekey order="18">herrmann1996backpropagation</bcf:citekey>
-    <bcf:citekey order="19">LearningLogicalActivations</bcf:citekey>
-    <bcf:citekey order="20">LearningLogicalActivations</bcf:citekey>
-    <bcf:citekey order="21">russell1995modern</bcf:citekey>
+    <bcf:citekey order="6">goodman2016european</bcf:citekey>
+    <bcf:citekey order="7">goodman2016european</bcf:citekey>
+    <bcf:citekey order="8">LearningLogicalActivations</bcf:citekey>
+    <bcf:citekey order="9">doshi2017towards</bcf:citekey>
+    <bcf:citekey order="10">doshi2017towards</bcf:citekey>
+    <bcf:citekey order="11">amodei2016concrete</bcf:citekey>
+    <bcf:citekey order="12">caliskan2017semantics</bcf:citekey>
+    <bcf:citekey order="13">ruggieri2010data</bcf:citekey>
+    <bcf:citekey order="14">doshi2017towards</bcf:citekey>
+    <bcf:citekey order="15">andrews1995survey</bcf:citekey>
+    <bcf:citekey order="16">andrews1995survey</bcf:citekey>
+    <bcf:citekey order="17">tickle1998truth</bcf:citekey>
+    <bcf:citekey order="18">andrews1995survey</bcf:citekey>
+    <bcf:citekey order="19">tsukimoto2000extracting</bcf:citekey>
+    <bcf:citekey order="20">tsukimoto2000extracting</bcf:citekey>
+    <bcf:citekey order="21">tsukimoto2000extracting</bcf:citekey>
     <bcf:citekey order="22">LearningLogicalActivations</bcf:citekey>
     <bcf:citekey order="23">LearningLogicalActivations</bcf:citekey>
-    <bcf:citekey order="24">LearningLogicalActivations</bcf:citekey>
-    <bcf:citekey order="25">herrmann1996backpropagation</bcf:citekey>
-    <bcf:citekey order="26">liu2002discretization</bcf:citekey>
-    <bcf:citekey order="27">liu2002discretization</bcf:citekey>
-    <bcf:citekey order="28">liu2002discretization</bcf:citekey>
+    <bcf:citekey order="24">russell1995modern</bcf:citekey>
+    <bcf:citekey order="25">LearningLogicalActivations</bcf:citekey>
+    <bcf:citekey order="26">herrmann1996backpropagation</bcf:citekey>
+    <bcf:citekey order="27">herrmann1996backpropagation</bcf:citekey>
+    <bcf:citekey order="28">LearningLogicalActivations</bcf:citekey>
     <bcf:citekey order="29">herrmann1996backpropagation</bcf:citekey>
-    <bcf:citekey order="30">herrmann1996backpropagation</bcf:citekey>
-    <bcf:citekey order="31">LearningLogicalActivations</bcf:citekey>
-    <bcf:citekey order="32">kingma2014adam</bcf:citekey>
-    <bcf:citekey order="33">Lichman:2013</bcf:citekey>
+    <bcf:citekey order="30">kingma2014adam</bcf:citekey>
+    <bcf:citekey order="31">Lichman:2013</bcf:citekey>
+    <bcf:citekey order="32">Lichman:2013</bcf:citekey>
+    <bcf:citekey order="33">LearningLogicalActivations</bcf:citekey>
     <bcf:citekey order="34">Lichman:2013</bcf:citekey>
-    <bcf:citekey order="35">liu2002discretization</bcf:citekey>
-    <bcf:citekey order="36">LearningLogicalActivations</bcf:citekey>
-    <bcf:citekey order="37">LearningLogicalActivations</bcf:citekey>
-    <bcf:citekey order="38">Lichman:2013</bcf:citekey>
-    <bcf:citekey order="39">LearningLogicalActivations</bcf:citekey>
-    <bcf:citekey order="40">andrews1995survey</bcf:citekey>
+    <bcf:citekey order="35">LearningLogicalActivations</bcf:citekey>
+    <bcf:citekey order="36">andrews1995survey</bcf:citekey>
+    <bcf:citekey order="37">baldi2012complex</bcf:citekey>
   </bcf:section>
 </bcf:controlfile>

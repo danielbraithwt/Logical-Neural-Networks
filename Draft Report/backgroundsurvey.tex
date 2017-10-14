@@ -4,19 +4,32 @@ This chapter presents concepts related to the study conducted in this report. Af
 \section{Intepretability}
 To create a system that is interpretable it is necessary to have an understanding of what it means to interpret a model and how its interpretation might be evaluated. Intepretability of Machine Learning systems has been defined as \textit{"the ability to explain or to present in understandable terms"} \cite{doshi2017towards} which is ambiguous.\\
 
-\comment{Situations where intepretability is important}
+When is an interpretable model necessary? \cite{doshi2017towards} In some problem domains there is no risk associated with incorrect answers, in this situation there may be less interest a model which can be interpreted.\\
 
-\comment{How evaluation of intepretabie systems might be carried out}
+Problem domains where there is a high risk associated with incorrect answers include Safety and Ethics. A survey, "Concrete Problems in AI Safety" \cite{amodei2016concrete} provides an example of potential safety issues with AI in the context of a cleaning robot.  For example if the robot's objective is to have a known environment containing no mess, how can the robot be prevented from disabling its sensors which it uses to detect the mess?\\
+
+It has been demonstrated that Machine Learning systems learn human like biases from textual data \cite{caliskan2017semantics}. A study done in 2010 \cite{ruggieri2010data} developed a method to analyse datasets for biases against particular classes of people. Analysis was conducted on the \textit{German Credit Dataset} which showed that discriminatory decisions where hidden in the data. An ANN trained on this data could learn these underlying biases. If the model was interpretable then it could be examined for discriminatory patterns.\\
+
+If an ANN model is presented as being interpretable how can this be verified in a scientific way? There are three categories of evaluation techniques \cite{doshi2017towards}.
+
+\comment{The titles are from another paper but descriptions are in my own words. Improve description here}
+\begin{enumerate}
+	\item \textit{"Application-Grounded Evaluation"} Conducting experiments with human subjects in a specific problem domain. If the goal is to learn an interpretable classifier to grant bank loans then a domain expert in granting/denying loans should be used to establish intepretability.
+	
+	\item \textit{"Human-Grounded Metrics"} Designing simpler experiments which still allow for establishing intepretability in a specific domain. This situation occurs when access to domain experts is either to expensive or difficult. The tasks can be simplified to allow humans that are not domain experts to complete them.
+	
+	\item \textit{"Functionally-Grounded Evaluation"} If it is possible to define intepretability in terms of the problem then it can be used to establish this property in the model.
+\end{enumerate}
 
 \subsection{Relation to Solution}
-
+The report is presenting an interpretable model. Consequently it is important to understand what it means for a model to be interpretable and how this property can be evaluated in the solution presented.
 
 
 \section{Rule Extraction}
 
 A survey in 1995 focuses on rule extraction algorithms \cite{andrews1995survey}, identifying the reasons for needing these algorithms along with introducing ways to categorise and compare them.\\
 
-There are three categories that rule extraction algorithms fall into \cite{andrews1995survey}. An algorithm in the \textbf{decompositional} category focuses on extracting rules from each hidden/output unit. If an algorithm is in the \textbf{pedagogical} category then rule extraction is thought of as a learning process, the ANN is treated as a black box and the algorithm learns a relationship between the input and output vectors. The third category, \textbf{electic}, is a combination of decompositional and pedagogical. Electic accounts for algorithms which inspect the hidden/output neurons individually but extracts rules which represent the ANN globally \cite{tickle1998truth}.\\
+There are three categories that rule extraction algorithms fall into \cite{andrews1995survey}. An algorithm in the \textbf{decompositional} category focuses on extracting rules from each hidden/output unit. If an algorithm is in the \textbf{pedagogical} category then rule extraction is thought of as a learning process. The ANN is treated as a black box and the algorithm learns a relationship between the input and output vectors. The third category, \textbf{electic}, is a combination of decompositional and pedagogical. An Electic algorithm inspects the hidden/output neurons individually but extracts rules which represent the ANN globally \cite{tickle1998truth}.\\
 
 To further divide the categories two more distinctions are introduced. One measures the portability of rule extraction techniques, i.e. how easily can they be applied to different types of ANN's? The second is criteria to assess the quality of the extracted rules, these are accuracy, fidelity, consistency, comprehensibility \cite{andrews1995survey}.
 
@@ -27,51 +40,17 @@ To further divide the categories two more distinctions are introduced. One measu
 \item The measure of \textbf{comprehensibility} is defined by the number of rules in the set and the number of literals per rule.
 \end{enumerate}
 
-One rule extraction algorithm presented in 2000 by Tsukimoto is able to extract boolean rules from ANNs in which neurons have monotonically increasing activations, such as the sigmoid function \cite{tsukimoto2000extracting}. The algorithm can be applied to problems with boolean or continuous inputs however only the boolean case will be considered here.\\
-
-Each neuron is written as a boolean operation on its inputs, this is done in the following manner. Consider a neuron $m$ in an MLPN with $n$ inputs, construct a truth table, T, with $n$ inputs. Let $f_i (i \in [0, 2^n])$ represent the activation of $m$ when given row $i$ as input and define $r_i = \land_{j=1}^{n} l_j$, the conjunction of all literals in the row $i$ in T, e.g. if $n=2$ then for row $(1,0)$ $r_i = x_1 \land \lnot x_2$. The approximation of $m$ is given by 
-
-\begin{align}
-	\lor_{i=1}^{2^n}\ g_i \land r_i
-\end{align}
-
-where $g_i$ is given by
-
-\[
-g_i =
-\begin{cases}
-1 & \text{if $f_i \geq \frac{1}{2}$} \\
-0 & \text{if $f_i < \frac{1}{2}$} \\
-\end{cases}
-\]
-
-By starting with the first hidden layer and progressing through the network an expression for the network can be extracted. Figure \ref{alg:rule-extraction-tsukimoto} shows an algorithm for extracting rules from an MLPN.
-
-\begin{figure}[H]
-\begin{lstlisting}[mathescape=true]
-function extractRulesMLPN(network)
-  prev_expressions = network.inputs
-  for layer in network
-    expressions = {}
-    patters = all input patters for layer
-    for each neuron (n) in layer
-      exp = And(Or({literals(p), $p \in $patterns n(p) > $\frac{1}{2}$}))
-      expressions.add(substitute prev_expressions into exp)
-	  
-    prev_expressions = expressions
-\end{lstlisting}
-	\caption{Rule Extraction Algorithm presented in \cite{tsukimoto2000extracting}}
-	\label{alg:rule-extraction-tsukimoto}
-\end{figure}
-
-The algorithm presented in figure \ref{alg:rule-extraction-tsukimoto} is exponential time in terms of $n$. A polynomial time algorithm is also presented but deriving it is beyond the scope of this report.\\
-
-These rule extraction algorithms are all post-hoc operations. They do not place many restrictions on the structure of ANN they are applied to, resulting with complicated algorithms. The solution developed in this report builds intepretability into the ANN structure with the goal of simpler and more intuitive algorithms to interpret knowledge.
-
 \subsection{Relation to Solution}
 These survayes provide a framework for evaluating the rules extracted using a particular technequic. The solution developed in this report allows for rule exaction in some situations. By introducing this content the reader is familiar with this approach to evaluating extracted rule sets.
 
 Rule extraction algorithms make up a large portion of the current methods to interpret knowledge inside an ANN.
+
+\section{LIME: Local Interpretable Model-Agnostic Explanations}
+\comment{Prehapse add more here?}
+The paper "'Why should I Trust You?' Explaining the Predictions of Any Classifier" \cite{ribeiro2016should} published in 2016 presents a novel approach to interpretation of Machine Learning models. The motivation for this research is the idea of trusting the answers provided, either in the context of an individual prediction or the model as a whole. The LIME technequic provides an explanation of a single prediction. Trust in the model can be developed by inspecting explanations of many individual predictions.
+
+\subsection{Relation to Solution}
+LIME is a recent and effect method for interpreting models. Consequently it will provide an effective benchmark for comparing the solution presented in this report.
 
 \section{Noisy Neurons} \label{sec:background-noisy-neurons}
 \hl{Multi-Layer Perceptron Networks (MLPNs) are universal function approximators} and as such can achieve a high accuracy across a broad range of problems. \hl{There are many equivalent weight representations of an MLPN which give the same solutions}, this makes interpreting the network difficult \cite{LearningLogicalActivations}. By restricting the possible relationships between a neurons inputs and outputs to be a single function then only the relevance of each feature needs to be inferred. Consequently the problem interpretation becomes easier. The two functions OR and AND are easy to understand, which is a good reason to pick them over other functions.\\
@@ -90,7 +69,7 @@ In 2016 the concept of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActiv
 
 Figure \ref{fig:bayesian-network-example} is a Bayesian network. It demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies i.e. Traffic influences whether you are late to work,\ and it being rush hour or raining influences whether there is traffic.\\
 
-Consider a Bayesian Network with a node $D$ and $S_1,..., S_n$ being $D$s parents. In other words $S_i$ influences the node $D$. Each $S_i$ is independent from all others. The relationship between D and its parents is defined as if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true. Let $\epsilon_i$ be the uncertainty that $S_i$ influence $D$, then $P(D = 1| S_1 = 1, , S_n = 1)$ can be defined as Equation \ref{equ:noisy-or-relation}.
+Consider a Bayesian Network with a node $D$ and $S_1,..., S_n$ being $D$s parents. In other words $S_i$ influences the node $D$. Each $S_i$ is independent from all others. The relationship between D and its parents is defined as if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true. This relationship is binary but there might be uncertantly as to whether each parent influences the child. Let $\epsilon_i$ be the uncertainty that $S_i$ influence $D$. If $\epsilon_i = 0$ then parent $i$ influences the child, otherwise if $\epsilon_i = 1$ it does not. Therefore $P(D = 1| S_1 = 1, , S_n = 1)$ can be defined as Equation \ref{equ:noisy-or-relation}. Given all the parents are 1, if the child is influenced by at least one of its parents then $\prod^n_{i=1} \epsilon_i = 0$ and it is on. On the other hand if it is not influenced by any of its parents then $\prod^n_{i=1} \epsilon_i = 1$ so it is off.
 
 \begin{align}
 P(D = 1 | S_1 = 1, ..., S_n = 1) = 1 - \prod^n_{i=1} \epsilon_i
@@ -162,9 +141,10 @@ In 1996 a class of networks called Logical Normal Form Networks \cite{herrmann19
 The algorithm which extracts rules from LNFNs would be Electic and certainly is not Portable as the algorithm is specific to the LNFN architecture. It is not possible to further classify the rule extraction algorithm as the research developing it lacks any experimental results. Justification is also missing making the LNFNs difficult to reproduce.\\
 
 \subsection{Relation to Solution}
+The motivation for the development of the solution presented in this report (Logical Neural Networks) can be derived as a more flexable version of Logical Normal Form Networks.
 
 \section{Logical Neural Networks}
 ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Networks \cite{LearningLogicalActivations} (LNN's). If the network consists of only Noisy neurons then it a pure LNN. ANNs containing a mix of logical and standard activations where shown to not yield interpretable models and also have lower performance, consequently when LNNs are refered to it will always be in the context of Pure LNNs.
 
 \subsection{Relation to Solution}
-
+The solution presented is a modified Logical Neural Network structure.
