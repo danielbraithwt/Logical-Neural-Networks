@@ -13,7 +13,7 @@ Consider the set of binary classification problems which have boolean inputs. Co
 
 How might a interpretable network architecture that can learn these functions be constructed? The following facts will be helpful, any boolean function has a unique Conjunctive and Disjunctive Normal Form (CNF \& DNF), both the CNF and DNF are described by the boolean operations NOT, OR and AND, in a CNF or DNF a not can only occur on a literal and the maximum number of clauses in a CNF or DNF is $2^n$ where n is th number of inputs.\\
 
-One option is to use a standard Multi-Layer Perceptron Network (MLPN). MLPNs have been shown to be universal function approximators but are not interpretable. Learning the CNF or DNF of the optimal function is an equivalent problem. For now consider the problem of learning the CNF. This can be done with hidden layer of size $k$ and an output layer with a single neuron. The hidden neurons only need to perform the OR operation on a subset of inputs. The output layer only need perform an AND of a subset of the hidden neurons.\\
+One option is to use a standard Multi-Layer Perceptron Network (MLPN). MLPNs have been shown to be universal function approximators \cite{hornik1989multilayer} but are diffcult to intepret. Learning the CNF or DNF of the optimal function is an equivalent problem. For now consider the problem of learning the CNF. This can be done with hidden layer of size $k$ and an output layer with a single neuron. The hidden neurons only need to perform the OR operation on a subset of inputs. The output layer only need perform an AND of a subset of the hidden neurons.\\
 
 Using Noisy-OR and Noisy-AND (See Section \ref{sec:background-noisy-neurons}) such a network can be constructed. Noisy neurons can not compute the not of inputs so the input layer must be modified to include the negation of each input. Figure \ref{fig:cnf-network-structure} is the structure that has been derived.
 
@@ -126,13 +126,13 @@ Using equations \ref{equ:real-noisy-or-activation} and \ref{equ:real-noisy-and-a
 Before these networks can be trained a number of choices must be made. These are outlined in the list below.
 
 \begin{enumerate}
-	\item \textit{Weight Initialization:} A method for initializing the weights must be derived, \hl{if this is not carefully thought about then it could lead to poor training conditions.}
-	\item \textit{Training Algorithm:} \hl{There exsists a number of different algorythms for propergating gradients}, one must be chosen based on the properties of these networks.
+	\item \textit{Weight Initialization:} A method for initializing the weights must be derived. In the case of MLPNs it was shown that if initilization of weights isnt carefully thought about then as the number of neurons increases the learning conditions deteriate \cite{glorot2010understanding}.
+	\item \textit{Training Algorithm:} There exsists a number of different algorythms for propergating gradients \cite{ruder2016overview}. One must be chosen based on the properties of these networks.
 	\item \textit{Batch Size:} What size should each batch be when training these networks.
 \end{enumerate}
 
 \subsection{Weight Initialization}
-The following section derives a method for initializing weights in an LNFN.
+Here a weight initlization method is derived specifically for networks using Noisy activation functions.
 
 \paragraph{Deriving a Distribution For The Weights}
 Before a weight initialization algorithm can be derived good learning conditions must be identified. Ideally the output of each neuron would be varied for each training example, i.e. $y \sim U(0,1)$. Each training example $X = \{x_1, ..., x_n\}$ has each component $x_i \in (0,1]$, it will be assumed that $x_i \sim U(0,1)$. If the input vectors and output of each neuron are both distributed $U(0,1)$ then the input to any layer is distributed $U(0,1)$, based on this fact it can be argued that the weight initialization is the same for both Noisy-OR and Noisy-AND. Recall the activations for Noisy neurons\\
@@ -257,7 +257,8 @@ Through experiments the weights sampled from a Log Normal distribution perform b
 The ADAM Optimizer \cite{kingma2014adam} is the learning algorithm which will be used. For the convenience of an adaptive learning rate and because it has been shown that networks of this form yield a sparse representation, which the ADAM algorithm works well with.
 
 \subsection{Batch Size}
-Through experimentation it was observed that LNFNs respond well to a mini batch size of 1. The learning quallity starts to decrease as the mini batch size grows.
+\comment{Investigate if with the weight initlization method means the minibatch size can vary}
+Through experimentation it was observed that LNFNs respond well to a mini batch size of 1. The question remains as to why higher batch sizes dont work 
 
 \subsection{Preliminary Results}
 Preliminary testing showed that LNFN's are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. It is also possible to inspect the trained weights and see that the networks have learnt the correct CNF or DNF representation.
@@ -466,7 +467,9 @@ Table \ref{tab:lenses-rule-peformance-comp} demontres the peformance of extracte
 \end{table}
 
 \section{Features with Continuous Domains}
-The input features to an LNFN are probabilities, as such they are allowed to be continuous but must be in the range $[0, 1]$. Consider attempting to learn the Iris data set \cite{Lichman:2013} with an LNFN. One option would be to normalize all the variables to force them into the expected range $[0,1]$. The values of all the features after normalization are compatible with an LNFN, but consider the meaning, can these normalized features do not represent probabilities.\\
+The input features to an LNFN are probabilities, as such they are allowed to be continuous but must be in the range $[0, 1]$. How would 
+
+Consider attempting to learn the Iris data set \cite{Lichman:2013} with an LNFN. One option would be to normalize all the variables to force them into the expected range $[0,1]$. The values of all the features after normalization are compatible with an LNFN, but consider the meaning, can these normalized features do not represent probabilities.\\
 
 It is possible to think of these normalised features as the probability that the true value is the upper bound of the original range. For example if the features range from 0 to 2, and one example has a feature value of 1, when normalised it becomes $\frac{1}{2}$ or a 50\% probability of being a 2. For a moment forget about trying to find meaning in these normalised features. What happens if an LNFN is trained on the Iris problem? Table \ref{tab:iris-network-peformance-comp} gives the results of training the normalised Iris problem on LNF networks. The results show that while the peformance can very alot it is possible for both the CNF and DNF networks to obtain 100\% accuracy.
 
@@ -521,17 +524,13 @@ In the context of the Lenses problem it was possible to extract boolean rules fr
 The LNFNs where able to achieve a low error rate (sometimes 0\%) on the Iris data set. It was possible to extract usful information from the trained models which highlighted the most important features when making classifications.
 
 \chapter{Logical Neural Networks} \label{C:lnn}
-This chapter discusses development of Logical Neural Networks as a generalization of LNFNs. There are two key issues with LNFNs. Firstly the number of hidden units becomes infeasible as the amount of inputs increases. Secondly if the problem size is small enough and the network can be trained the volume of hidden neurons allows for the possibility to memorise the input data.\\
-
-Using what has been learnt about LNFNs the class of Logical Neural Networks (LNNs) can be defined.
+This chapter discusses development of Logical Neural Networks as a generalization of LNFNs. There are two key issues with LNFNs. Firstly the number of hidden units becomes infeasible as the amount of inputs increases. Secondly if the problem size is small enough and the network can be trained the volume of hidden neurons allows for the possibility to memorise the input data. Using what has been learnt about LNFNs the class of Logical Neural Networks (LNNs) can be defined.
 
 \begin{definition}
 	A \text{Logical Neural Network} is an ANN where each neuron has a noisy activation.
 \end{definition}
 
-LNNs have a more flexible structure, allowing for deeper networks and hidden layers with a variable number of neurons. The current LNN model has been shown to have poor performance when compared to a Multi-Layer Perceptron Network \cite{LearningLogicalActivations}. An LNN, consisting of Noisy-OR hidden units and Noisy-AND outputs, was shown to perform worse than an MLPN. 
-
-There are two key issues caused by removing the restrictions imposed by the LNFN definition (Definition \ref{def:lnfn}) which must be addressed 
+LNNs have a more flexible structure, allowing for deeper networks and hidden layers with a variable number of neurons. The current LNN model has been shown to have poor performance when compared to a Multi-Layer Perceptron Network \cite{LearningLogicalActivations}. An LNN, consisting of Noisy-OR hidden units and Noisy-AND outputs, was shown to perform worse than an MLPN. There are two key issues caused by removing the restrictions imposed by the LNFN definition (Definition \ref{def:lnfn}) which must be addressed 
 
 \begin{enumerate}
 	\item Noisy neurons do not have the capacity to consider the presence of the negation of an input. This was a problem for LNFNs as well, however given that only the negations of atoms need to be considered to learn a CNF or DNF it was easily fixed by presenting the network with each atom and its negation. The problem can not be solved so easily for LNNs. A boolean formula can not always be represented by only AND and OR gate, i.e the set of operations $\{AND, OR\}$ is not functionally complete. 
@@ -561,19 +560,27 @@ Figure \ref{fig:modified-lnn-structure} shows the new LNN structure which includ
 \subsection{Softmax Output Layer}
 The softmax function takes a vector of real values to a vector of values in the range $[0,1]$ that equal 1 when summed. The softmax function highlights the difference between the maximum and smaller values by increasing this difference. It is used in multiclass classification to generate a probability distrubution over the different outcomes and promote mutual exclusivity between the different classes.\\
 
-The old LNN structure does not include a Softmax layer as the output layer. A traditional Softmax layer would not be effective as the neuron outputs are limited to the range $[0,1]$. Figure \ref{fig:softmax-failure} shows an example of the softmax function on probabilities, insted of highilight the difference between 0.1 and 0.9 the resulting vector has the values closer together.
-
 \begin{figure}[H]
-\begin{align*}
-A &= \{01, 0.9\}\\
-SoftMax(A) &= \{ \frac{e^{0.1}}{e^{0.1} + e^{0.9}}, \frac{e^{0.9}}{e^{0.1} + e^{0.9}} \}\\
-&\approxeq \{ 0.29, 0.71 \}
-\end{align*}
+
+\begin{minipage}[t]{0.57\textwidth}
+	\vspace{0px}
+	The old LNN structure does not include a Softmax layer as the output layer. A traditional Softmax layer would not be effective as the neuron outputs are limited to the range $[0,1]$. Figure \ref{fig:softmax-failure} shows an example of the softmax function on probabilities, insted of highilight the difference between 0.1 and 0.9 the resulting vector has the values closer together. Consider the following vector of probabilities $P = \{p_1, ..., p_n\}$ where $p_i$ is the probability the given example belongs to class $i$.
+\end{minipage}
+\hspace{3px}
+\begin{minipage}[t]{0.4\textwidth}
+\vspace{0px}
+	\begin{align*}
+		A &= \{01, 0.9\}\\
+		SoftMax(A) &= \{ \frac{e^{0.1}}{e^{0.1} + e^{0.9}}, \frac{e^{0.9}}{e^{0.1} + e^{0.9}} \}\\
+		&\approxeq \{ 0.29, 0.71 \}
+	\end{align*}
 \caption{Demonstration of Softmax on probabilities}
 \label{fig:softmax-failure}
+
+\end{minipage}
 \end{figure}
 
-Consider the following vector of probabilities $P = \{p_1, ..., p_n\}$ where $p_i$ is the probability the given example belongs to class $i$. Then define $p_i^{'} = \frac{p_i}{\sum_j p_j}$, performing this action to generate a vector $P^{'}$ where each of the classes are mutually exclusive. This operation can be thought of as a "Logical Softmax".\\
+ Then define $p_i^{'} = \frac{p_i}{\sum_j p_j}$, performing this action to generate a vector $P^{'}$ where each of the classes are mutually exclusive. This operation can be thought of as a "Logical Softmax".\\
 
 Adding a "Logical Softmax" may guarantee mutual exclusivity of each classes but will it cause the network to be less interpretable? Consider that without with no softmax then the network outputs directly represent the probabilities that the input vector is class $k$ given the parameters. Once the "Logical Softmax" has been introduced then it becomes less clear what the non softmaxed probabilities represent. The softmax introduces a dependency between the output neurons of the network which might cause a decrease in intepretability. This is a question which will be explored during experimentation with the modified LNN architecture.
 
@@ -1244,7 +1251,7 @@ This network is running on the new architecture and as such each feature has two
 	\begin{minipage}[t]{0.44\textwidth}
 		\vspace{0.2cm}
 		\paragraph{OR $\rightarrow$ AND (With LSM)} Figure \ref{fig:or-and-with-lsm-pos} show the positive features for an OR AND model with an LSM. 
-The features extracted from this network do not appear to correspond to a 1, not in a way which is immediately interpretable. 
+The features extracted from this network do not appear to correspond to a 1, not in a way which is immediately interpretable. The presense of the features represented in Figure \ref{fig:or-and-with-lsm-neg} mean the classification is less likely to be a 1. These features do not appear to relate to the digit 1, but rather pixles that would not usially occour in the digit 1.
 	\end{minipage}
 	\hspace{1cm}
 	\begin{minipage}[t]{0.44\textwidth}
@@ -1281,8 +1288,6 @@ The features extracted from this network do not appear to correspond to a 1, not
 	\end{minipage}
 	\hfill
 \end{figure}
-
-The following features are the ones which are negatively weighted towards being a 1. 
 
 \begin{figure}[H]
 
@@ -1328,12 +1333,17 @@ The following features are the ones which are negatively weighted towards being 
 	\label{}
 \end{minipage}
 	\caption{Features contributing to the classification not being 1 for OR $\rightarrow$ AND (With LSM)}
+	\label{fig:or-and-with-lsm-neg}
 	\hfill
 \end{figure}
+
+
 \begin{figure}[H]
 	\begin{minipage}[t]{0.48\textwidth}
 		\vspace{0px}
 		\paragraph{AND $\rightarrow$ OR Model (With Out LSM)}
+			Figure \ref{} shows the single feature which positively contributes to the classification as the digit 1. This feature has learnt to positively identify the stem of a 1 and negatively identify 
+
 This network has a small number of features associated with each classification. In terms of the classifying the digit 1 there is only 1 hidden features. This feature appears to classify a 1 by positively liking the stem of a 1 and disliking the anything outside the average 1.\\ \\
 
 		\paragraph{AND $\rightarrow$ OR Model (With LSM)}
@@ -1360,6 +1370,7 @@ Similarly to the AND OR Model with out the LSM this model appears to positively 
 		\label{}
 	\end{minipage}
 	\caption{Features positively contributing to classification as 1 for AND $\rightarrow$ OR Model (With Out LSM)}
+	\label{fig:}
 	\end{minipage}
 
 	\hfill
@@ -1421,12 +1432,12 @@ Through the experiments carried out the following observations can be made.
 	\item \textit{Comparison of intepretability between MLPNs (using LIME) and new/old LNNs:}
 \end{enumerate}
 
-These experiments have therefore provided evidence demonstrating that the modified LNN structure and logical softmax improves upon the current state of LNNs.  
+These experements have therefor shown that the LNN networks have stistically equivelent peformance to MLPNs. Evidence has also been provided in support of LNNs have a more intepretable model than MLPNs.
 
 \chapter{Application to Auto Encoders} \label{C:lnn-application}
 This chapter demonstraits the flexability of the LNN archecthure by applying them in the context of Auto Encoders. \\
 
-Auto encoders \cite{baldi2012complex} \hl{are a network architecture trained with unsupervised learning for a purpose of learning an encoding of the data}. \hl{An application learning a new encoding is dimensionality reduction}. The aim is to take the input to some reduced feature space and then from this feature space back to the original input with the smallest error. The case where there is one linear layer doing the encoding and decoding is called \textbf{Linear Autoencoder}, this architecture corresponds to performing Principle Component Analysis (PCA) on the data.\\
+Auto encoders \cite{baldi2012complex} \cite{hinton2006reducing} are a network architecture trained with unsupervised learning for a purpose of learning an encoding of the data. An application learning a new encoding is dimensionality reduction. The aim is to take the input to some reduced feature space and then from this feature space back to the original input with the smallest error. The case where there is one linear layer doing the encoding and decoding is called \textbf{Linear Autoencoder}, this architecture corresponds to performing Principle Component Analysis (PCA) on the data.\\
 
 \hl{For some data sets, such as MNIST, PCA is not an effective way to reduce the dimensions of the data}. For this reason Logical Autoencoders are proposed (Definition \ref{def:logical-autoencoder}) as an alternative means to lower the dimensions of a dataset.
 

@@ -62,7 +62,7 @@
 \contentsline {paragraph}{AND $\rightarrow $ OR Model (With LSM)}{37}
 \contentsline {paragraph}{Conclusion of Intepretability for LNNs with No Hidden Layer}{37}
 \contentsline {subsection}{\numberline {6.2.3}Comparason between LNN Intepretability and LIME}{37}
-\contentsline {subsection}{\numberline {6.2.4}Results of Intepretability Experiments}{37}
+\contentsline {subsection}{\numberline {6.2.4}Results of Intepretability Experiments}{38}
 \contentsline {section}{\numberline {6.3}Summary Of Logical Neural Network Evaluation}{38}
 \contentsline {chapter}{\numberline {7}Application to Auto Encoders}{39}
 \contentsline {paragraph}{Result of Logical Auto Encoder (LoAE)}{39}
