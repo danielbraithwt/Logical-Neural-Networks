@@ -55,21 +55,31 @@ LIME is a recent and effect method for interpreting models. Consequently it will
 \section{Noisy Neurons} \label{sec:background-noisy-neurons}
 Multi-Layer Perceptron Networks (MLPNs) are universal function approximators \cite{hornik1989multilayer}, as such can achieve a high accuracy across a broad range of problems. \hl{There are many equivalent weight representations of an MLPN which give the same solutions}, this makes interpreting the network difficult \cite{LearningLogicalActivations}. By restricting the possible relationships between a neurons inputs and outputs to be a single function then only the relevance of each feature needs to be inferred. Consequently the problem interpretation becomes easier. The two functions OR and AND are easy to understand, which is a good reason to pick them over other functions.\\
 
+
+\noindent
+\begin{minipage}[t]{0.6\textwidth}
+\vspace{0px}
 In 2016 the concept of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActivations} where derived from the Noisy-OR relation \cite{russell1995modern}, a concept in Bayesian Networks developed by Judea Pearl. A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph \cite{neapolitan2004learning}.
 
+Figure \ref{fig:bayesian-network-example} is a Bayesian network. It demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies i.e. Traffic influences whether you are late to work,\ and it being rush hour or raining influences whether there is traffic.\\
+
+Consider a Bayesian Network consisting of a node $D$ with parents $S_1,..., S_n$. In other words $S_i$ influences the node $D$. Each $S_i$ is independent from all others. The relationship between D and its parents is defined as if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true.\\
+\end{minipage}
+\hspace{0.05\textwidth}
+\begin{minipage}[t]{0.35\textwidth}
+\vspace{0px}
 \begin{figure}[H]
 	\centering
-	\begin{minipage}[b]{0.4\textwidth}
+	\begin{minipage}[b]{1.0\textwidth}
 		\includegraphics[width=\textwidth]{bayesian-network-example.png}
 		\caption{}
 		\label{fig:bayesian-network-example}
 	\end{minipage}
 	\hfill
 \end{figure}
+\end{minipage}
 
-Figure \ref{fig:bayesian-network-example} is a Bayesian network. It demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies i.e. Traffic influences whether you are late to work,\ and it being rush hour or raining influences whether there is traffic.\\
-
-Consider a Bayesian Network with a node $D$ and $S_1,..., S_n$ being $D$s parents. In other words $S_i$ influences the node $D$. Each $S_i$ is independent from all others. The relationship between D and its parents is defined as if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true. This relationship is binary but there might be uncertantly as to whether each parent influences the child. Let $\epsilon_i$ be the uncertainty that $S_i$ influence $D$. If $\epsilon_i = 0$ then parent $i$ influences the child, otherwise if $\epsilon_i = 1$ it does not. Therefore $P(D = 1| S_1 = 1, , S_n = 1)$ can be defined as Equation \ref{equ:noisy-or-relation}. Given all the parents are 1, if the child is influenced by at least one of its parents then $\prod^n_{i=1} \epsilon_i = 0$ and it is on. On the other hand if it is not influenced by any of its parents then $\prod^n_{i=1} \epsilon_i = 1$ so it is off.
+This relationship is binary but there might be uncertainly as to whether each parent influences the child. Let $\epsilon_i$ be the uncertainty that $S_i$ influence $D$. If $\epsilon_i = 0$ then parent $i$ influences the child, otherwise if $\epsilon_i = 1$ it does not. Therefore $P(D = 1| S_1 = 1, , S_n = 1)$ can be defined as Equation \ref{equ:noisy-or-relation}. Given all the parents are 1, if the child is influenced by at least one of its parents then $\prod^n_{i=1} \epsilon_i = 0$ and D is 1. On the other hand if it is not influenced by any of its parents then $\prod^n_{i=1} \epsilon_i = 1$ so D is 0.
 
 \begin{align}
 P(D = 1 | S_1 = 1, ..., S_n = 1) = 1 - \prod^n_{i=1} \epsilon_i
@@ -141,10 +151,10 @@ In 1996 a class of networks called Logical Normal Form Networks \cite{herrmann19
 The algorithm which extracts rules from LNFNs would be Electic and certainly is not Portable as the algorithm is specific to the LNFN architecture. It is not possible to further classify the rule extraction algorithm as the research developing it lacks any experimental results. Justification is also missing making the LNFNs difficult to reproduce.\\
 
 \subsection{Relation to Solution}
-The motivation for the development of the solution presented in this report (Logical Neural Networks) can be derived as a more flexable version of Logical Normal Form Networks.
+The motivation for the development of the solution presented in this report (Logical Neural Networks) can be derived as a more flexible version of Logical Normal Form Networks.
 
 \section{Logical Neural Networks}
-ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Networks \cite{LearningLogicalActivations} (LNN's). If the network consists of only Noisy neurons then it a pure LNN. ANNs containing a mix of logical and standard activations where shown to not yield interpretable models and also have lower performance, consequently when LNNs are refered to it will always be in the context of Pure LNNs.
+ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Networks \cite{LearningLogicalActivations} (LNN's). If the network consists of only Noisy neurons then it a pure LNN. ANNs containing a mix of logical and standard activations where shown to not yield interpretable models and also have lower performance, consequently when LNNs are referred to it will always be in the context of Pure LNNs.
 
 \subsection{Relation to Solution}
 The solution presented is a modified Logical Neural Network structure.
