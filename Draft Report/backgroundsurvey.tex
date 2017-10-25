@@ -4,15 +4,13 @@ This chapter presents concepts related to the study conducted in this report. Af
 \section{Intepretability}
 To create a system that is interpretable it is necessary to have an understanding of what it means to interpret a model and how its interpretation might be evaluated. Intepretability of Machine Learning systems has been defined as \textit{"the ability to explain or to present in understandable terms"} \cite{doshi2017towards} which is ambiguous.\\
 
-When is an interpretable model necessary? \cite{doshi2017towards} In some problem domains there is no risk associated with incorrect answers, in this situation there may be less interest a model which can be interpreted.\\
+When is an interpretable model necessary? \cite{doshi2017towards} In some problem domains there is less risk associated with incorrect answers. An ANN which controlls a car in a game has little risk as a poor driving decison will only effect an artifical environment.
 
-Problem domains where there is a high risk associated with incorrect answers include Safety and Ethics. A survey, "Concrete Problems in AI Safety" \cite{amodei2016concrete} provides an example of potential safety issues with AI in the context of a cleaning robot.  For example if the robot's objective is to have a known environment containing no mess, how can the robot be prevented from disabling its sensors which it uses to detect the mess?\\
+Problem domains where there is a high risk associated with incorrect answers include Safety and Ethics. A survey, "Concrete Problems in AI Safety" \cite{amodei2016concrete} provides an example of potential safety issues with AI in the context of a cleaning robot.  For example if the robot's objective is to have a known environment containing no mess, how can the robot be prevented from disabling its sensors which it uses to detect the mess? Alternatively a self driving car might be penalised for running a stop light, but what is to prevent the car from distabling the sensors that detect stop lights?
 
 It has been demonstrated that Machine Learning systems learn human like biases from textual data \cite{caliskan2017semantics}. A study done in 2010 \cite{ruggieri2010data} developed a method to analyse datasets for biases against particular classes of people. Analysis was conducted on the \textit{German Credit Dataset} which showed that discriminatory decisions where hidden in the data. An ANN trained on this data could learn these underlying biases. If the model was interpretable then it could be examined for discriminatory patterns.\\
 
 If an ANN model is presented as being interpretable how can this be verified in a scientific way? There are three categories of evaluation techniques \cite{doshi2017towards}.
-
-\comment{The titles are from another paper but descriptions are in my own words. Improve description here}
 \begin{enumerate}
 	\item \textit{"Application-Grounded Evaluation"} Conducting experiments with human subjects in a specific problem domain. If the goal is to learn an interpretable classifier to grant bank loans then a domain expert in granting/denying loans should be used to establish intepretability.
 	
@@ -31,7 +29,7 @@ A survey in 1995 focuses on rule extraction algorithms \cite{andrews1995survey},
 
 There are three categories that rule extraction algorithms fall into \cite{andrews1995survey}. An algorithm in the \textbf{decompositional} category focuses on extracting rules from each hidden/output unit. If an algorithm is in the \textbf{pedagogical} category then rule extraction is thought of as a learning process. The ANN is treated as a black box and the algorithm learns a relationship between the input and output vectors. The third category, \textbf{electic}, is a combination of decompositional and pedagogical. An Electic algorithm inspects the hidden/output neurons individually but extracts rules which represent the ANN globally \cite{tickle1998truth}.\\
 
-To further divide the categories two more distinctions are introduced. One measures the portability of rule extraction techniques, i.e. how easily can they be applied to different types of ANN's? The second is criteria to assess the quality of the extracted rules, these are accuracy, fidelity, consistency, comprehensibility \cite{andrews1995survey}.
+To further divide the categories two more distinctions are introduced. One measures the portability of rule extraction techniques, i.e. how easily can they be applied to different types of ANN's? The second is criteria to assess the quality of the extracted rules, these are accuracy, fidelity, consistency and comprehensibility \cite{andrews1995survey}.
 
 \begin{enumerate}
 \item A rule set is \textbf{Accurate} if it can generalize, i.e. classify previously unseen examples.
@@ -40,28 +38,22 @@ To further divide the categories two more distinctions are introduced. One measu
 \item The measure of \textbf{comprehensibility} is defined by the number of rules in the set and the number of literals per rule.
 \end{enumerate}
 
-\subsection{Relation to Solution}
-These survayes provide a framework for evaluating the rules extracted using a particular technequic. The solution developed in this report allows for rule exaction in some situations. By introducing this content the reader is familiar with this approach to evaluating extracted rule sets.
-
-Rule extraction algorithms make up a large portion of the current methods to interpret knowledge inside an ANN.
+These survayes provide a framework for evaluating the rules extracted using a particular technequic. By introducing this content the reader is familiar with this approach to evaluating extracted rule sets. The solution developed in this report allows for rule exaction in some situations and will be evaluated against these creteria. 
 
 \section{LIME: Local Interpretable Model-Agnostic Explanations}
-\comment{Prehapse add more here?}
-The paper "'Why should I Trust You?' Explaining the Predictions of Any Classifier" \cite{ribeiro2016should} published in 2016 presents a novel approach to interpretation of Machine Learning models. The motivation for this research is the idea of trusting the answers provided, either in the context of an individual prediction or the model as a whole. The LIME technequic provides an explanation of a single prediction. Trust in the model can be developed by inspecting explanations of many individual predictions.
+The paper "'Why should I Trust You?' Explaining the Predictions of Any Classifier" \cite{ribeiro2016should} published in 2016 presents a novel approach to interpretation of Machine Learning models. The motivation for this research is the idea of trusting the answers provided, either in the context of an individual prediction or the model as a whole. The LIME technequic provides an explanation of a single prediction. Trust in the model can be developed by inspecting explanations of many individual predictions.\\
 
-\subsection{Relation to Solution}
-LIME is a recent and effect method for interpreting models. Consequently it will provide an effective benchmark for comparing the solution presented in this report.
+Esentially the LIME algorythm treats the classifier as a black-box and generates a number of examples by slightly peterbing the instance for which an explination is wanted and asks the model for a classification. It then constructs a linear model of local region around the instance using the classifications of the peterbed examples. A more detailed explination of LIME is beyond the scope of this report.
+
+LIME is a recent method for interpreting machine learning models. Consequently it will provide a comparason point when evaluating the solution presented in this report.
 
 \section{Noisy Neurons} \label{sec:background-noisy-neurons}
-Multi-Layer Perceptron Networks (MLPNs) are universal function approximators \cite{hornik1989multilayer}, as such can achieve a high accuracy across a broad range of problems. \hl{There are many equivalent weight representations of an MLPN which give the same solutions}, this makes interpreting the network difficult \cite{LearningLogicalActivations}. By restricting the possible relationships between a neurons inputs and outputs to be a single function then only the relevance of each feature needs to be inferred. Consequently the problem interpretation becomes easier. The two functions OR and AND are easy to understand, which is a good reason to pick them over other functions.\\
-
+In 2016 the concept of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActivations} was presented. These neurons are based on the descrete boolean OR and AND gates. The motivation for this work was that logical functions are directly intepretable as functions of their input. Conesquently if a problem had a natural logical decomposition then it could be learnt by Artitifical Neural Networks using Noisy neurons.
 
 \noindent
 \begin{minipage}[t]{0.6\textwidth}
 \vspace{0px}
-In 2016 the concept of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActivations} where derived from the Noisy-OR relation \cite{russell1995modern}, a concept in Bayesian Networks developed by Judea Pearl. A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph \cite{neapolitan2004learning}.
-
-Figure \ref{fig:bayesian-network-example} is a Bayesian network. It demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies i.e. Traffic influences whether you are late to work,\ and it being rush hour or raining influences whether there is traffic.\\
+The Noisy-OR neuron is derived from the Noisy-OR relation \cite{russell1995modern}, a concept in Bayesian Networks developed by Judea Pearl. A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph \cite{neapolitan2004learning}. Figure \ref{fig:bayesian-network-example} is a Bayesian network. It demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies i.e. Traffic influences whether you are late to work,\ and it being rush hour or raining influences whether there is traffic.\\
 
 Consider a Bayesian Network consisting of a node $D$ with parents $S_1,..., S_n$. In other words $S_i$ influences the node $D$. Each $S_i$ is independent from all others. The relationship between D and its parents is defined as if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true.\\
 \end{minipage}
@@ -79,28 +71,57 @@ Consider a Bayesian Network consisting of a node $D$ with parents $S_1,..., S_n$
 \end{figure}
 \end{minipage}
 
-This relationship is binary but there might be uncertainly as to whether each parent influences the child. Let $\epsilon_i$ be the uncertainty that $S_i$ influence $D$. If $\epsilon_i = 0$ then parent $i$ influences the child, otherwise if $\epsilon_i = 1$ it does not. Therefore $P(D = 1| S_1 = 1, , S_n = 1)$ can be defined as Equation \ref{equ:noisy-or-relation}. Given all the parents are 1, if the child is influenced by at least one of its parents then $\prod^n_{i=1} \epsilon_i = 0$ and D is 1. On the other hand if it is not influenced by any of its parents then $\prod^n_{i=1} \epsilon_i = 1$ so D is 0.
+This relationship is binary but there might be uncertainly as to whether each $S_i$ influences $D$. Let $\epsilon_i$ be the uncertainty that $S_i$ influence $D$. If $\epsilon_i = 0$ then parent $i$ influences the child, otherwise if $\epsilon_i = 1$ it does not. Therefore $P(D = 1| S_1 = 1, , S_n = 1)$ can be expressed as Equation \ref{equ:noisy-or-relation}. Given all the parents are 1, if the child is influenced by at least one of its parents then $\prod^n_{i=1} \epsilon_i = 0$ and D is 1. On the other hand if it is not influenced by any of its parents then $\prod^n_{i=1} \epsilon_i = 1$ so D is 0.
 
 \begin{align}
 P(D = 1 | S_1 = 1, ..., S_n = 1) = 1 - \prod^n_{i=1} \epsilon_i
 \label{equ:noisy-or-relation}
 \end{align}
 
-Equation \ref{equ:noisy-or-relation} shows the noisy or relation. In the context of a neuron the inputs $x_1, ..., x_n$ represent the probability that inputs $1, ..., n$ are true. The output of a neuron as conditionally dependent on its inputs, in terms of a Bayesian Network the $x_i$'s is a parent of the neuron. Each $\epsilon_i$ is the uncertainty as to whether $x_i$ influences the neurons output. How can weights and inputs be combined to create a final activation value for the neuron? First consider a function $f(\epsilon, x)$ which computes the irrelevance of input x. Some conditions \cite{LearningLogicalActivations} that can be placed on $f$ are given in the following list. 
+In the context of a neuron consider the inputs $x_1, ..., x_n$ to represent $D$'s beleif of the probability that the inputs $1, ..., n$ are True. The output of a neuron as conditionally dependent on its inputs, in terms of a Bayesian Network the $x_i$'s is a parent of the neuron. Each $\epsilon_i$ is $D$'s uncertainty as to whether $x_i$ influences its output. The probability that $D$ is True is therefore influenced by $x_i$ and $\epsilon_i$. A function $f$ is needed to compute the irelevence of node $i$ in light of $x_i$ and $\epsilon_i$. The list in Figure \ref{fig:irelevence-function-cond} gives three properties of $f(x_i, \epsilon_i)$ \cite{LearningLogicalActivations}. \\
 
+\begin{figure}[H]
 \begin{enumerate}
 	\item $\epsilon = 1$ means that $f(\epsilon, x) = 1$
-	\item $x = 1$ means that $f(\epsilon, x) = 1$
-	\item Monotonically increasing in $\epsilon$ and decreasing in x. Let $f(x, \epsilon) = \epsilon^x$. The definitions for Noisy-OR and Noisy-AND gates can now be given.
+	\item $x = 0$ means that $f(\epsilon, x) = 1$
+	\item Monotonically increasing in $\epsilon$ and decreasing in x. In otherwords, fixing $x$ results in a function that monotically increases as $\epsilon$ get closer to 1. Fixing $\epsilon$ results in a function that monotically decreases as $x$ approaches 1.
 \end{enumerate}
+\caption{Three properties of the function $f$}
+\label{fig:irelevence-function-cond}
+\end{figure}
 
-The function $f(\epsilon, x)$ is 1 (i.e x is irrelevant) if x does not influence the output ($\epsilon = 1$) essentially cancelling these irrelevant inputs out in a AND or OR. The noisy activations can therefore be a logical function over $f(\epsilon_{x_i}, x_i)$ for all $i$.
+If the inputs of $f$ are restricted to be either 0 or 1 then it becomes aparent that properties (1) - (3) describe the logic function $x \implies \epsilon$ ($x$ implies $\epsilon$) , this is shown in Figure \ref{fig:f-actually-implies}. 
+
+\begin{figure}[H]
+\begin{enumerate}
+\item \textit{f(1,1) = 1:} This is shown by (1)
+\item \textit{f(1,0) = 1:} Shown by (2)
+\item \textit{f(0,1) = 0:} Fix $x = 1$ and let $\epsilon = 1$, $f(1,1) = 1$. As $\epsilon \rightarrow 0 $ $f$ is monitonically decreasing so $f(0,1) = 0$.
+\item \textit{f(0,0) = 1:} Shown by (2)
+\end{enumerate}
+\caption{Demonstraiton that $f$ is actually $x \implies \epsilon$ when $x,\epsilon \in \{0, 1\}$}
+\label{fig:f-actually-implies}
+\end{figure}
+A function $g(x_1, ..., x_m)$ is defined to be \textit{Boolean-Like} \cite{williams1986logic} when $x_i \in \{0, 1\} \forall i$ then $g(x_1, ..., x_m) \in \{0, 1\}$. Consequently, ontop of properties (1) - (3) $f$ should be a boolean like Implies function. A function which stasfys properties (1) - (3) is $f(x, \epsilon) = \epsilon^x$. It is a simple task to check that $f$ is a \textit{boolean like} Implies function. Figure \ref{fig:f-check-implies} shows that all properties are stasfied.
+
+\begin{figure}[H]
+\begin{align*}
+f(1,1) &= 1^1 = 1\\
+f(1,0) &= 1^0 = 1\\
+f(0,1) &= 0^1 = 0\\
+f(0,0) &= 0^0 = 1\\
+\end{align*}
+\caption{Checking $f(\epsilon, x) = \epsilon^x$ is a Boolean Like Implies function. Note that for $f(0,0) = 0^0$ strictly this is undefined, but $\lim_{\epsilon \rightarrow 0} \epsilon^0 = 0$}
+\label{fig:f-check-implies}
+\end{figure}
+
+This is not a uniquic solution but it has a property which becomes convenient later on, specifically $\log(f) = \log(\epsilon^x) = x \cdot \log(\epsilon)$.
 
 \begin{definition}
 	A \textbf{Noisy-OR} Neuron has weights $\epsilon_1, ..., \epsilon_n \in (0,1]$ which represent the uncertainty that corresponding inputs $x_1, ..., x_n \in [0,1]$ influence the output. The activation of a Noisy-OR Neurons is given in Equation \ref{equ:noisy-or-activation-1}.
 	
 	\begin{align}
-	a = 1 - \prod^p_{i=1} (\epsilon_i^{x_i}) \cdot \epsilon_b
+	a = 1 - \prod^p_{i=1} (\epsilon_i^{x_i})
 	\label{equ:noisy-or-activation-1}
 	\end{align}
 \end{definition}
@@ -109,14 +130,12 @@ The function $f(\epsilon, x)$ is 1 (i.e x is irrelevant) if x does not influence
 	A \textbf{Noisy-AND} Neuron has weights $\epsilon_1, ..., \epsilon_n \in (0, 1]$ which represent the uncertainty that corresponding inputs $x_1, ..., x_n \in [0,1]$ influence the output. The activation of a Noisy-AND Neurons is given in Equation \ref{equ:noisy-and-activation-1}
 	
 	\begin{align}
-	a = \prod^p_{i=1} (\epsilon_i^{1 - x_i}) \cdot \epsilon_b
+	a = \prod^p_{i=1} (\epsilon_i^{1 - x_i})
 	\label{equ:noisy-and-activation-1}
 	\end{align}
 \end{definition}
 
 Both these parametrisations reduce to discrete logic gates when there is no noise, i.e. $\epsilon_i = 0$ for all $i$.\\
-
-\subsection{Relation to Solution}
 The noisy neurons are the building blocks for the two network architectures present in this report. Without an understanding of these concepts it would be difficult to understand the motivations for the solution developed.
 
 \section{Logical Normal Form Networks}
@@ -148,13 +167,14 @@ Given a truth table representing a boolean formula, constructing a DNF formula i
 \subsection{Definition of Logical Normal Form Networks}
 In 1996 a class of networks called Logical Normal Form Networks \cite{herrmann1996backpropagation} (LNFNs) where developed. Focusing on learning the underlying CNF or DNF for a boolean expression which describes the problem. The approach relies on a specific network configuration along with restriction the function space of each neuron, allowing them to only perform an OR or AND on a subset of their inputs. Such OR and AND neurons are called Disjunctive and Conjunctive retrospectively. If the trained network is able to achieve a low enough accuracy then rules can be extracted from the network in terms of a Boolean CNF or DNF expression \cite{herrmann1996backpropagation}.\\
 
-The algorithm which extracts rules from LNFNs would be Electic and certainly is not Portable as the algorithm is specific to the LNFN architecture. It is not possible to further classify the rule extraction algorithm as the research developing it lacks any experimental results. Justification is also missing making the LNFNs difficult to reproduce.\\
-
-\subsection{Relation to Solution}
-The motivation for the development of the solution presented in this report (Logical Neural Networks) can be derived as a more flexible version of Logical Normal Form Networks.
+The algorithm which extracts rules from LNFNs would be Electic and certainly is not Portable as the algorithm is specific to the LNFN architecture. It is not possible to further classify the rule extraction algorithm as the research developing it lacks any experimental results. Justification is also missing making the LNFNs difficult to reproduce.
 
 \section{Logical Neural Networks}
 ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Networks \cite{LearningLogicalActivations} (LNN's). If the network consists of only Noisy neurons then it a pure LNN. ANNs containing a mix of logical and standard activations where shown to not yield interpretable models and also have lower performance, consequently when LNNs are referred to it will always be in the context of Pure LNNs.
 
-\subsection{Relation to Solution}
-The solution presented is a modified Logical Neural Network structure.
+
+\section{Learning Fuzzy Logic Operations in Deep Neural Networks}
+A paper published in 2017 \cite{godfrey2017parameterized} aims to combine Deep Learning and Fuzzy Logic to create artificial neural networks which can be trained using backpropagation and be more intepretable.  They propose a single activation which can learn to perform a number of differnet fuzzy logic operations. The result of this paper is a neural network archetchure that can peform well as a classifier but also yield a model from which fuzzy rules can be extracted. The Fuzzy Logic networks where compared against standard deep neural networks using a tanh activation function. In this comparason they where found to have 
+
+Fuzzy Logic Networks are a different approach to solving the problem outligned in this report. As such will be an interesting comparason point for the solution developed here. Does the solution presented here have comparable peformance and intepretability? 
+

@@ -57,41 +57,7 @@ Let T be the complete truth table for the boolean formula B. Let L be an LNFN, i
 \label{thm:upper-bound-hidden-units}
 \end{theorem}
 
-\begin{proof}
-Let T be the truth table for a boolean function B. The atoms of B are $x_1, ..., x_n$. T has exactly $2^n$ rows. Construct an LNFN, L, in the following manner. L has $2^n$ hidden units and by definition L has one output unit. The inputs to L are $i_1, ..., i_{2n}$ where $i_1, i_2$ represent $x_1, \lnot x_1$ and so on. Let $\epsilon_b = 1$ for every neuron.\\
-
-Let $h_k$ denote hidden unit k. $h_k$ has the weights $\epsilon_{k,1}, ..., \epsilon_{k,2n}$, where $\epsilon_{k, m}$ represents input $i_m$'s relevance to the output of $h_k$. Similarly the output unit $o$ has weights $\mu_1, .., \mu_{2^n}$ where $\mu_m$ represents the relevance of $h_m$ to the output of $o$.\\
-
-Assume L is a DNF Network. Starting from row one of the table T, to row $2^n$. If row $a$ corresponds to False then set $\mu_a = 1$ (i.e. hidden node $a$ is irrelevant), otherwise the row corresponds to True, then $\mu_a = Z$, where Z is a value close to 0 (any weight for a Noisy neuron cant be exactly 0). For each $\epsilon_{a, m}$ if the corresponding literal occurs in row $a$ of the truth table then $\epsilon_{a, m} = Z$ other wise $\epsilon_{a, m} = 1$.\\
-
-\textbf{Claim:} For some assignment to the atoms of B, $x_1 = v_1, ..., x_n = v_n$ where $v_i \in \{0, 1\}$. Then $L(i_1, ..., i_{2n}) = B(x_1, ..., x_n)$.\\
-
-Assume $B(x_1, ..., x_n) = 1$ for the assignment $x_1 = v_1, ..., x_n = v_n$ corresponding to row $a$ of T. Then if $i_k$ is not considered in row $a$ then $\epsilon_{a,k} = 1$ and if it is present then $i_k = 1$. The output of $h_a$ is given by 
-
-\begin{align*}
-&= \prod \epsilon_{a, m}^{1 - i_m}\\
-&= Z^{\sum_{i_k = 1}(1 - i_k)}\\
-&= Z^0
-\end{align*}
-Demonstrating that  $\lim_{Z \to 0} Out(h_a) = \lim_{Z \to 0} Z^0 = 1$. Consider the activation of $o$, it is known that $\mu_a = Z$ consequently $\lim_{Z \to 0} \mu_a^{h_a} = \lim_{Z \to 0} Z^1 = 0$, therefore
-
-\begin{align}
-\lim_{Z \to 0} Out(o) &= 1 - \prod_{m=1}^{2^n} \mu_m ^{h_m}\\
-&= 1 - 0 = 1
-\end{align} 
-
-Therefore $L(i_1, ..., i_{2n}) = 1$. Alternatively if $B(x_1, ..., x_n) = 0$ then no hidden neuron will have activation $1$, this can be demonstrated by considering that any relevant neuron (i.e. corresponding $\mu \neq 1$) will have some input weight pair of $i_m$ $\epsilon_m$ such that $\epsilon_m^{i_m} = 0$. Consequently it can be said that for all $m$ $\mu_m^{h_m} = \mu_m^{0} = 1$, therefore the output unit will give $0$, as required.
-
-Now assume that L is a CNF Network. The weights can be assigned in the same manner as before, except rather than considering the rows that correspond to True the negation of the rows corresponding to False are used. If a row $a$ corresponds to True then $\mu_a = 1$, otherwise $\mu_a = Z$ and for any literal present in the row then the input to L which corresponds to the negated literal has weight $Z$, all other weights are $1$.\\
-
-\textbf{Claim:} For some assignment to the atoms of B, $x_1 = v_1, ..., x_n = v_n$ where $v_i \in \{0, 1\}$. Then $L(i_1, ..., i_{2n}) = B(x_1, ..., x_n)$.\\
-
-In this configuration it must be shown that every hidden neuron fires when the network is presented with a variable assignment which corresponds to True and there is always at least one neuron which does not fire when the assignment corresponds to False. Assume for a contradiction that for a given assignment $B(x_1, ..., x_n) = 1$ but $L(i_1, ..., i_{2n}) = 0$. Then there is at least one hidden neuron which does not fire. Let $h_a$ be such a neuron. Consequently for any input weight combination which is relevant $\epsilon_{a,m}^{i_m} = 1$, so $i_m = 0$ for any relevant input. Let $i_{r_1}, ..., i_{r_k}$ be the relevant inputs then $i_{r_1} \lor ... \lor i_{r_k} = False$, so $\lnot(\lnot i_{r_1} \land ... \land \lnot i_{r_k}) = False$, a contradiction as then $B(x_1, ..., x_n)$ would be False.
-
-Now assume for a contradiction $B(x_1, ..., x_n) = 0$ but $L(i_1, ..., i_{2n}) = 1$. Then there exists some $h_a$ with output $1$ where it should be $0$. Consequently there exists at least one input/weight pair with $\epsilon_{a,m}^{i_m} = 1$ that should be $0$. Let $i_{r_1}, ..., i_{r_k}$ be all the relevant inputs, at least one relevant input is present $i_r$. Consequently $i_{r_1} \lor ... \lor i_{r_k} = True$, therefore $\lnot(\lnot i_{r_1} \land ... \land \lnot i_{r_k}) = True$, a contradiction as then $B(x_1, ..., x_n)$ is True.\\
-\end{proof}
-
-Theorem \ref{thm:upper-bound-hidden-units} provides justification for using $2^n$ hidden units, it guarantees that there at least exists an assignment of weights yielding a network that can correctly classify each item in the truth table.
+A proof of Theorem \ref{thm:upper-bound-hidden-units} is given in Apendix \ref{apendix:proofs}. Theorem \ref{thm:upper-bound-hidden-units} provides justification for using $2^n$ hidden units, it guarantees that there at least exists an assignment of weights yielding a network that can correctly classify each item in the truth table.
 
 \section{Noisy Gate Parametrisation} \label{sec:real-noisy-parametrisation}
 The parametrisation of Noisy gates require weight clipping, an expensive operation. A new parametrisation is derived that implicitly clips the weights. Consider that $\epsilon \in (0, 1]$, therefore let $\epsilon_i = \sigma(w_i)$, these $w_i$'s can be trained without any clipping, after training the original $\epsilon_i$'s can be recovered.\\
@@ -99,29 +65,29 @@ The parametrisation of Noisy gates require weight clipping, an expensive operati
 Now these weights must be substituted into the Noisy activation. Consider the Noisy-OR activation.
 
 \begin{align*}
-a_{or}(X) &= 1 - \prod^p_{i=1}(\epsilon_i^{x_i}) \cdot \epsilon_b\\
-&= 1 - \prod^p_{i=1}(\sigma(w_i)^{x_i}) \cdot \sigma(b)\\
-&= 1 - \prod^p_{i=1}((\frac{1}{1 + e^{-w_i}})^{x_i}) \cdot \frac{1}{1 + e^{-b}}\\
-&= 1 - \prod^p_{i=1}((1 + e^{-w_i})^{-x_i}) \cdot (1 + e^{-w_i})^{-1}\\
-&= 1 - e^{\sum^p_{i=1} -x_i \cdot ln(1 + e^{-w_i}) - ln(1 + e^{-b})} \\
-&Let\ w_i^{'} = ln(1 + e^{-w_i}),\ b^{'} = ln(1 + e^{-b})\\
-&= 1 - e^{-(W^{'} \cdot X + b^{'})}
+a_{or}(X) &= 1 - \prod^p_{i=1}(\epsilon_i^{x_i})\\
+&= 1 - \prod^p_{i=1}(\sigma(w_i)^{x_i})\\
+&= 1 - \prod^p_{i=1}((\frac{1}{1 + e^{-w_i}})^{x_i})\\
+&= 1 - \prod^p_{i=1}((1 + e^{-w_i})^{-x_i})\\
+&= 1 - e^{\sum^p_{i=1} -x_i \cdot ln(1 + e^{-w_i})} \\
+&Let\ w_i^{'} = ln(1 + e^{-w_i})\\
+&= 1 - e^{-(W^{'} \cdot X)}
 \end{align*}
 
 From a similar derivation we get the activation for a Noisy-AND.
 
 \begin{align*}
-a_{and}(X) &= \prod_{p}^{i=1} (\epsilon_i^{1 - x_i}) \cdot \epsilon_b\\
-&= \prod_{p}^{i=1} (\sigma(w_i)^{1 - x_i}) \cdot \sigma(w_b)\\
-&= e^{\sum^p_{i=1} -(1 - x_i) \cdot ln(1 + e^{-w_i}) - ln(1 + e^{-b})} \\
-&= e^{-(W^{'} \cdot (1 - X) + b^{'})}
+a_{and}(X) &= \prod_{p}^{i=1} (\epsilon_i^{1 - x_i})\\
+&= \prod_{p}^{i=1} (\sigma(w_i)^{1 - x_i})\\
+&= e^{\sum^p_{i=1} -(1 - x_i) \cdot ln(1 + e^{-w_i})}\\
+&= e^{-(W^{'} \cdot (1 - X))}
 \end{align*}
 
 Concisely giving equations \ref{equ:real-noisy-and-activation}, \ref{equ:real-noisy-or-activation}
 
 \begin{align}
-a_{and}(X) &= e^{-(W^{'} \cdot (1 - X) + b^{'})} \label{equ:real-noisy-and-activation}\\
-a_{or}(X)&= 1 - e^{-(W^{'} \cdot X + b^{'})} \label{equ:real-noisy-or-activation}
+a_{and}(X) &= e^{-(W^{'} \cdot (1 - X))} \label{equ:real-noisy-and-activation}\\
+a_{or}(X)&= 1 - e^{-(W^{'} \cdot X)} \label{equ:real-noisy-or-activation}
 \end{align}
 
 The function taking $w_i$ to $w_i^{'}$ is the soft ReLU function which is performing a soft clipping on the $w_i$'s. 
@@ -302,11 +268,8 @@ The ADAM Optimizer \cite{kingma2014adam} is the learning algorithm which will be
 \subsection{Batch Size}
 The batch size will be fixed to one. Experimental results from training an LNFN with a batch size of 1 converged faster. 
 
-\subsection{Preliminary Results}
-Preliminary testing showed that LNFN's are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. It is also possible to inspect the trained weights and see that the networks have learnt the correct CNF or DNF representation.
-
 \section{LNF Network Performance}
-How do LNFNs perform against standard MLPNs which are known to be universal function approximators? Two different MLPNs will be used as a benchmark
+Preliminary testing showed that LNFN's are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. How do LNFNs perform against standard MLPNs which are known to be universal function approximators? Two different MLPNs will be used as a benchmark
 
 \begin{enumerate}
 	\item One will have the same configuration as the LNFNs, i.e. $2^n$ hidden neurons. \label{lnfn-peformance:mlpn-arch-1}
@@ -353,12 +316,10 @@ These networks are able to perform as well as standard perceptron networks but s
 \section{LNF Network Rule Extraction} \label{sec:lnfn-rule-extraction}
 Consider the weights for a logical neuron $W = \{w_1, ..., w_n\}$. These can be converted to $\epsilon_i = \sigma(w_i)$ where $\epsilon_i \in [0, 1]$ and represents the relevance input $x_i$ has on the neurons output.\\
 
-To extract boolean rules from the network it must be possible to interpret each neuron as a logical function acting on a subset of its inputs. For this to be the case, at the conclusion of training either $\epsilon_i \approxeq 1$ or $\epsilon_i \approxeq 0$ needs to be true. If each $\epsilon_i$ is either 1 or 0 then the neuron is a logical function of the inputs which have corresponding $\epsilon \approxeq 0$.\\
-
-Conjecture \ref{conj:lnfn-approach-binary} is the foundation of the following rule extraction algorithm, it was derived from experimental evidence by training LNFNs over complete truth tables and inspecting the weights. Ideally Conjecture \ref{conj:lnfn-approach-binary} would be proved, but that is out of scope for this report.
+To extract boolean rules from the network it must be possible to interpret each neuron as a logical function acting on a subset of its inputs. For this to be the case, at the conclusion of training either $\epsilon_i \approxeq 1$ or $\epsilon_i \approxeq 0$ needs to be true. If each $\epsilon_i$ is either 1 or 0 then the neuron is a logical function of the inputs which have corresponding $\epsilon \approxeq 0$. Conjecture \ref{conj:lnfn-approach-binary} is the foundation of the following rule extraction algorithm, it was derived from experimental evidence by training LNFNs over complete truth tables and inspecting the weights. Ideally Conjecture \ref{conj:lnfn-approach-binary} would be proved, but that is out of scope for this report.
 
 \begin{conjecture}
-	For an LNFN network trained on a binary classification problem with boolean inputs as the loss approaches 0  (i.e. the correct CNF or DNF has been found) the weights $\{ w_1, ..., w_n \}$ approach $\infty$ or $-\infty$. Consequently each $\epsilon_i$ approaches 0 or 1.
+	For an LNFN network trained on a binary classification problem with boolean inputs as the loss approaches 0  (i.e. the correct CNF or DNF has been found) the weights $\{ w_1, ..., w_n \}$ approach $\infty$ or $-\infty$. Consequently each $\epsilon_i = \sigma(w_i)$ (where $\sigma(\cdot)$ is the sigmoid function) approaches 0 or 1.
 	\label{conj:lnfn-approach-binary}
 \end{conjecture}
 
@@ -372,13 +333,13 @@ The Algorithm displayed in figure \ref{alg:rule-extraction} extracts rules from 
 \vspace{0px}
 \begin{figure}[H]
 	\begin{lstlisting}[mathescape=true]
-atoms = $\{ x_1, \lnot x_1, ... x_n, \lnot x_n, \}$
+atoms = $\{ x_1, ... x_n, \lnot x_1, ..., \lnot x_n, \}$
 	
 function extractRulesCNFN(ow, hw)
   ow $= \sigma($ow$)$
   hw $= \sigma($hw$)$
   relvHidden = [hw[i] where ow[i] := 0]
-		
+
   and=And([])
     for weights in relvHidden
       or=Or([atoms[i] where weights[i]:=0])
@@ -391,48 +352,48 @@ function extractRulesCNFN(ow, hw)
 \end{figure}
 \end{minipage}
 
-Filtering these out is not an expensive operation. Section \ref{sec:lnfn-generalization} discusses the generalization capabilities of LNFNs compared to MLPNs and shows that they are statistically equivalent. How does training over incomplete truth tables effect the generalization of extracted rules and what factors could influence this?\\
+How does training over incomplete truth tables effect the generalization of extracted rules and what factors could influence this?\\
 
-Consider $B$ to be the set of all boolean problems with $n$ inputs. What is the cardinality of $B$? There are $2^n$ rows in the truth table and $2^{2^n}$ ways to assign true/false values to these rows, each way corresponding to a different boolean function. Consequently $|B| = 2^{2^n}$. Consider some $b \in B$ represented by $2^n$ rows of a truth table, removing one row from the training data means there are now two possible functions that could be learnt, one where the removed row corresponds to true and the other to false. As more rows are removed this problem is compounded, if $m$ rows are taken then there are $2^m$ possible functions.\\
+Consider $B$ to be the set of all boolean problems with $n$ inputs. What is the cardinality of $B$? There are $2^n$ rows in the truth table and $2^{2^n}$ ways to assign true/false values to these rows, each way corresponding to a different boolean function. Consequently $|B| = 2^{2^n}$. Consider some $b \in B$ represented by $2^n$ rows of a truth table, removing one row from the training data means there are now two possible functions that could be learnt, one where the removed row corresponds to true and the other to false. As more rows are removed this problem is compounded. If $m$ rows are taken then there are $2^m$ possible functions that $b$ could represent.\\
 
-When constructing a CNF or DNF from a truth table (See Section \ref{subsec:construct-cnfdnf}) in the case of CNF only the rows corresponding to false are considered and for the DNF only rows corresponding to true. Despite the fact that if $m$ rows are removed from the training set then there are $2^m$ possible functions that could represent the partial truth table. Does this same principle apply to the rules extracted from CNF or DNF networks? Figure \ref{fig:cnf-descrete-generalizatiion} shows how the rule set of an CNFN generalizes as examples are removed. Figure \ref{fig:dnf-descrete-generalizatiion} shows the same but for DNFNs.
+To test the generalization of the CNFN and DNFN rule sets LNFNs will be trained over a randomly generated boolean problem with 4 inputs. The trainig set will reduce in size one by one and the extracted rules will be evaluated over the entire tuth table. For each training set size the experement will be repeated 30 times. Figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-generalizatiion} shows the number of examples removed from the training set on the x axis. The y axis shows the number of incorrectly classified instances over the entire dataset. These experements show that when no examples are removed then the rules can achieve a perfect accuracy. As instances are removed from the training set the rules are able to generalise on average. 
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[b]{0.45\textwidth}
 		\includegraphics[width=\textwidth]{cnf-descrete-generalization.png}
-		\caption{}
+		\caption{CNFN trained using an incomplete truth table}
 		\label{fig:cnf-descrete-generalizatiion}
 	\end{minipage}
 	\begin{minipage}[b]{0.45\textwidth}
 		\includegraphics[width=\textwidth]{dnf-descrete-generalization.png}
-		\caption{}
+		\caption{DNFN trained using an incomplete truth table}
 		\label{fig:dnf-descrete-generalizatiion}
 	\end{minipage}
 	\hfill
 \end{figure}
 
-In Figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-generalizatiion} the training examples which are removed get randomly selected. How is the performance effected if the removed examples are chosen more carefully? In the next experiment only examples corresponding to false are removed and the resultant training set is given to a DNFN.
+When constructing a CNF from a truth table (See Section \ref{subsec:construct-cnfdnf}) only the rows corresponding to false are considered. Is it then possible that by only removing rows which corospond to false a CNFN can learn rules which achieve a perfect accuracy. Figure \ref{fig:cnf-descrete-generalizatiion-partial} represents this situation.
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[b]{0.45\textwidth}
 		\includegraphics[width=\textwidth]{cnf-descrete-generalization-partial.png}
-		\caption{}
+		\caption{CNFN trained using an incomplete truth table, only rows coresponding to false are removed}
 		\label{fig:cnf-descrete-generalizatiion-partial}
 	\end{minipage}
 	\begin{minipage}[b]{0.45\textwidth}
 		\includegraphics[width=\textwidth]{dnf-descrete-generalization-partial.png}
-		\caption{}
+		\caption{DNFN trained using an incomplete truth table, only rows coresponding to true are removed}
 		\label{fig:dnf-descrete-generalizatiion-partial}
 	\end{minipage}
 	\hfill
 \end{figure}
 
-Figures \ref{fig:cnf-descrete-generalizatiion-partial} \& \ref{fig:dnf-descrete-generalizatiion-partial} shown CNFNs and DNFNs trained over partial data retrospectively. In the case of CNFNs only entries corresponding to true in the truth table are removed and for the DNFNs only false entries. These graphs show that careful removal of each training example does not result in rules that perform better.
+Figures \ref{fig:cnf-descrete-generalizatiion-partial} \& \ref{fig:dnf-descrete-generalizatiion-partial} show CNFNs and DNFNs trained over partial data retrospectively. In the case of CNFNs only entries corresponding to true in the truth table are removed and for the DNFNs only false entries. These graphs show that careful removal of each training example does not result in rules that perform better. These results indicate that the generalization of extracted rule sets depends on the initial condtions rather than what examples are removed.
 
 \section{Summary}
-In this chapter a method for training LNFNs was derived. LNFNs where shown to have statistically equivalent performance and generalizations to MLPNs. Finally it was shown that rules can be extracted from LNFNs which are able to generalise.
+In this chapter a method for training LNFNs was derived. LNFNs where shown to have statistically equivalent performance and generalization to MLPNs. Finally it was shown that rules can be extracted from LNFNs and that these rule sets where able to generalise.
 
 \chapter{Expanding the Problem Domain of Logical Normal Form Networks} \label{C:investigation-of-lnfns}
 The LNFNs presented in Chapter \ref{C:foundation-of-lnfns} have only been shown to be applicable when learning boolean truth tables. This chapter investigates extending LNFNs to support multi class classification problems and continuous feature spaces.
@@ -497,9 +458,7 @@ Immediately it is possible to find useful information about this problem that wa
 	\item \text{Class 3:} $(e \land e \land \lnot a) \lor (c \land f \land \lnot a \land \lnot b \land \lnot d \land \lnot e) \lor (\lnot f) \lor (\lnot f)$
 \end{itemize}
 
-The formulae extracted from the DNFN confirm previous knowledge obtained from the CNFN, namely $\lnot f = True \implies $ Class 3.\\
-
-Table \ref{tab:lenses-rule-peformance-comp} demonstrates the performance of extracted rules over the Lenses dataset. The confidence intervals of networks and rule sets overlap so there is no statistically significant difference between the network and rule set in terms of their accuracy on the data.
+The formulae extracted from the DNFN confirm previous knowledge obtained from the CNFN, namely $\lnot f = True \implies $ Class 3. Table \ref{tab:lenses-rule-peformance-comp} demonstrates the performance of extracted rules over the Lenses dataset. The confidence intervals of networks and rule sets overlap so there is no statistically significant difference between the network and rule set in terms of their accuracy on the data.
 
 \begin{table}[H]
 	\begin{center}
@@ -518,16 +477,51 @@ Table \ref{tab:lenses-rule-peformance-comp} demonstrates the performance of extr
 	\label{tab:lenses-rule-peformance-comp}
 \end{table}
 
-The results shown thus far demonstrate that LNFNs can be applied to multi class classification problems.
+The results shown thus far demonstrate that LNFNs can be applied to boolean multi class classification problems.
 
 \section{Features with Continuous Domains}
-It is possible to give Noisy neurons continuous variables in the range $[0,1]$ but when does it make sense to do so? And what do these continuous features mean? The inputs can be thought of as being the probability that the feature is present. In the discrete case either the input is there (a 1) or not (a 0). Then in the continuous case each input feature is thought of as a probability.\\
+It is possible for the inputs to a Noisy Neuron to be in the range $[0,1]$, but when does it make sense to do so? And what do these continuous features mean? The inputs can be thought of as being the probability that the feature is present. In the discrete case either the input is there (a 1) or not (a 0). Then in the continuous case each input feature is thought of as a probability.\\
 
-How about the case where the feature range is not confined to $[0,1]$. An option is to normalise the feature spaces, forcing them into a format compatible with LNFNs. The problem then comes down to meaning. Is possible to think of these normalised features as a probability? Consider an arbitrary (un-normalised) feature $f$. Assume $f \in [f_{min}, f_{max}]$ then the larger the normalised feature $f_N$ the closer its true value is to $f_{max}$. Similarly if $\lnot f_N = 1 - f_N$ is large then the true value is closer to $f_{min}$. $f_N$ could then be the probability of sampling a $v \sim U(f_{min}, f_{max})$ that is less than $f$.
+How about the case where the feature range is not confined to $[0,1]$. An option is to normalise the feature spaces, forcing them into a format compatible with LNFNs. The problem then comes down to meaning. Is possible to think of these normalised features as a probability? Consider an arbitrary (un-normalised) feature $f$. Assume $f \in [f_{min}, f_{max}]$ then the larger the normalised feature $f_N$ the closer its true value is to $f_{max}$. Similarly if $\lnot f_N = 1 - f_N$ is large then the true value is closer to $f_{min}$. $f_N$ could then be the probability of sampling a $v \sim U(f_{min}, f_{max})$ that is less than $f$. This is certianly not the only meaning normalised features could have, it is simply an example.\\
 
+Another consideration to make is, how can trained LNFN models be intepreted if the features are continous? When the weights are binary then a Noisy neuron can be considered as a logical gate of its inputs with $\epsilon \approxeq 0$. The weights in a trained LNFN do not converge to 0 or 1 when the input features are continous so a more general method to intepret LNFNs is needed.
+
+\paragraph{Influence Model}
+One potential way to intepret LNFNs would be to compute the influence each input feature has on the output neurons, this is defined to be an \textbf{Influence Model}.  The weights for a Noisy neuron directly corespond to the influence each input has on the neuron's output. Consequently it is a trivial task to find an Influence Model for describing how each input feature affects the hidden layer outputs, this is just the weights of each hidden neuron. Consider Figure \ref{fig:network-example}  and the problem computing an Influnce Model describing the influence each $x_i$ has on the output of some $o_j$.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\textwidth}
+		\vspace{0px}
+		\includegraphics[width=\textwidth]{NetworkExample.png}
+		\caption{Example Network}
+		\label{fig:network-example}
+	\end{minipage}
+	\hspace{1px}
+	\begin{minipage}[t]{0.45\textwidth}
+		\vspace{2px}
+		 In the folowing computations $\epsilon_i^{h_j}$ is the ith $\epsilon$ for neuron $h_j$. Assume all activations are Noisy-OR's, then the activation of $o_j$ is $1 - \prod^m_{k=1} (\epsilon_k^{o_j})^{h_k}$ and the activation of some $h_k$ is $1 - \prod^n_{b=1} (\epsilon_b^{h_k})^{x_b}$. The aim is therefore to find an $(\epsilon^{'}_i)$ that stasfies Equation \ref{equ:interpetation-across-layers}.
+	
+		\begin{align}
+			(\epsilon^{'}_i)^{x_i} = \prod_{k = 1}^{m} (\epsilon^{o_j}_k)^{\prod_{b = 1}^{n} (\epsilon^{h_k}_b)^{x_b}}
+			\label{equ:interpetation-across-layers}
+		\end{align}
+	\end{minipage}
+	\hfill
+\end{figure}
+
+This new $\epsilon^{'}_i$ is dependent on all the other $x$'s, not just the $x_i$ of interest. Consequently there is not an obvous solution to computing Influence Model for LNFNs.
+
+\paragraph{Partial Influence Models}
+While it is not obvious how to compute an Influence Model describing a LNFN entirely it is trivial to compute one describing the influence between input features and the hidden layer output. Using this Partial Influence Model can describe the the hidden neurons in terms of the input features. The weights beloning to each output neuron could then be used to find the most important hidden neurons.
+
+\paragraph{Continous Rules}
+Another way to intepret LNFNs in a continous domain is to extract continous rules. A threshold will be set, any input with a weight below the threshold will be considered important. Consqeuently each neuron will be considered a function of its inputs that have corosopnding weight less than or equal to a given threshold $t$. The same rule extraction algorythm (given in Figure \ref{alg:rule-extraction}) can therefore be used in both the descrete and continous case if line 6 is adjusted to \textit{relvHidden = [hw[i] where ow[i] $\leq t$]}. The weights of all features will be truncated to 0 as if the weights where kept then it is esentially still an LNN with some connections removed. The continous rules can be applied by using the Noisy activations with each $\epsilon \approxeq 0$. A potential issue with this method is that the less important features are removed after the threshold is applied, this might result in more incorrect classifications by the rules. A smaller threshold will lead to simpler rules with prehapse a higher error rate where as a larger threshold will give more complex rules with a possibley higher accuracy. This process also discards the true $\epsilon$'s which could potentially effect the accuracy of the rules.
 
 \subsection{Application To Iris Problem}
-The Iris data set \cite{Lichman:2013} is the problem of classifying a plant as one of three classes when given four measurements taken from the plant. These features are all measurements in centimetres and are not confined to the range $[0, 1]$. Table \ref{tab:iris-network-peformance-comp} gives the results of training the normalised Iris problem on LNF networks. The results show that while the performance can vary a lot it is possible for both the CNF and DNF networks to obtain 100\% accuracy.
+
+
+The Iris data set \cite{Lichman:2013} is the problem of classifying a plant as one of three classes. Each example consists of four features, all are mesurements taken from the plant. All features are in centimetres and not confined to the range $[0, 1]$. Table \ref{tab:iris-network-peformance-comp} gives the results of training the Normalised Iris problem on LNF networks. The results show that while the performance can vary a lot it is possible for both the CNF and DNF networks to obtain 100\% accuracy.
 
 \begin{table}[H]
 	\begin{center}
@@ -542,13 +536,52 @@ The Iris data set \cite{Lichman:2013} is the problem of classifying a plant as o
 			\hline
 		\end{tabular}
 	\end{center}
-	\caption{tab:iris-network-performance-comp}
+	\caption{LNFN peformance on an Iris problem testing set}
 	\label{tab:iris-network-peformance-comp}
 \end{table}
 
-Given that the input features to the network are continuous it is not possible to extract boolean rules. However the most important features for each class can be observed in the weights. If attempting to interpret these models meaning must be assigned to each of the normalised features. Informally, an atom is "truer" if the un-normalised feature is larger and "falser" if its smaller.\\
+If attempting to interpret these models meaning must be assigned to each of the normalised features. Informally, an atom is "truer" if the un-normalised feature is larger and "falser" if its smaller. A NOT operaion inverts this property. Table \ref{tab:iris-rule-peformance-comp} shows the peformance of extracted continous rules on a testing set. These peformance stistics provide evidence that continous rules have poor peformance.
 
-The list in Figure \ref{fig:iris-rules} describes the attributes of each class on an CNF network which obtained an error rate of 0\% on the testing set. These discovered rules reveal interesting information about the dataset. Having a small petal width and length mean the class is more likely to be \textit{Iris Setosa}. Alternatively having a larger petal width means the instance is more likely to be \textit{Iris Virginica}.
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| c | c | c |}
+			\hline
+			& Error Rate & Error Rate CI (95\%) \\
+			\hline
+			\hline
+			CNF Rules & 0.439 & (0.156, 0.867) \\
+			\hline
+			DNF Rules & 0.323 & (0.156, 0.511) \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{Peformance of rules extracted from LNFN on an Iris problem testing set}
+	\label{tab:iris-rule-peformance-comp}
+\end{table}
+
+
+\noindent
+\begin{minipage}[t]{0.5\textwidth}
+\vspace{0px}
+The question reamining is, how do these rules contribute to intepreting the LNFN model. Figure \ref{fig:raw-iris-rules} shows raw continous rules extracted from a DNFN. Features $\{a,b,c,d\}$ corespond to prefering larger values of $\{$ sepal length, sepal width, petal length, petal width $\}$. On the other hand $e = \lnot a, f = \lnot b, g = \lnot c, h = \lnot d$.\\
+
+The list in Figure \ref{fig:iris-rules} shows some conclusions about the classes which can be drawn from the raw continous rules. Having a small petal width and length mean the class is more likely to be \textit{Iris Setosa}. \\
+\end{minipage}
+\hspace{0.05\textwidth}
+\begin{minipage}[t]{0.45\textwidth}
+\vspace{0px}
+\begin{figure}[H]
+\begin{enumerate}
+\item \textit{Iris Setosa:} $(g \land h) \lor (g \land h) \lor (g \land h) \lor (g \land h)$
+\item \textit{Iris Versicolour:} $(c \land e \land f \land h) \lor (c \land f \land h) \lor (c \land f \land h) \lor (c \land e \land f \land h) \lor (c \land f \land h)$
+\item \textit{Iris Virginica:} $(c \land d \land f) \lor (c \land d \land f) \lor (d \land f) \lor (c \land d \land f) \lor (c \land d \land f) \lor (c) \lor (c \land d \land f)$
+\end{enumerate}
+\caption{Raw continous rules extracted from a DNFN, with a threshold of $0.5$}
+\label{fig:raw-iris-rules}
+\end{figure}
+\end{minipage}
+
+Alternatively having a larger petal width means the instance is more likely to be \textit{Iris Versicolour} or \textit{Iris Virginica}.
 
 \begin{figure}[H]
 	\centering
@@ -557,9 +590,9 @@ The list in Figure \ref{fig:iris-rules} describes the attributes of each class o
 	 Finally the \textit{Iris Versicolour} rule is more complicated and seems contradictory. If the instance has a small petal width and length but also has a large petal width or length.
 	 \begin{figure}[H]
 	 	\begin{enumerate}
-	 		\item \textit{Iris Setosa: } Smaller \textbf{petal width} AND Smaller \textbf{petal length}
-	 		\item \textit{Iris Versicolour: } Smaller \textbf{petal width} AND Smaller \textbf{petal length}. AND ( Larger \textbf{petal width} OR Larger \textbf{petal length} )
-	 		\item \textit{Iris Virginica: } Larger \textbf{petal width}
+	 		\item \textit{Iris Setosa: } Smaller \textbf{petal width} $\land$ Smaller \textbf{petal length}
+	 		\item \textit{Iris Versicolour: } Larger \textbf{petal length} $\land$ Smaller \textbf{petal width} $\land$ Smaller \textbf{sepal width}
+	 		\item \textit{Iris Virginica: } Larger \textbf{petal length} $\lor$ (Large \textbf{petal width} $\land$ Small \textbf{sepal width})
 	 	\end{enumerate}
  		\caption{Rules representing the iris problem, extracted from a CNFN}
  		\label{fig:iris-rules}
@@ -574,16 +607,14 @@ The list in Figure \ref{fig:iris-rules} describes the attributes of each class o
 	\hfill
 \end{figure}
 
-Figure \ref{fig:iris-data-petal-length-vs-width} demonstrates the class rules for \textit{Iris Setosa} and \textit{Iris Virginica}. The Figure also gives incite as to the meaning of the class rule for \textit{Iris Versicolour}, these instances are generally centred around the middle with a trend of increasing length and width. The two features \textbf{sepal width} and \textbf{sepal length} are used in the classification algorithm but have a very small weighting which is why they have been omitted.
+Figure \ref{fig:iris-data-petal-length-vs-width} plots the petal width and length features against each other, demonstraiting the conclusions drawn make sense.\\
 
-This section has shown that LNFNs can be applied to any problem with continuous features by normalisation. This operation creates an additional problem, namely it becomes difficult to interpret what the normalised features mean.
+This section has shown that LNFNs can be applied to any problem with continuous features by normalisation. This operation creates an additional problem, namely it becomes difficult to interpret what the normalised features mean. Future work into LNNs might aim to develop a better way to convert feature domains to probabilities.
 
 \section{Summary}
-This chapter has demonstrated that LNFNs can be applied to more than just learning boolean truth tables. They have been shown to achieve good accuracy on multi class classification problems, with and without discrete input features.\\
+This chapter has demonstrated that LNFNs can be applied to more than just learning boolean truth tables. They have been shown to achieve good accuracy on multi class classification problems, with and without discrete input features. A number of methods for intepreting LNFNs applied to continous feature spaces. These methods where then shown to provide useful insights into the Iris dataset.\\
 
-In the context of the Lenses problem it was possible to extract boolean rules from the LNFNs which had a statistically equivalent performance to the networks. These rules also provided incite into the problem which was not obvious from the data.\\
-
-The LNFNs where able to achieve a low error rate (sometimes 0\%) on the Iris data set. It was possible to extract useful information from the trained models which highlighted the most important features when making classifications.
+In the context of the Lenses problem it was possible to extract boolean rules from the LNFNs which had a statistically equivalent performance to the networks. These rules also provided incite into the problem which was not obvious from the data. The LNFNs where able to achieve a low error rate (sometimes 0\%) on the Iris data set. It was possible to extract useful information from the trained models which highlighted the most important features when making classifications. The experements with the Iris problem also revealed limiatations of LNNs
 
 \chapter{Logical Neural Networks} \label{C:lnn}
 This chapter discusses development of Logical Neural Networks as a generalization of LNFNs. There are two key issues with LNFNs. Firstly the number of hidden units becomes infeasible as the amount of inputs increases. Secondly if the problem size is small enough and the network can be trained the volume of hidden neurons allows for the possibility to memorise the input data. Using what has been learnt about LNFNs the class of Logical Neural Networks (LNNs) can be defined.
@@ -665,9 +696,9 @@ To evaluate the performance of Logical Neural Networks (LNNs) a number of differ
 	\item \textbf{(OR $\rightarrow$ AND) Old Architecture:} This will consist of 30 hidden OR neurons. \label{lnn-eval-arch-1}
 	\item \textbf{(OR $\rightarrow$ AND) Architecture:} Same as \ref{lnn-eval-arch-1} but with the new LNN architecture \label{lnn-eval-arch-2}
 	\item \textbf{(OR $\rightarrow$ AND $\rightarrow$ AND) Architecture: } 60 hidden OR neurons, 30 hidden AND neurons\label{lnn-eval-arch-4}
-	\item \textbf{(OR) Architecture:} \label{lnn-eval-arch-5}
-	\item \textbf{(AND) Architecture:} \label{lnn-eval-arch-6}
-	\item \textbf{(AND) Old Architecture:} \label{lnn-eval-arch-7}
+	\item \textbf{(OR) Architecture:} Inputs are directly connected to the outputs which have a Noisy-OR acitvation \label{lnn-eval-arch-5}
+	\item \textbf{(AND) Architecture:} Inputs are directly connected to the outputs which have a Noisy-AND acitvation\label{lnn-eval-arch-6}
+	\item \textbf{(AND) Old Architecture:} Inputs are directly connected to the outputs which have a Noisy-AND acitvation, this netowrk is also running on the old archetchure.\label{lnn-eval-arch-7}
 \end{enumerate}
 
 Sigmoid models will also be run to provide a performance comparison point for the Logical Neural Networks.
@@ -724,7 +755,7 @@ The experimental results lead to the following conclusions
 \end{enumerate}
 
 \section{Intepretability of Logical Neural Networks}
-There are two cases of intepretability. In the situation where input and outputs are discrete then intepretablity becomes Rule Extraction. The other situation is where the inputs are continuous.
+There are two cases of intepretability. In the situation where input and outputs are discrete then intepretablity becomes Boolean Rule Extraction. The other situation is where the inputs are continuous.
 
 \subsection{Discrete Case (Rule Extraction)}
 To assess the rule extraction of LNNs the Tic Tac Toe  \cite{Lichman:2013} problem will be the benchmark. 
@@ -817,32 +848,9 @@ Figure \ref{fig:tic-tac-toe-rule-example} shows a rule taken at random from the 
 \end{enumerate}
 
 \subsection{Continuous Case}
-In the continuous case extracting boolean rules is not possible as each input no longer represents a boolean but rather a degree of truth. To verify the model has leant something meaningful it would be useful to visualise each output neuron as a function of the input features. In terms of MNIST, this could be an image where the darkness of each pixel represents its importance to a specific classification.\\
+Chapter \ref{C:investigation-of-lnfns} discusses three methods for intepreting Logical Normal Form Networks which can also be applied to the generalised LNN archetchure. Extracting a continous rule set would be to large to put in a report or intepret given MNIST has 784 features. For this reason Influence and Partial Influence models will be constructed and presented as images.
 
-Consider Figure \ref{fig:network-example} and trying to compute the influence each $x_i$ has on the output of some $h_j$. The weights from one layer to another directly correspond to how much influence the corresponding input has. Consequently determining the relevance each inputs to a neuron has on the neurons output is not difficult task. However computing the influence that a neuron has across layers is not so simple. This is the case of asking how $x_i$ influences the output of $o_j$.
-
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\textwidth}
-		\vspace{0px}
-		\includegraphics[width=\textwidth]{NetworkExample.png}
-		\caption{Example Network}
-		\label{fig:network-example}
-	\end{minipage}
-	\hspace{1px}
-	\begin{minipage}[t]{0.45\textwidth}
-		\vspace{2px}
-	Why is this problem of trying to determine how each $x_i$ effects each $o_j$ difficult? In essence it equivalent to find $\epsilon^{'}_i$ in Equation \ref{equ:interpetation-across-layers}. Note that exponent on each $\epsilon$ refers to the neuron it belongs to.
-
-		\begin{align}
-			(\epsilon^{'}_i)^{x_i} = \prod_{k = 0}^{m} (\epsilon^{o_j}_m)^{\prod_{b = 0}^{n} (\epsilon^{h_k}_b)^{x_b}}
-			\label{equ:interpetation-across-layers}
-		\end{align}
-	\end{minipage}
-	\hfill
-\end{figure}
-
-This new $\epsilon$ is dependent on all the other $x_i$'s, not just the one of interest. Consequently it is only possible to directly compute the influence of each input feature with respect to the output from first layer of hidden neurons. Interpreting Multi Layer LNNs instead will be achieved by displaying the most relevant hidden features for a specific classification. Intepretability will be assessed by comparing various MNIST models using the new architecture again each other but also the original LNN model. Part of this assessment will be to determine what effects the LSM has on the model interpretation.
+LNNs with no hidden layer can be intepreted easily by showing pictorial representations of Indluence models. Interpreting Multi Layer LNNs will be achieved by constructing Partial Influence models and then displaying pictorial representations of the most important features that contribute to the classification of an example as the digit 1. Multi-Layer perceptron networks will be visulised by constructing a heat map of the weights.
 
 \subsubsection{No Hidden Layer Networks}
 
@@ -1082,13 +1090,58 @@ The logical Softmax introduces more noise into the weights but does not diminish
 These experiments provide evidence towards Logical Neural Networks being more interpretable than MLPNs. While it is possible to observe some of the MLPNs decision making process, the LNN is clearer and simpler leading to a more interpretable model.
 
 \subsubsection{Single Hidden Layer Networks}
+To intepret these multi layer networks Partial Influence models will be constructed and pictorial representations of the most important features that contrubute to classification as a one will be displayed.
+
+\paragraph{Sigmoid Network}
+	The features in Figure \ref{fig:sigmoid-hidden-layer-features-like} positively contribute to the classification as a 1. These do not appear to have any clear relation to the digit 1. The features in Figure \ref{fig:sigmoid-hidden-layer-features-dont-like} again appear to not have any relation ship with the digit 1.
+
+	\begin{figure}[H]
+		\centering
+		\begin{minipage}[b]{0.19\textwidth}
+			\captionsetup{labelformat=empty}
+			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Like/Layer0-Neuron-11.png}
+			%\caption{Digit 0}
+			\label{}
+		\end{minipage}
+		\begin{minipage}[b]{0.19\textwidth}
+			\captionsetup{labelformat=empty}
+			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Like/Layer0-Neuron-27.png}
+			%\caption{Digit 0}
+			\label{}
+		\end{minipage}
+		\begin{minipage}[b]{0.19\textwidth}
+			\captionsetup{labelformat=empty}
+			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Like/Layer0-Neuron-29.png}
+			%\caption{Digit 0}
+			\label{}
+		\end{minipage}
+		\caption{Features that positively contribute to the classification as a 1.}
+		\label{fig:sigmoid-hidden-layer-features-like}
+		\hfill
+	\end{figure}
+
+		\begin{figure}[H]
+		\centering
+		\begin{minipage}[b]{0.19\textwidth}
+			\captionsetup{labelformat=empty}
+			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/DontLike/Layer0-Neuron-0.png}
+			%\caption{Digit 0}
+			\label{}
+		\end{minipage}
+		\begin{minipage}[b]{0.19\textwidth}
+			\captionsetup{labelformat=empty}
+			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/DontLike/Layer0-Neuron-4.png}
+			%\caption{Digit 0}
+			\label{}
+		\end{minipage}
+		\caption{Features that negatively contribute to the classification of 1}
+		\label{fig:sigmoid-hidden-layer-features-dont-like}
+		\hfill
+	\end{figure}
 
 \begin{minipage}[t]{0.45\textwidth}
 	\vspace{0px}
-	Interpreting these multilayer models is a more difficult task as the hidden layer introduces dependencies between the inputs when considering how they influence the classification. To test the intepretability of these networks assume the goal is to verify that the digit 1 is being classified in a sensible way. With each network the hidden neurons which have the most influence on the classification be 1 will be displayed along with the ones which influence the classification not being 1.	
 
-	\paragraph{Sigmoid Network}
-	The features in Figure \ref{fig:sigmoid-hidden-layer-features-like} positively contribute to the classification as a 1. These do not appear to have any clear relation to the digit 1. The features in Figure \ref{fig:sigmoid-hidden-layer-features-dont-like} again appear to not have any relation ship with the digit 1.
 	
 	\paragraph{OR $\rightarrow$ AND Network Old Structure (With Out LSM)}
 	It is not immediately apparent how the features in Figure \ref{fig:or-and-net-old-with-out-lsm} make up the digit 1. \\
@@ -1102,49 +1155,7 @@ These experiments provide evidence towards Logical Neural Networks being more in
 \hspace{0.1\textwidth}
 \begin{minipage}[t]{0.45\textwidth}
 	\vspace{0px}
-	\begin{figure}[H]
-		\centering
-		\begin{minipage}[b]{0.45\textwidth}
-			\captionsetup{labelformat=empty}
-			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Like/Layer0-Neuron-11.png}
-			%\caption{Digit 0}
-			\label{}
-		\end{minipage}
-		\begin{minipage}[b]{0.45\textwidth}
-			\captionsetup{labelformat=empty}
-			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Like/Layer0-Neuron-27.png}
-			%\caption{Digit 0}
-			\label{}
-		\end{minipage}
-		\begin{minipage}[b]{0.45\textwidth}
-			\captionsetup{labelformat=empty}
-			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/Like/Layer0-Neuron-29.png}
-			%\caption{Digit 0}
-			\label{}
-		\end{minipage}
-		\caption{Features that positively contribute to the classification as a 1.}
-		\label{fig:sigmoid-hidden-layer-features-like}
-		\hfill
-	\end{figure}
 	
-	\begin{figure}[H]
-		\centering
-		\begin{minipage}[b]{0.45\textwidth}
-			\captionsetup{labelformat=empty}
-			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/DontLike/Layer0-Neuron-0.png}
-			%\caption{Digit 0}
-			\label{}
-		\end{minipage}
-		\begin{minipage}[b]{0.45\textwidth}
-			\captionsetup{labelformat=empty}
-			\includegraphics[width=\textwidth]{Sigmoid(Hidden-Layer)/DontLike/Layer0-Neuron-4.png}
-			%\caption{Digit 0}
-			\label{}
-		\end{minipage}
-		\caption{Features that negatively contribute to the classification of 1}
-		\label{fig:sigmoid-hidden-layer-features-dont-like}
-		\hfill
-	\end{figure}
 
 	\begin{figure}[H]
 		%\captionsetup{labelformat=empty}
@@ -1487,6 +1498,18 @@ The features extracted from this network do not appear to correspond to a 1, not
 	
 \end{minipage}
 
+
+\subsection{Results of Intepretability Experiments}
+From the above experiments and discussions the following conclusions can be made
+
+\begin{enumerate}
+	\item \textit{Rules Extracted are Intepretable:} The Tic-Tac-Toe problem experiments showed that the rules extracted from LNNs where interpretable.
+	\item \textit{Adding Nots Improves Intepretability:} Using the new structure with nots allows the network to place a greater emphasis on the presence or absence of various pixels. Without the Nots not many of inputs are of great importance, rather many have a relatively small relevance.
+	\item \textit{Adding an Logical Soft Max does not hinder the intepretability (on the new architecture):} By comparing the two different network architectures with and without an LSM it is possible to see that the intepretability is not directly effected and the features representing the classification of the digit 1 are not significantly changed.
+	\item \textit{Intepretability of Network is Heavily Dependent on Structure:} As shown through the previous examples the OR $\rightarrow$ AND networks harder to interpret than the AND $\rightarrow$ OR architecture.
+\end{enumerate}
+
+\section{Comparason Between LNNs and Exsisting Methods}
 \subsection{Comparison between LNN Intepretability and LIME}
 The aim of LIME is to build trust in the model by explaining how a specific predictions are arrived at. LIME is also model agnostic, so it is a highly portable algorithm.  In comparason, LNN intepretability comes down to directly identifying what input features contribute to each output neuron being active. Figure \ref{} shows the LIME algorythm applied to three different ANNs, two LNNs and one MLPN. Each image shows what features are important in classifiying the example as a 1.
 
@@ -1513,37 +1536,40 @@ The aim of LIME is to build trust in the model by explaining how a specific pred
 	\label{fig:and-or-lnn-with-lsm-like}
 \end{figure}
 
-The LIME filters out the features which have a low importance. Figure \ref{} says that for the three different classifiers the same features are most important to correctly classifiying this instance of a 1. 
-\subsection{Results of Intepretability Experiments}
-From the above experiments and discussions the following conclusions can be made
+The LIME filters out the features which have a low importance. Figure \ref{fig:and-or-lnn-with-lsm-like} says that for the three different classifiers the same features are most important to correctly classifiying this instance of a 1. 
 
-\begin{enumerate}
-	\item \textit{Rules Extracted are Intepretable:} The Tic-Tac-Toe problem experiments showed that the rules extracted from LNNs where interpretable.
-	\item \textit{Adding Nots Improves Intepretability:} Using the new structure with nots allows the network to place a greater emphasis on the presence or absence of various pixels. Without the Nots not many of inputs are of great importance, rather many have a relatively small relevance.
-	\item \textit{Adding an Logical Soft Max does not hinder the intepretability (on the new architecture):} By comparing the two different network architectures with and without an LSM it is possible to see that the intepretability is not directly effected and the features representing the classification of the digit 1 are not significantly changed.
-	\item \textit{Intepretability of Network is Heavily Dependent on Structure:} As shown through the previous examples the OR $\rightarrow$ AND networks harder to interpret than the AND $\rightarrow$ OR architecture.
-\end{enumerate}
+\subsection{Comparason Between LNNs and Fuzzy Logic Networks}
+The paper presenting Fuzzy Logic Networks (FLN) evaluates their peformance on a number of benchmark problems including the Vehicle \cite{Lichman:2013} dataset. The Vehicle problem concerns attempting to classify a given silhouette as one of four vehicles types. The data set consists of 18 features extracted from car silhoute images.\\
+
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| c | c | c | c | c |}
+			\hline
+			\textbf{} & \textbf{Net Error Rate} & \textbf{Net Error Rate CI} & \textbf{Rule Error Rate} & \textbf{Rule Error Rate CI 95\%}\\
+			\hline
+			\hline
+			\textbf{Training} & 0.101 & (0.079, 0.132) & 0.649 & (0.380, 0.762)\\
+			\textbf{Testing} & 0.173 & (0.130, 0.224) & 0.648 & (0.398, 0.763)\\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{Results of experiments with Logical Neural Networks on the Vehicle Problem using an OR $\rightarrow$ OR $\rightarrow$ AND network archetchure}
+	\label{tab:vehicle-lnn-peformance}
+\end{table}
+
+Tabel \ref{tab:vehicle-lnn-peformance} show the error rates of OR $\rightarrow$ OR $\rightarrow$ AND LNN on the Vehicle problem. The LNN network achieved an average error rate of --\& on a testing set compared to 28.71\% error rate for the FLN. The difference between the LNN and rule error rates is stisticaly significant. While the rules extracted from an LNN peform worse than the network its self they have comparable peformance to rules taken from a FLN. An LNN rule set obtains 64.8\% average error rate on the test set where as the FLN rules achieve an average error rate of 67.8\%.\\
+
+One advantage that the FLN has over LNNs is that the rule sets are more compact and thus are simpler to intepret. This experement would sugest that FLN is better than LNNs as the rule sets have similar peformance but FLN rules are simpler. Future work on LNNs might aim to implement an algorythm which can automatically simplyfy the extracted rules, this could lead to simpler expressions.
 
 \section{Summary Of Logical Neural Network Evaluation}
-Through the experiments carried out the following observations can be made.
+Through the experiments carried out the following observations can be made. The new LNN structure (adding NOTs) results with a statistically significant increase in accuracy with some network architectures. The new LNN structure achieved statistically equivalent or better performance than the MLPN nets with an equivalent number of hidden neurons/layers. For any LNN (new structure or old) adding a Logical Softmax improved performance by a statistically significant margin. Any LNN (new or old structure) was more interpretable than the corresponding MLPN. These experiments have therefore shown that the LNN networks have statistically equivalent performance to MLPNs on the MNIST dataset. Evidence has also been provided in support of LNNs have a more interpretable model than MLPNs.\\
 
-\begin{enumerate}
-	\item \textit{Performance comparison between the old and new Logical Neural Network Structures:} The new LNN structure (adding NOTs) results with a statistically significant increase in accuracy with some network architectures.
-	\item \textit{Performance comparison between Multi Layer Perceptron Network and new LNNs:} The new LNN structure achieved statistically equivalent or better performance than the MLPN nets with an equivalent number of hidden neurons/layers.
-	\item \textit{Performance comparison between networks with and without Logical Softmax:} For any LNN (new structure or old) adding a Logical Softmax improved performance by a statistically significant margin.
-	\item \textit{Comparison of intepretability between MLPNs and new/old LNNs:} Any LNN (new or old structure) was more interpretable than the corresponding MLPN.
-	\item \textit{Comparison of intepretability between MLPNs (using LIME) and new/old LNNs:}
-	\item \textit{Comparison of LIME to LNN Intepretability:}
-\end{enumerate}
-
-These experiments have therefore shown that the LNN networks have statistically equivalent performance to MLPNs. Evidence has also been provided in support of LNNs have a more interpretable model than MLPNs.
+The LIME algorythm is more powerful than LNN Intepretability in the sense that it is model agnostic. On the other hand Intepreting LNNs provides a more complete picture of the models decison making process. Comparing LNNs and Fuzzy Logic Networks on the Vehicles problem showed that the LNN error rate was lower. However, ultimately a more interesting comparason is how the rule sets peform on a test set. Both LNN and FLN yield rules that obtain a comparable error rate the only difference between the two being FLN rules are simpler.
 
 \chapter{Application to Auto Encoders} \label{C:lnn-application}
 This chapter demonstrates the flexibility of the LNN architecture by applying them in the context of Auto Encoders. \\
 
-Auto encoders \cite{baldi2012complex} \cite{hinton2006reducing} are a network architecture trained with unsupervised learning for a purpose of learning an encoding of the data. An application learning a new encoding is dimensionality reduction. The aim is to take the input to some reduced feature space and then from this feature space back to the original input with the smallest error. The case where there is one linear layer doing the encoding and decoding is called \textbf{Linear Autoencoder}.\\
-
-Logical Autoencoders are proposed (Definition \ref{def:logical-autoencoder}) as an alternative means to lower the dimensions of a dataset.
+Auto encoders \cite{baldi2012complex} \cite{hinton2006reducing} are a network architecture trained with unsupervised learning for a purpose of learning an encoding of the data. An application learning a new encoding is dimensionality reduction. The aim is to take the input to some reduced feature space and then from this feature space back to the original input with the smallest error. The case where there is one linear layer doing the encoding and decoding is called \textbf{Linear Autoencoder}. Logical Autoencoders are proposed (Definition \ref{def:logical-autoencoder}) as an alternative means to lower the dimensions of a dataset.
 
 \begin{definition} \label{def:logical-autoencoder}
 	A \textbf{Logical Autoencoder} is an Autoencoder where the encoder and decoder are LNNs
