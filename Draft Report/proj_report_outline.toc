@@ -33,7 +33,7 @@
 \contentsline {section}{\numberline {4.2}Features with Continuous Domains}{21}
 \contentsline {paragraph}{Influence Model}{21}
 \contentsline {paragraph}{Partial Influence Models}{22}
-\contentsline {paragraph}{Continous Rules}{22}
+\contentsline {paragraph}{Continuous Rules}{22}
 \contentsline {subsection}{\numberline {4.2.1}Application To Iris Problem}{22}
 \contentsline {section}{\numberline {4.3}Summary}{23}
 \contentsline {chapter}{\numberline {5}Logical Neural Networks}{25}

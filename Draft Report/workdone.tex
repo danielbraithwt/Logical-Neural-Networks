@@ -11,9 +11,9 @@ Consider the set of binary classification problems which have boolean input feat
 \end{aligned}
 \end{equation}
 
-How might Equation \ref{equ:arg-max-boolean-function} be optimised in a way which allows $f$ to be known? Enumerating every possible $f \in B_p$ is to computationally expensive. Alternatively a Multi-Layer Perceptron Network (MLPN) could learn $f$ using gradient descent. MLPNs are universal approximators so there exsists a network archetchure that can learn the optimal $f$. The problem with MLPNs is with intepreting the learnt function after training is diffcult. The remainder of this chapter is dedicated to deriving an Artificial Neural Network Archetchure which can be trained with gradient descent and reveal the function learnt after training.\\
+How might Equation \ref{equ:arg-max-boolean-function} be optimised in a way which allows $f$ to be known? Enumerating every possible $f \in B_p$ is to computationally expensive. Alternatively a Multi-Layer Perceptron Network (MLPN) could learn $f$ using gradient descent. MLPNs are universal approximators so there exists a network architecture that can learn the optimal $f$. The problem with MLPNs is with interpreting the learnt function after training is difficult. The remainder of this chapter is dedicated to deriving an Artificial Neural Network Architecture which can be trained with gradient descent and reveal the function learnt after training.\\
 
-Every boolean function has a unique Conjunctive and Disjunctive Normal Form (CNF \& DNF). Learning the CNF of DNF of $f$ is functionally equivelent to learning $f$ and provides more guarentees about the structure of the solution. Both the CNF and DNF are described by the three logical operations OR, AND and NOT. A NOT operation can only occour inside a clause as a literal. Finally the maximum number of clauses in a CNF or DNF is $2^n$ where n is the number of variables. A Bayesian Network representing the CNF of $f$ could be thought of as three layers of nodes. The first layer containing all the literals (atoms and their negations), two of these nodes are dependent if they concern the same atom (one is the negation of the other). A second layer with $k \leq 2^n$ nodes representing the clauses, each is dependent on a subset of the atoms and is True if all the dependencies are True. The last layer contains a single node which is dependent on all the second layer nodes and is True if one of the clauses is True. Each clause is an OR and the last layer node is an AND. This Bayesian Network could then be represented by a Feed-Forward Neural Network where the nodes in the first, second and third layers are input, hidden and output neurons.
+Every boolean function has a unique Conjunctive and Disjunctive Normal Form (CNF \& DNF). Learning the CNF of DNF of $f$ is functionally equivalent to learning $f$ and provides more guarantees about the structure of the solution. Both the CNF and DNF are described by the three logical operations OR, AND and NOT. A NOT operation can only occur inside a clause as a literal. Finally the maximum number of clauses in a CNF or DNF is $2^n$ where n is the number of variables. A Bayesian Network representing the CNF of $f$ could be thought of as three layers of nodes. The first layer containing all the literals (atoms and their negations), two of these nodes are dependent if they concern the same atom (one is the negation of the other). A second layer with $k \leq 2^n$ nodes representing the clauses, each is dependent on a subset of the atoms and is True if all the dependencies are True. The last layer contains a single node which is dependent on all the second layer nodes and is True if one of the clauses is True. Each clause is an OR and the last layer node is an AND. This Bayesian Network could then be represented by a Feed-Forward Neural Network where the nodes in the first, second and third layers are input, hidden and output neurons.
 
 \noindent
 \begin{minipage}[t]{0.35\textwidth}
@@ -50,14 +50,14 @@ A \textbf{DNF-Network} is a three layer network where neurons in the hidden laye
 A \textbf{LNF-Network} is a DNF or CNF Network
 \end{definition}
 
-Theorem \ref{thm:upper-bound-hidden-units} proves that a CNF or DNF Network should have a hidden layer size of $2^n$ to guraentee that the formule can be learnt.
+Theorem \ref{thm:upper-bound-hidden-units} proves that a CNF or DNF Network should have a hidden layer size of $2^n$ to guarantee that the formulae can be learnt.
 
 \begin{theorem}
 Let T be the complete truth table for the boolean formula B. Let L be an LNFN, if L has $2^n$ hidden units then there always exists a set of weights for L which correctly classifies any assignment of truth values to atoms.
 \label{thm:upper-bound-hidden-units}
 \end{theorem}
 
-A proof of Theorem \ref{thm:upper-bound-hidden-units} is given in Apendix \ref{apendix:proofs}. Theorem \ref{thm:upper-bound-hidden-units} provides justification for using $2^n$ hidden units, it guarantees that there at least exists an assignment of weights yielding a network that can correctly classify each item in the truth table.
+A proof of Theorem \ref{thm:upper-bound-hidden-units} is given in Appendix \ref{apendix:proofs}. Theorem \ref{thm:upper-bound-hidden-units} provides justification for using $2^n$ hidden units, it guarantees that there at least exists an assignment of weights yielding a network that can correctly classify each item in the truth table.
 
 \section{Noisy Gate Parametrisation} \label{sec:real-noisy-parametrisation}
 The parametrisation of Noisy gates require weight clipping, an expensive operation. A new parametrisation is derived that implicitly clips the weights. Consider that $\epsilon \in (0, 1]$, therefore let $\epsilon_i = \sigma(w_i)$, these $w_i$'s can be trained without any clipping, after training the original $\epsilon_i$'s can be recovered.\\
@@ -99,19 +99,19 @@ Before these networks can be trained a number of choices must be made. These are
 
 \begin{enumerate}
 	\item \textit{Weight Initialization:} A method for initializing the weights must be derived. In the case of MLPNs it was shown that if initialization of weights is not carefully thought about as the number of neurons increases the learning conditions deteriorate \cite{glorot2010understanding}.
-	\item \textit{Training Algorithm:} There exsists a number of different algorithms for propagating gradients \cite{ruder2016overview}. One must be chosen based on the properties of these networks.
+	\item \textit{Training Algorithm:} There exists a number of different algorithms for propagating gradients \cite{ruder2016overview}. One must be chosen based on the properties of these networks.
 	\item \textit{Batch Size:} What size should each batch be when training these networks.
 \end{enumerate}
 
 \subsection{Weight Initialization}
-Poor weight initilization leads to slower or poor convergence \cite{mishkin2015all}. Weight initlization algorythms can not be universally applied to different activations. A method derived for MLPNs was shown to be ineffective for networks using other activations \cite{he2015delving}.
+Poor weight initialization leads to slower or poor convergence \cite{mishkin2015all}. Weight initialization algorithms can not be universally applied to different activations. A method derived for MLPNs was shown to be ineffective for networks using other activations \cite{he2015delving}.
 
 \paragraph{Deriving a Distribution For The Weights}
 Before a weight initialization algorithm can be derived good learning conditions must be identified. The function $e^{-z}$ squash a variable $z$ into the range $[0,1]$, Figure \ref{fig:activation-plot} shows a graph of this function.\\
 \noindent
 \begin{minipage}[t]{0.55\textwidth}
 \vspace{0px}
-At $z \geq 4$ the function $e^{-z}$ changes very little as it gets asymtoticly close to 0. This means that $e^{-z}$ suffers from what is known as saturation. If the method of initilizing weights does not consider the inputs to a neuron then at a certian point the weighted sum of inputs will always be $\geq 4$ and thus the activation will always be constant. The sigmoid function suffered from this problem and one method of fixing it was careful initilizaton of the weights \cite{glorot2010understanding}. The approach here is to derive an initial weight distrubution which keeps the variance and mean of neuron activations the same throughout the network \cite{kumar2017weight}. \\
+At $z \geq 4$ the function $e^{-z}$ changes very little as it gets asymtoticly close to 0. This means that $e^{-z}$ suffers from what is known as saturation. If the method of initializing weights does not consider the inputs to a neuron then at a certain point the weighted sum of inputs will always be $\geq 4$ and thus the activation will always be constant. The sigmoid function suffered from this problem and one method of fixing it was careful initilizaton of the weights \cite{glorot2010understanding}. The approach here is to derive an initial weight distribution which keeps the variance and mean of neuron activations the same throughout the network \cite{kumar2017weight}. \\
 \end{minipage}
 \hspace{0.05\textwidth}
 \begin{minipage}[t]{0.4\textwidth}
@@ -124,7 +124,7 @@ At $z \geq 4$ the function $e^{-z}$ changes very little as it gets asymtoticly c
 \end{figure}
 \end{minipage}
 
-As with previous approaches to solving this problem it will be assumed the inputs to the network are independent and weights are independent and identically distrubuted (i.i.d). It has previously been proved that these assumptions are enough to show the inputs to any layer are independent \cite{kumar2017weight}.\\
+As with previous approaches to solving this problem it will be assumed the inputs to the network are independent and weights are independent and identically distributed (i.i.d). It has previously been proved that these assumptions are enough to show the inputs to any layer are independent \cite{kumar2017weight}.\\
 
 Ideally the output of each neuron would be varied for each training example, i.e. $y \sim U(0,1)$. Each training example $X = \{x_1, ..., x_n\}$ has each component $x_i \in (0,1]$, it will be assumed that $x_i \sim U(0,1)$. 
 
@@ -156,7 +156,7 @@ Consider a random variable $g$, if $g \sim U(0,1)$ then $1 - g \sim U(0,1)$ also
 	If $y \sim U(0,1)$ and $y = e^{-z}$, then $z \sim exp(\lambda = 1)$
 \end{theorem}
 \begin{proof}
-	Consider that $y = e^{-z}$ can be re written as $z = -\log(y)$. The Cumulative Distrubution Function (CDF) will be derived for $z$.
+	Consider that $y = e^{-z}$ can be re written as $z = -\log(y)$. The Cumulative Distribution Function (CDF) will be derived for $z$.
 	
 	\begin{align*}
 	F(z) &= P(Z < z)\\
@@ -169,7 +169,7 @@ Consider a random variable $g$, if $g \sim U(0,1)$ then $1 - g \sim U(0,1)$ also
 	&= 1 - e^{-z}
 	\end{align*}
 	
-	Therefore $F(z) = 1 - e^{-\lambda z}$ where $\lambda = 1$. So $z$ has the CDF of an exponential distrubution. Consequently $z \sim exp(\lambda = 1)$
+	Therefore $F(z) = 1 - e^{-\lambda z}$ where $\lambda = 1$. So $z$ has the CDF of an exponential distribution. Consequently $z \sim exp(\lambda = 1)$
 \end{proof}
 
 The problem has now been reduced to find how $w_i$ is distributed given that $z \sim exp(\lambda = 1)$ and $x_i \sim U(0,1)$. The approach taken is to find $E[w_i]$ and $var(w_i)$.
@@ -246,7 +246,7 @@ Giving the parameters for the log normal distribution below
 \begin{minipage}[t]{0.48\textwidth}
 \vspace{0px}
 \paragraph{Weight Initialization Algorithm}
-Figure \ref{alg:lnn-initlization} gives the algorythm for initilizing weights for Noisy neurons. Each weight that is sampled from the Log Normal distribution. Recall $w = f(w^{'})$ where $w^{'}$ can be any real value, consequently to obtain the initial weights each $w$ must be inversely transformed using $f^{-1}$.
+Figure \ref{alg:lnn-initlization} gives the algorithm for initializing weights for Noisy neurons. Each weight that is sampled from the Log Normal distribution. Recall $w = f(w^{'})$ where $w^{'}$ can be any real value, consequently to obtain the initial weights each $w$ must be inversely transformed using $f^{-1}$.
 \end{minipage}
 \hspace{0.05\textwidth}
 \begin{minipage}[t]{0.47\textwidth}
@@ -356,7 +356,7 @@ How does training over incomplete truth tables effect the generalization of extr
 
 Consider $B$ to be the set of all boolean problems with $n$ inputs. What is the cardinality of $B$? There are $2^n$ rows in the truth table and $2^{2^n}$ ways to assign true/false values to these rows, each way corresponding to a different boolean function. Consequently $|B| = 2^{2^n}$. Consider some $b \in B$ represented by $2^n$ rows of a truth table, removing one row from the training data means there are now two possible functions that could be learnt, one where the removed row corresponds to true and the other to false. As more rows are removed this problem is compounded. If $m$ rows are taken then there are $2^m$ possible functions that $b$ could represent.\\
 
-To test the generalization of the CNFN and DNFN rule sets LNFNs will be trained over a randomly generated boolean problem with 4 inputs. The trainig set will reduce in size one by one and the extracted rules will be evaluated over the entire tuth table. For each training set size the experement will be repeated 30 times. Figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-generalizatiion} shows the number of examples removed from the training set on the x axis. The y axis shows the number of incorrectly classified instances over the entire dataset. These experements show that when no examples are removed then the rules can achieve a perfect accuracy. As instances are removed from the training set the rules are able to generalise on average. 
+To test the generalization of the CNFN and DNFN rule sets LNFNs will be trained over a randomly generated boolean problem with 4 inputs. The training set will reduce in size one by one and the extracted rules will be evaluated over the entire tuth table. For each training set size the experiment will be repeated 30 times. Figures \ref{fig:cnf-descrete-generalizatiion} \& \ref{fig:dnf-descrete-generalizatiion} shows the number of examples removed from the training set on the x axis. The y axis shows the number of incorrectly classified instances over the entire dataset. These experiments show that when no examples are removed then the rules can achieve a perfect accuracy. As instances are removed from the training set the rules are able to generalise on average. 
 
 \begin{figure}[H]
 	\centering
@@ -373,18 +373,18 @@ To test the generalization of the CNFN and DNFN rule sets LNFNs will be trained 
 	\hfill
 \end{figure}
 
-When constructing a CNF from a truth table (See Section \ref{subsec:construct-cnfdnf}) only the rows corresponding to false are considered. Is it then possible that by only removing rows which corospond to false a CNFN can learn rules which achieve a perfect accuracy. Figure \ref{fig:cnf-descrete-generalizatiion-partial} represents this situation.
+When constructing a CNF from a truth table (See Section \ref{subsec:construct-cnfdnf}) only the rows corresponding to false are considered. Is it then possible that by only removing rows which correspond to false a CNFN can learn rules which achieve a perfect accuracy. Figure \ref{fig:cnf-descrete-generalizatiion-partial} represents this situation.
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[b]{0.45\textwidth}
 		\includegraphics[width=\textwidth]{cnf-descrete-generalization-partial.png}
-		\caption{CNFN trained using an incomplete truth table, only rows coresponding to false are removed}
+		\caption{CNFN trained using an incomplete truth table, only rows corresponding to false are removed}
 		\label{fig:cnf-descrete-generalizatiion-partial}
 	\end{minipage}
 	\begin{minipage}[b]{0.45\textwidth}
 		\includegraphics[width=\textwidth]{dnf-descrete-generalization-partial.png}
-		\caption{DNFN trained using an incomplete truth table, only rows coresponding to true are removed}
+		\caption{DNFN trained using an incomplete truth table, only rows corresponding to true are removed}
 		\label{fig:dnf-descrete-generalizatiion-partial}
 	\end{minipage}
 	\hfill
@@ -482,12 +482,12 @@ The results shown thus far demonstrate that LNFNs can be applied to boolean mult
 \section{Features with Continuous Domains}
 It is possible for the inputs to a Noisy Neuron to be in the range $[0,1]$, but when does it make sense to do so? And what do these continuous features mean? The inputs can be thought of as being the probability that the feature is present. In the discrete case either the input is there (a 1) or not (a 0). Then in the continuous case each input feature is thought of as a probability.\\
 
-How about the case where the feature range is not confined to $[0,1]$. An option is to normalise the feature spaces, forcing them into a format compatible with LNFNs. The problem then comes down to meaning. Is possible to think of these normalised features as a probability? Consider an arbitrary (un-normalised) feature $f$. Assume $f \in [f_{min}, f_{max}]$ then the larger the normalised feature $f_N$ the closer its true value is to $f_{max}$. Similarly if $\lnot f_N = 1 - f_N$ is large then the true value is closer to $f_{min}$. $f_N$ could then be the probability of sampling a $v \sim U(f_{min}, f_{max})$ that is less than $f$. This is certianly not the only meaning normalised features could have, it is simply an example.\\
+How about the case where the feature range is not confined to $[0,1]$. An option is to normalise the feature spaces, forcing them into a format compatible with LNFNs. The problem then comes down to meaning. Is possible to think of these normalised features as a probability? Consider an arbitrary (un-normalised) feature $f$. Assume $f \in [f_{min}, f_{max}]$ then the larger the normalised feature $f_N$ the closer its true value is to $f_{max}$. Similarly if $\lnot f_N = 1 - f_N$ is large then the true value is closer to $f_{min}$. $f_N$ could then be the probability of sampling a $v \sim U(f_{min}, f_{max})$ that is less than $f$. This is certainly not the only meaning normalised features could have, it is simply an example.\\
 
-Another consideration to make is, how can trained LNFN models be intepreted if the features are continous? When the weights are binary then a Noisy neuron can be considered as a logical gate of its inputs with $\epsilon \approxeq 0$. The weights in a trained LNFN do not converge to 0 or 1 when the input features are continous so a more general method to intepret LNFNs is needed.
+Another consideration to make is, how can trained LNFN models be interpreted if the features are continuous? When the weights are binary then a Noisy neuron can be considered as a logical gate of its inputs with $\epsilon \approxeq 0$. The weights in a trained LNFN do not converge to 0 or 1 when the input features are continuous so a more general method to interpret LNFNs is needed.
 
 \paragraph{Influence Model}
-One potential way to intepret LNFNs would be to compute the influence each input feature has on the output neurons, this is defined to be an \textbf{Influence Model}.  The weights for a Noisy neuron directly corespond to the influence each input has on the neuron's output. Consequently it is a trivial task to find an Influence Model for describing how each input feature affects the hidden layer outputs, this is just the weights of each hidden neuron. Consider Figure \ref{fig:network-example}  and the problem computing an Influnce Model describing the influence each $x_i$ has on the output of some $o_j$.
+One potential way to interpret LNFNs would be to compute the influence each input feature has on the output neurons, this is defined to be an \textbf{Influence Model}.  The weights for a Noisy neuron directly correspond to the influence each input has on the neuron's output. Consequently it is a trivial task to find an Influence Model for describing how each input feature affects the hidden layer outputs, this is just the weights of each hidden neuron. Consider Figure \ref{fig:network-example}  and the problem computing an Influnce Model describing the influence each $x_i$ has on the output of some $o_j$.
 
 \begin{figure}[H]
 	\centering
@@ -500,7 +500,7 @@ One potential way to intepret LNFNs would be to compute the influence each input
 	\hspace{1px}
 	\begin{minipage}[t]{0.45\textwidth}
 		\vspace{2px}
-		 In the folowing computations $\epsilon_i^{h_j}$ is the ith $\epsilon$ for neuron $h_j$. Assume all activations are Noisy-OR's, then the activation of $o_j$ is $1 - \prod^m_{k=1} (\epsilon_k^{o_j})^{h_k}$ and the activation of some $h_k$ is $1 - \prod^n_{b=1} (\epsilon_b^{h_k})^{x_b}$. The aim is therefore to find an $(\epsilon^{'}_i)$ that stasfies Equation \ref{equ:interpetation-across-layers}.
+		 In the following computations $\epsilon_i^{h_j}$ is the ith $\epsilon$ for neuron $h_j$. Assume all activations are Noisy-OR's, then the activation of $o_j$ is $1 - \prod^m_{k=1} (\epsilon_k^{o_j})^{h_k}$ and the activation of some $h_k$ is $1 - \prod^n_{b=1} (\epsilon_b^{h_k})^{x_b}$. The aim is therefore to find an $(\epsilon^{'}_i)$ that stasfies Equation \ref{equ:interpetation-across-layers}.
 	
 		\begin{align}
 			(\epsilon^{'}_i)^{x_i} = \prod_{k = 1}^{m} (\epsilon^{o_j}_k)^{\prod_{b = 1}^{n} (\epsilon^{h_k}_b)^{x_b}}
@@ -510,18 +510,18 @@ One potential way to intepret LNFNs would be to compute the influence each input
 	\hfill
 \end{figure}
 
-This new $\epsilon^{'}_i$ is dependent on all the other $x$'s, not just the $x_i$ of interest. Consequently there is not an obvous solution to computing Influence Model for LNFNs.
+This new $\epsilon^{'}_i$ is dependent on all the other $x$'s, not just the $x_i$ of interest. Consequently there is not an obvious solution to computing Influence Model for LNFNs.
 
 \paragraph{Partial Influence Models}
-While it is not obvious how to compute an Influence Model describing a LNFN entirely it is trivial to compute one describing the influence between input features and the hidden layer output. Using this Partial Influence Model can describe the the hidden neurons in terms of the input features. The weights beloning to each output neuron could then be used to find the most important hidden neurons.
+While it is not obvious how to compute an Influence Model describing a LNFN entirely it is trivial to compute one describing the influence between input features and the hidden layer output. Using this Partial Influence Model can describe the the hidden neurons in terms of the input features. The weights belonging to each output neuron could then be used to find the most important hidden neurons.
 
-\paragraph{Continous Rules}
-Another way to intepret LNFNs in a continous domain is to extract continous rules. A threshold will be set, any input with a weight below the threshold will be considered important. Consqeuently each neuron will be considered a function of its inputs that have corosopnding weight less than or equal to a given threshold $t$. The same rule extraction algorythm (given in Figure \ref{alg:rule-extraction}) can therefore be used in both the descrete and continous case if line 6 is adjusted to \textit{relvHidden = [hw[i] where ow[i] $\leq t$]}. The weights of all features will be truncated to 0 as if the weights where kept then it is esentially still an LNN with some connections removed. The continous rules can be applied by using the Noisy activations with each $\epsilon \approxeq 0$. A potential issue with this method is that the less important features are removed after the threshold is applied, this might result in more incorrect classifications by the rules. A smaller threshold will lead to simpler rules with prehapse a higher error rate where as a larger threshold will give more complex rules with a possibley higher accuracy. This process also discards the true $\epsilon$'s which could potentially effect the accuracy of the rules.
+\paragraph{Continuous Rules}
+Another way to interpret LNFNs in a continuous domain is to extract continuous rules. A threshold will be set, any input with a weight below the threshold will be considered important. Consequently each neuron will be considered a function of its inputs that have corosopnding weight less than or equal to a given threshold $t$. The same rule extraction algorithm (given in Figure \ref{alg:rule-extraction}) can therefore be used in both the discrete and continuous case if line 6 is adjusted to \textit{relvHidden = [hw[i] where ow[i] $\leq t$]}. The weights of all features will be truncated to 0 as if the weights where kept then it is essentially still an LNN with some connections removed. The continuous rules can be applied by using the Noisy activations with each $\epsilon \approxeq 0$. A potential issue with this method is that the less important features are removed after the threshold is applied, this might result in more incorrect classifications by the rules. A smaller threshold will lead to simpler rules with perhaps a higher error rate where as a larger threshold will give more complex rules with a possibly higher accuracy. This process also discards the true $\epsilon$'s which could potentially effect the accuracy of the rules.
 
 \subsection{Application To Iris Problem}
 
 
-The Iris data set \cite{Lichman:2013} is the problem of classifying a plant as one of three classes. Each example consists of four features, all are mesurements taken from the plant. All features are in centimetres and not confined to the range $[0, 1]$. Table \ref{tab:iris-network-peformance-comp} gives the results of training the Normalised Iris problem on LNF networks. The results show that while the performance can vary a lot it is possible for both the CNF and DNF networks to obtain 100\% accuracy.
+The Iris data set \cite{Lichman:2013} is the problem of classifying a plant as one of three classes. Each example consists of four features, all are measurements taken from the plant. All features are in centimetres and not confined to the range $[0, 1]$. Table \ref{tab:iris-network-peformance-comp} gives the results of training the Normalised Iris problem on LNF networks. The results show that while the performance can vary a lot it is possible for both the CNF and DNF networks to obtain 100\% accuracy.
 
 \begin{table}[H]
 	\begin{center}
@@ -536,11 +536,11 @@ The Iris data set \cite{Lichman:2013} is the problem of classifying a plant as o
 			\hline
 		\end{tabular}
 	\end{center}
-	\caption{LNFN peformance on an Iris problem testing set}
+	\caption{LNFN performance on an Iris problem testing set}
 	\label{tab:iris-network-peformance-comp}
 \end{table}
 
-If attempting to interpret these models meaning must be assigned to each of the normalised features. Informally, an atom is "truer" if the un-normalised feature is larger and "falser" if its smaller. A NOT operaion inverts this property. Table \ref{tab:iris-rule-peformance-comp} shows the peformance of extracted continous rules on a testing set. These peformance stistics provide evidence that continous rules have poor peformance.
+If attempting to interpret these models meaning must be assigned to each of the normalised features. Informally, an atom is "truer" if the un-normalised feature is larger and "falser" if its smaller. A NOT operation inverts this property. Table \ref{tab:iris-rule-peformance-comp} shows the performance of extracted continuous rules on a testing set. These performance statistics provide evidence that continuous rules have poor performance.
 
 \begin{table}[H]
 	\begin{center}
@@ -555,7 +555,7 @@ If attempting to interpret these models meaning must be assigned to each of the 
 			\hline
 		\end{tabular}
 	\end{center}
-	\caption{Peformance of rules extracted from LNFN on an Iris problem testing set}
+	\caption{Performance of rules extracted from LNFN on an Iris problem testing set}
 	\label{tab:iris-rule-peformance-comp}
 \end{table}
 
@@ -563,9 +563,9 @@ If attempting to interpret these models meaning must be assigned to each of the 
 \noindent
 \begin{minipage}[t]{0.5\textwidth}
 \vspace{0px}
-The question reamining is, how do these rules contribute to intepreting the LNFN model. Figure \ref{fig:raw-iris-rules} shows raw continous rules extracted from a DNFN. Features $\{a,b,c,d\}$ corespond to prefering larger values of $\{$ sepal length, sepal width, petal length, petal width $\}$. On the other hand $e = \lnot a, f = \lnot b, g = \lnot c, h = \lnot d$.\\
+The question remaining is, how do these rules contribute to interpreting the LNFN model. Figure \ref{fig:raw-iris-rules} shows raw continuous rules extracted from a DNFN. Features $\{a,b,c,d\}$ correspond to preferring larger values of $\{$ sepal length, sepal width, petal length, petal width $\}$. On the other hand $e = \lnot a, f = \lnot b, g = \lnot c, h = \lnot d$.\\
 
-The list in Figure \ref{fig:iris-rules} shows some conclusions about the classes which can be drawn from the raw continous rules. Having a small petal width and length mean the class is more likely to be \textit{Iris Setosa}. \\
+The list in Figure \ref{fig:iris-rules} shows some conclusions about the classes which can be drawn from the raw continuous rules. Having a small petal width and length mean the class is more likely to be \textit{Iris Setosa}. \\
 \end{minipage}
 \hspace{0.05\textwidth}
 \begin{minipage}[t]{0.45\textwidth}
@@ -576,7 +576,7 @@ The list in Figure \ref{fig:iris-rules} shows some conclusions about the classes
 \item \textit{Iris Versicolour:} $(c \land e \land f \land h) \lor (c \land f \land h) \lor (c \land f \land h) \lor (c \land e \land f \land h) \lor (c \land f \land h)$
 \item \textit{Iris Virginica:} $(c \land d \land f) \lor (c \land d \land f) \lor (d \land f) \lor (c \land d \land f) \lor (c \land d \land f) \lor (c) \lor (c \land d \land f)$
 \end{enumerate}
-\caption{Raw continous rules extracted from a DNFN, with a threshold of $0.5$}
+\caption{Raw continuous rules extracted from a DNFN, with a threshold of $0.5$}
 \label{fig:raw-iris-rules}
 \end{figure}
 \end{minipage}
@@ -607,14 +607,14 @@ Alternatively having a larger petal width means the instance is more likely to b
 	\hfill
 \end{figure}
 
-Figure \ref{fig:iris-data-petal-length-vs-width} plots the petal width and length features against each other, demonstraiting the conclusions drawn make sense.\\
+Figure \ref{fig:iris-data-petal-length-vs-width} plots the petal width and length features against each other, demonstrating the conclusions drawn make sense.\\
 
 This section has shown that LNFNs can be applied to any problem with continuous features by normalisation. This operation creates an additional problem, namely it becomes difficult to interpret what the normalised features mean. Future work into LNNs might aim to develop a better way to convert feature domains to probabilities.
 
 \section{Summary}
-This chapter has demonstrated that LNFNs can be applied to more than just learning boolean truth tables. They have been shown to achieve good accuracy on multi class classification problems, with and without discrete input features. A number of methods for intepreting LNFNs applied to continous feature spaces. These methods where then shown to provide useful insights into the Iris dataset.\\
+This chapter has demonstrated that LNFNs can be applied to more than just learning boolean truth tables. They have been shown to achieve good accuracy on multi class classification problems, with and without discrete input features. A number of methods for interpreting LNFNs applied to continuous feature spaces. These methods where then shown to provide useful insights into the Iris dataset.\\
 
-In the context of the Lenses problem it was possible to extract boolean rules from the LNFNs which had a statistically equivalent performance to the networks. These rules also provided incite into the problem which was not obvious from the data. The LNFNs where able to achieve a low error rate (sometimes 0\%) on the Iris data set. It was possible to extract useful information from the trained models which highlighted the most important features when making classifications. The experements with the Iris problem also revealed limiatations of LNNs
+In the context of the Lenses problem it was possible to extract boolean rules from the LNFNs which had a statistically equivalent performance to the networks. These rules also provided incite into the problem which was not obvious from the data. The LNFNs where able to achieve a low error rate (sometimes 0\%) on the Iris data set. It was possible to extract useful information from the trained models which highlighted the most important features when making classifications. The experiments with the Iris problem also revealed limitations of LNNs
 
 \chapter{Logical Neural Networks} \label{C:lnn}
 This chapter discusses development of Logical Neural Networks as a generalization of LNFNs. There are two key issues with LNFNs. Firstly the number of hidden units becomes infeasible as the amount of inputs increases. Secondly if the problem size is small enough and the network can be trained the volume of hidden neurons allows for the possibility to memorise the input data. Using what has been learnt about LNFNs the class of Logical Neural Networks (LNNs) can be defined.
@@ -649,11 +649,11 @@ Figure \ref{fig:modified-lnn-structure} provides a new structure for the connect
 
 Figure \ref{fig:modified-lnn-structure} shows the new LNN structure which includes an implicit NOT operation. The input to each layer consists of the true output of the previous plus the negated output from the last layer. If a layer has 20 outputs then there are 40 inputs to the following layer.
 \subsection{Softmax Output Layer}
-The softmax function takes a vector of real values to a vector of values in the range $[0,1]$ that equal 1 when summed. The softmax function highlights the difference between the maximum and smaller values by increasing this difference. It is used in multiclass classification to generate a probability distrubution over the different outcomes and promote mutual exclusivity between the different classes.
+The softmax function takes a vector of real values to a vector of values in the range $[0,1]$ that equal 1 when summed. The softmax function highlights the difference between the maximum and smaller values by increasing this difference. It is used in multi class classification to generate a probability distribution over the different outcomes and promote mutual exclusivity between the different classes.
 \begin{figure}[H]
 \begin{minipage}[t]{0.57\textwidth}
 	\vspace{0px}
-	The old LNN structure does not include a Softmax layer as the output layer. A traditional Softmax layer would not be effective as the neuron outputs are limited to the range $[0,1]$. Figure \ref{fig:softmax-failure} shows an example of the softmax function on probabilities, insted of highilight the difference between 0.1 and 0.9 the resulting vector has the values closer together. Consider the following vector of probabilities $P = \{p_1, ..., p_n\}$ where $p_i$ is the probability the given example belongs to class $i$.
+	The old LNN structure does not include a Softmax layer as the output layer. A traditional Softmax layer would not be effective as the neuron outputs are limited to the range $[0,1]$. Figure \ref{fig:softmax-failure} shows an example of the softmax function on probabilities, instead of highlight the difference between 0.1 and 0.9 the resulting vector has the values closer together. Consider the following vector of probabilities $P = \{p_1, ..., p_n\}$ where $p_i$ is the probability the given example belongs to class $i$.
 \end{minipage}
 \hspace{3px}
 \begin{minipage}[t]{0.4\textwidth}

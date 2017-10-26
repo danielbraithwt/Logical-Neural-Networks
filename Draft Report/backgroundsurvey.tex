@@ -4,11 +4,9 @@ This chapter presents concepts related to the study conducted in this report. Af
 \section{Intepretability}
 To create a system that is interpretable it is necessary to have an understanding of what it means to interpret a model and how its interpretation might be evaluated. Intepretability of Machine Learning systems has been defined as \textit{"the ability to explain or to present in understandable terms"} \cite{doshi2017towards} which is ambiguous.\\
 
-When is an interpretable model necessary? \cite{doshi2017towards} In some problem domains there is less risk associated with incorrect answers. An ANN which controlls a car in a game has little risk as a poor driving decison will only effect an artifical environment.
+When is an interpretable model necessary? \cite{doshi2017towards} In some problem domains there is less risk associated with incorrect answers. An ANN which controls a car in a game has little risk as a poor driving decision will only affect an artificial environment. Problem domains where there is a high risk associated with incorrect answers include Safety and Ethics. A survey, "Concrete Problems in AI Safety" \cite{amodei2016concrete} provides an example of potential safety issues with AI in the context of a cleaning robot.  For example, if the robot's objective is to have a known environment containing no mess, how can the robot be prevented from disabling its sensors which it uses to detect the mess? Alternatively, a self-driving car might be penalized for running a stop light, but what is to prevent the car from disabling the sensors that detect stop lights?\\
 
-Problem domains where there is a high risk associated with incorrect answers include Safety and Ethics. A survey, "Concrete Problems in AI Safety" \cite{amodei2016concrete} provides an example of potential safety issues with AI in the context of a cleaning robot.  For example if the robot's objective is to have a known environment containing no mess, how can the robot be prevented from disabling its sensors which it uses to detect the mess? Alternatively a self driving car might be penalised for running a stop light, but what is to prevent the car from distabling the sensors that detect stop lights?
-
-It has been demonstrated that Machine Learning systems learn human like biases from textual data \cite{caliskan2017semantics}. A study done in 2010 \cite{ruggieri2010data} developed a method to analyse datasets for biases against particular classes of people. Analysis was conducted on the \textit{German Credit Dataset} which showed that discriminatory decisions where hidden in the data. An ANN trained on this data could learn these underlying biases. If the model was interpretable then it could be examined for discriminatory patterns.\\
+It has been demonstrated that Machine Learning systems learn human like biases from textual data \cite{caliskan2017semantics}. A study done in 2010 \cite{ruggieri2010data} developed a method to analyze datasets for biases against particular classes of people. An analysis of the \textit{German Credit Dataset} was conducted. It which showed that discriminatory decisions were hidden in the data. An ANN trained on this data could learn these underlying biases. If the model was interpretable then it could be examined for discriminatory patterns.\\
 
 If an ANN model is presented as being interpretable how can this be verified in a scientific way? There are three categories of evaluation techniques \cite{doshi2017towards}.
 \begin{enumerate}
@@ -38,24 +36,24 @@ To further divide the categories two more distinctions are introduced. One measu
 \item The measure of \textbf{comprehensibility} is defined by the number of rules in the set and the number of literals per rule.
 \end{enumerate}
 
-These survayes provide a framework for evaluating the rules extracted using a particular technequic. By introducing this content the reader is familiar with this approach to evaluating extracted rule sets. The solution developed in this report allows for rule exaction in some situations and will be evaluated against these creteria. 
+These survey provide a framework for evaluating the rules extracted using a particular technequic. By introducing this content the reader is familiar with this approach to evaluating extracted rule sets. The solution developed in this report allows for rule exaction in some situations and will be evaluated against these criteria. 
 
 \section{LIME: Local Interpretable Model-Agnostic Explanations}
 The paper "'Why should I Trust You?' Explaining the Predictions of Any Classifier" \cite{ribeiro2016should} published in 2016 presents a novel approach to interpretation of Machine Learning models. The motivation for this research is the idea of trusting the answers provided, either in the context of an individual prediction or the model as a whole. The LIME technequic provides an explanation of a single prediction. Trust in the model can be developed by inspecting explanations of many individual predictions.\\
 
-Esentially the LIME algorythm treats the classifier as a black-box and generates a number of examples by slightly peterbing the instance for which an explination is wanted and asks the model for a classification. It then constructs a linear model of local region around the instance using the classifications of the peterbed examples. A more detailed explination of LIME is beyond the scope of this report.
+Essentially the LIME algorithm treats the classifier as a black-box and generates a number of examples by slightly perturbing the instance for which an explanation is wanted and asks the model for a classification. It then constructs a linear model of local region around the instance using the classifications of the perturbed examples. A more detailed explanation of LIME is beyond the scope of this report.
 
-LIME is a recent method for interpreting machine learning models. Consequently it will provide a comparason point when evaluating the solution presented in this report.
+LIME is a recent method for interpreting machine learning models. Consequently it will provide a comparison point when evaluating the solution presented in this report.
 
 \section{Noisy Neurons} \label{sec:background-noisy-neurons}
-In 2016 the concept of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActivations} was presented. These neurons are based on the descrete boolean OR and AND gates. The motivation for this work was that logical functions are directly intepretable as functions of their input. Conesquently if a problem had a natural logical decomposition then it could be learnt by Artitifical Neural Networks using Noisy neurons.
+In 2016 the concept of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActivations} was presented. These neurons are based on the discrete boolean OR and AND gates. The motivation for this work was that logical functions are directly interpretable as functions of their input. Consequently if a problem had a natural logical decomposition then it could be learnt by Artificial Neural Networks using Noisy neurons.
 
 \noindent
 \begin{minipage}[t]{0.6\textwidth}
 \vspace{0px}
 The Noisy-OR neuron is derived from the Noisy-OR relation \cite{russell1995modern}, a concept in Bayesian Networks developed by Judea Pearl. A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph \cite{neapolitan2004learning}. Figure \ref{fig:bayesian-network-example} is a Bayesian network. It demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies i.e. Traffic influences whether you are late to work,\ and it being rush hour or raining influences whether there is traffic.\\
 
-Consider a Bayesian Network consisting of a node $D$ with parents $S_1,..., S_n$. In other words $S_i$ influences the node $D$. Each $S_i$ is independent from all others. The relationship between D and its parents is defined as if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true.\\
+Consider a Bayesian Network consisting of a node $D$ with parents $S_1,..., S_n$. In other words $S_i$ influences the node $D$. Each $S_i$ is independent from all others. The relationship between D and its parents is defined as if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true.
 \end{minipage}
 \hspace{0.05\textwidth}
 \begin{minipage}[t]{0.35\textwidth}
@@ -78,31 +76,31 @@ P(D = 1 | S_1 = 1, ..., S_n = 1) = 1 - \prod^n_{i=1} \epsilon_i
 \label{equ:noisy-or-relation}
 \end{align}
 
-In the context of a neuron consider the inputs $x_1, ..., x_n$ to represent $D$'s beleif of the probability that the inputs $1, ..., n$ are True. The output of a neuron as conditionally dependent on its inputs, in terms of a Bayesian Network the $x_i$'s is a parent of the neuron. Each $\epsilon_i$ is $D$'s uncertainty as to whether $x_i$ influences its output. The probability that $D$ is True is therefore influenced by $x_i$ and $\epsilon_i$. A function $f$ is needed to compute the irelevence of node $i$ in light of $x_i$ and $\epsilon_i$. The list in Figure \ref{fig:irelevence-function-cond} gives three properties of $f(x_i, \epsilon_i)$ \cite{LearningLogicalActivations}. \\
+In the context of a neuron consider the inputs $x_1, ..., x_n$ to represent $D$'s belief of the probability that the inputs $1, ..., n$ are True. The output of a neuron as conditionally dependent on its inputs, in terms of a Bayesian Network the $x_i$'s is a parent of the neuron. Each $\epsilon_i$ is $D$'s uncertainty as to whether $x_i$ influences its output. The probability of $D$ being True is influenced by $x_i$ and $\epsilon_i$. A function $f$ is needed to compute the irrelevance of node $i$ in light of $x_i$ and $\epsilon_i$. The list in Figure \ref{fig:irelevence-function-cond} gives three properties of $f(x_i, \epsilon_i)$ \cite{LearningLogicalActivations}.\\
 
 \begin{figure}[H]
 \begin{enumerate}
 	\item $\epsilon = 1$ means that $f(\epsilon, x) = 1$
 	\item $x = 0$ means that $f(\epsilon, x) = 1$
-	\item Monotonically increasing in $\epsilon$ and decreasing in x. In otherwords, fixing $x$ results in a function that monotically increases as $\epsilon$ get closer to 1. Fixing $\epsilon$ results in a function that monotically decreases as $x$ approaches 1.
+	\item Monotonically increasing in $\epsilon$ and decreasing in x. In other words, fixing $x$ results in a function that monotonically increases as $\epsilon$ get closer to 1. Fixing $\epsilon$ results in a function that monotonically decreases as $x$ approaches 1.
 \end{enumerate}
 \caption{Three properties of the function $f$}
 \label{fig:irelevence-function-cond}
 \end{figure}
 
-If the inputs of $f$ are restricted to be either 0 or 1 then it becomes aparent that properties (1) - (3) describe the logic function $x \implies \epsilon$ ($x$ implies $\epsilon$) , this is shown in Figure \ref{fig:f-actually-implies}. 
+If the inputs of $f$ are restricted to be either 0 or 1 then it becomes apparent that properties (1) - (3) describe the logic function $x \implies \epsilon$ ($x$ implies $\epsilon$) , this is shown in Figure \ref{fig:f-actually-implies}. 
 
 \begin{figure}[H]
 \begin{enumerate}
 \item \textit{f(1,1) = 1:} This is shown by (1)
 \item \textit{f(1,0) = 1:} Shown by (2)
-\item \textit{f(0,1) = 0:} Fix $x = 1$ and let $\epsilon = 1$, $f(1,1) = 1$. As $\epsilon \rightarrow 0 $ $f$ is monitonically decreasing so $f(0,1) = 0$.
+\item \textit{f(0,1) = 0:} Fix $x = 1$ and let $\epsilon = 1$, $f(1,1) = 1$. As $\epsilon \rightarrow 0 $ $f$ is monotonically decreasing so $f(0,1) = 0$.
 \item \textit{f(0,0) = 1:} Shown by (2)
 \end{enumerate}
-\caption{Demonstraiton that $f$ is actually $x \implies \epsilon$ when $x,\epsilon \in \{0, 1\}$}
+\caption{Demonstration that $f$ is actually $x \implies \epsilon$ when $x,\epsilon \in \{0, 1\}$}
 \label{fig:f-actually-implies}
 \end{figure}
-A function $g(x_1, ..., x_m)$ is defined to be \textit{Boolean-Like} \cite{williams1986logic} when $x_i \in \{0, 1\} \forall i$ then $g(x_1, ..., x_m) \in \{0, 1\}$. Consequently, ontop of properties (1) - (3) $f$ should be a boolean like Implies function. A function which stasfys properties (1) - (3) is $f(x, \epsilon) = \epsilon^x$. It is a simple task to check that $f$ is a \textit{boolean like} Implies function. Figure \ref{fig:f-check-implies} shows that all properties are stasfied.
+A function $g(x_1, ..., x_m)$ is defined to be \textit{Boolean-Like} \cite{williams1986logic} when $x_i \in \{0, 1\} \forall i$ then $g(x_1, ..., x_m) \in \{0, 1\}$. Consequently, on top of properties (1) - (3) $f$ should be a boolean like Implies function. A choice of $f$ which satisfies properties (1) - (3) is $f(x, \epsilon) = \epsilon^x$. It is a simple task to check that $f$ is a \textit{boolean like} Implies function. Figure \ref{fig:f-check-implies} shows that all properties are satisfied.
 
 \begin{figure}[H]
 \begin{align*}
@@ -174,7 +172,7 @@ ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Net
 
 
 \section{Learning Fuzzy Logic Operations in Deep Neural Networks}
-A paper published in 2017 \cite{godfrey2017parameterized} aims to combine Deep Learning and Fuzzy Logic to create artificial neural networks which can be trained using backpropagation and be more intepretable.  They propose a single activation which can learn to perform a number of differnet fuzzy logic operations. The result of this paper is a neural network archetchure that can peform well as a classifier but also yield a model from which fuzzy rules can be extracted. The Fuzzy Logic networks where compared against standard deep neural networks using a tanh activation function. In this comparason they where found to have 
+A paper published in 2017 \cite{godfrey2017parameterized} aims to combine Deep Learning and Fuzzy Logic to create artificial neural networks which can be trained using back propagation and be more interpretable.  They propose a single activation which can learn to perform a number of different fuzzy logic operations. The result of this paper is a neural network architecture that can perform well as a classifier but also yield a model from which fuzzy rules can be extracted. The Fuzzy Logic networks where compared against standard deep neural networks using a tanh activation function. In this comparison they where found to have 
 
-Fuzzy Logic Networks are a different approach to solving the problem outligned in this report. As such will be an interesting comparason point for the solution developed here. Does the solution presented here have comparable peformance and intepretability? 
+Fuzzy Logic Networks are a different approach to solving the problem outlined in this report. As such will be an interesting comparison point for the solution developed here. Does the solution presented here have comparable performance and intepretability? 
 
