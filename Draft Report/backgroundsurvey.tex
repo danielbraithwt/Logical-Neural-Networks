@@ -1,24 +1,21 @@
 \chapter{Background}\label{C:backgroundsurvey}
-This chapter presents concepts related to the study conducted in this report. After each idea is introduced and discussed the relation to this work is explored.
+This chapter introduces concepts which are used to motivate and develop the solution presented.
 
-\section{Intepretability}
-To create a system that is interpretable it is necessary to have an understanding of what it means to interpret a model and how its interpretation might be evaluated. Intepretability of Machine Learning systems has been defined as \textit{"the ability to explain or to present in understandable terms"} \cite{doshi2017towards} which is ambiguous.\\
+\section{Interpretability}
+To create a system that is interpretable it is necessary to have an understanding of what it means to interpret a model and how its interpretation might be evaluated. Interpretability of Machine Learning systems has been defined as \textit{"the ability to explain or to present in understandable terms"} \cite{doshi2017towards} which is ambiguous.\\
 
-When is an interpretable model necessary? \cite{doshi2017towards} In some problem domains there is less risk associated with incorrect answers. An ANN which controls a car in a game has little risk as a poor driving decision will only affect an artificial environment. Problem domains where there is a high risk associated with incorrect answers include Safety and Ethics. A survey, "Concrete Problems in AI Safety" \cite{amodei2016concrete} provides an example of potential safety issues with AI in the context of a cleaning robot.  For example, if the robot's objective is to have a known environment containing no mess, how can the robot be prevented from disabling its sensors which it uses to detect the mess? Alternatively, a self-driving car might be penalized for running a stop light, but what is to prevent the car from disabling the sensors that detect stop lights?\\
+When is an interpretable model necessary? \cite{doshi2017towards} In some problem domains there is less risk associated with incorrect answers. An ANN which controls a car in a game has little risk as a poor driving decision will only affect an artificial environment. Problem domains where there is a high risk associated with incorrect answers include Safety and Ethics. A survey, "Concrete Problems in AI Safety" \cite{amodei2016concrete} provides an example of potential safety issues with AI in the context of a cleaning robot.  For example, if the robot's objective is to havee an environment containing no mess, how can the robot be prevented from disabling its sensors which it uses to detect the mess? Alternatively, a self-driving car might be penalized for running a stop light, but what is to prevent the car from disabling the sensors that detect stop lights?\\
 
-It has been demonstrated that Machine Learning systems learn human like biases from textual data \cite{caliskan2017semantics}. A study done in 2010 \cite{ruggieri2010data} developed a method to analyze datasets for biases against particular classes of people. An analysis of the \textit{German Credit Dataset} was conducted. It which showed that discriminatory decisions were hidden in the data. An ANN trained on this data could learn these underlying biases. If the model was interpretable then it could be examined for discriminatory patterns.\\
+It has been demonstrated that Machine Learning systems learn human-like biases from textual data \cite{caliskan2017semantics}. A study done in 2010 \cite{ruggieri2010data} developed a method to analyze datasets for biases against particular classes of people. An analysis of the \textit{German Credit Dataset} was conducted. It which showed that discriminatory decisions were hidden in the data. An ANN trained on this data could learn these underlying biases. If the model was interpretable then it could be examined for discriminatory patterns.\\
 
-If an ANN model is presented as being interpretable how can this be verified in a scientific way? There are three categories of evaluation techniques \cite{doshi2017towards}.
+If an ANN model is presented as being interpretable how can this be verified scientifically? There are three categories of evaluation techniques \cite{doshi2017towards}.
 \begin{enumerate}
-	\item \textit{"Application-Grounded Evaluation"} Conducting experiments with human subjects in a specific problem domain. If the goal is to learn an interpretable classifier to grant bank loans then a domain expert in granting/denying loans should be used to establish intepretability.
+	\item \textit{"Application-Grounded Evaluation"} Conducting experiments with human subjects in a specific problem domain. If the goal is to learn an interpretable classifier to grant bank loans then a domain expert in granting/denying loans should be used to establish interpretability.
 	
-	\item \textit{"Human-Grounded Metrics"} Designing simpler experiments which still allow for establishing intepretability in a specific domain. This situation occurs when access to domain experts is either to expensive or difficult. The tasks can be simplified to allow humans that are not domain experts to complete them.
+	\item \textit{"Human-Grounded Metrics"} Designing simpler experiments which still allow for establishing interpretability in a specific domain. This situation occurs when access to domain experts is either too expensive or difficult. The tasks can be simplified to allow humans that are not domain experts to complete them.
 	
-	\item \textit{"Functionally-Grounded Evaluation"} If it is possible to define intepretability in terms of the problem then it can be used to establish this property in the model.
+	\item \textit{"Functionally-Grounded Evaluation"} If it is possible to define interpretability of the problem then it can be used to establish this property in the model.
 \end{enumerate}
-
-\subsection{Relation to Solution}
-The report is presenting an interpretable model. Consequently it is important to understand what it means for a model to be interpretable and how this property can be evaluated in the solution presented.
 
 
 \section{Rule Extraction}
