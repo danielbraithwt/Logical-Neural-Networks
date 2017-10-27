@@ -3,8 +3,7 @@
 \contentsline {section}{\numberline {1.1}Motivation}{1}
 \contentsline {section}{\numberline {1.2}Solution}{2}
 \contentsline {chapter}{\numberline {2}Background}{3}
-\contentsline {section}{\numberline {2.1}Intepretability}{3}
-\contentsline {subsection}{\numberline {2.1.1}Relation to Solution}{4}
+\contentsline {section}{\numberline {2.1}Interpretability}{3}
 \contentsline {section}{\numberline {2.2}Rule Extraction}{4}
 \contentsline {section}{\numberline {2.3}LIME: Local Interpretable Model-Agnostic Explanations}{4}
 \contentsline {section}{\numberline {2.4}Noisy Neurons}{5}
@@ -32,7 +31,7 @@
 \contentsline {subsection}{\numberline {4.1.1}Application to Lenses Problem}{19}
 \contentsline {section}{\numberline {4.2}Features with Continuous Domains}{21}
 \contentsline {paragraph}{Influence Model}{21}
-\contentsline {paragraph}{Partial Influence Models}{22}
+\contentsline {paragraph}{Partial Influence Models}{21}
 \contentsline {paragraph}{Continuous Rules}{22}
 \contentsline {subsection}{\numberline {4.2.1}Application To Iris Problem}{22}
 \contentsline {section}{\numberline {4.3}Summary}{23}

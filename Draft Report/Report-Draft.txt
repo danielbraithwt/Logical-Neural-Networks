@@ -1,0 +1,1651 @@
+VICTORIA UNIVERSITY OF WELLINGTON
+    Te Whare Wānanga o te Ūpoko o te Ika a Māui
+  School of Engineering and Computer Science
+                Te Kura Mātai Pūkaha, Pūrorohiko
+ PO Box 600
+                                                                           Tel: +64 4 463 5341
+ Wellington
+                                                                          Fax: +64 4 463 5045
+ New Zealand
+                                                               Internet: office@ecs.vuw.ac.nz
+                Logical Neural Networks: Opening
+                                   the black box
+                               Daniel Thomas Braithwaite
+                                Supervisor: Marcus Frean
+                   Submitted in partial fulfilment of the requirements for
+                  Bachelor of Science with Honours in Computer Science.
+                                          Abstract
+        Artificial Neural Networks are growing in popularity and can generalise well
+    to unseen examples. However it can be difficult to interpret the learned models.
+    A problem which is driving the development of systems that are not only ac-
+    curate but have a decision-making process that can be defended. This report
+    develops a novel neural network architecture which builds in an interpretable
+    structure. Experiments on the MNIST dataset showed these models had statisti-
+    cally equivalent performance to Multi-Layer Perceptron Networks and provided
+    evidence that they have a more interpretable learned model. The networks de-
+    veloped here were also shown to perform well when compared with recently
+    developed methods aimed at solving the same problem.
+Acknowledgements
+I would particularly like to thank Marcus Frean, this report would not of been possible with
+out his constant support, encouragement and knowledge. I could not of asked for a more
+helpful supervisor.
+   I would also like to express my gratitude towards my parents, Anna Debnam and Eric
+Braithwaite, without their unwavering financial and spiritual support I would not be in a
+position to peruse research.
+Contents
+1 Introduction                                                                                  1
+  1.1 Motivation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  1
+  1.2 Solution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  2
+2 Background                                                                                    3
+  2.1 Interpretability . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+  2.2 Rule Extraction . . . . . . . . . . . . . . . . . . . . . . . . . .  . . . . . . . . . .  4
+  2.3 LIME: Local Interpretable Model-Agnostic Explanations . .            . . . . . . . . . .  4
+  2.4 Noisy Neurons . . . . . . . . . . . . . . . . . . . . . . . . . .    . . . . . . . . . .  5
+  2.5 Logical Normal Form Networks . . . . . . . . . . . . . . . .         . . . . . . . . . .  7
+       2.5.1 CNF & DNF . . . . . . . . . . . . . . . . . . . . . . . .     . . . . . . . . . .  7
+       2.5.2 CNF & DNF from Truth Table . . . . . . . . . . . . . .        . . . . . . . . . .  7
+       2.5.3 Definition of Logical Normal Form Networks . . . .            . . . . . . . . . .  8
+  2.6 Logical Neural Networks . . . . . . . . . . . . . . . . . . . .      . . . . . . . . . .  8
+  2.7 Learning Fuzzy Logic Operations in Deep Neural Networks              . . . . . . . . . .  8
+3 Foundation of Logical Normal Form Networks                                                    9
+  3.1 Noisy Gate Parametrisation . . . . . . . . .     . . . . . . . . . . . . . . . . . . . . 10
+  3.2 Training LNF Networks . . . . . . . . . . .      . . . . . . . . . . . . . . . . . . . . 11
+       3.2.1 Weight Initialization . . . . . . . . .   . . . . . . . . . . . . . . . . . . . . 12
+       3.2.2 Training Algorithm . . . . . . . . . .    . . . . . . . . . . . . . . . . . . . . 15
+       3.2.3 Batch Size . . . . . . . . . . . . . . .  . . . . . . . . . . . . . . . . . . . . 15
+  3.3 LNF Network Performance . . . . . . . . .        . . . . . . . . . . . . . . . . . . . . 15
+  3.4 LNF Network Generalization . . . . . . . .       . . . . . . . . . . . . . . . . . . . . 16
+  3.5 LNF Network Rule Extraction . . . . . . . .      . . . . . . . . . . . . . . . . . . . . 16
+  3.6 Summary . . . . . . . . . . . . . . . . . . . .  . . . . . . . . . . . . . . . . . . . . 18
+4 Expanding the Problem Domain of Logical Normal Form Networks                                 19
+  4.1 Multi-class Classification . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+       4.1.1 Application to Lenses Problem . . . . . . . . . . . . . . .       . . . . . . . . 19
+  4.2 Features with Continuous Domains . . . . . . . . . . . . . . . .         . . . . . . . . 21
+       4.2.1 Application To Iris Problem . . . . . . . . . . . . . . . . .     . . . . . . . . 22
+  4.3 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  . . . . . . . . 24
+5 Logical Neural Networks                                                                      25
+  5.1 Modified Logical Neural Network . . . . . . . . . . . . . . . . . . . . . . . . .        26
+       5.1.1 Connections Between Layers & Parameters . . . . . . . . . . . . . . . .           26
+       5.1.2 Softmax Output Layer . . . . . . . . . . . . . . . . . . . . . . . . . . . .      26
+                                             ii
+6 Evaluation Of Logical Neural Networks                                                      28
+  6.1 Performance of Logical Neural Networks . . . . . . . . . . . . .       . . . . . . . . 29
+  6.2 Intepretability of Logical Neural Networks . . . . . . . . . . . .     . . . . . . . . 30
+      6.2.1 Discrete Case (Rule Extraction) . . . . . . . . . . . . . . .    . . . . . . . . 30
+      6.2.2 Continuous Case . . . . . . . . . . . . . . . . . . . . . . .    . . . . . . . . 33
+      6.2.3 Results of Intepretability Experiments . . . . . . . . . . .     . . . . . . . . 43
+  6.3 Comparason Between LNNs and Exsisting Methods . . . . . . .            . . . . . . . . 44
+      6.3.1 Comparison between LNN Intepretability and LIME . .              . . . . . . . . 44
+      6.3.2 Comparason Between LNNs and Fuzzy Logic Networks                 . . . . . . . . 45
+  6.4 Summary Of Logical Neural Network Evaluation . . . . . . . .           . . . . . . . . 45
+7 Application to Auto Encoders                                                               47
+8 Conclusion                                                                                 50
+9 Proofs                                                                                     55
+  9.1 Proof Of Theorem 3.0.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+                                           iii
+Chapter 1
+Introduction
+Artificial Neural Networks (ANN’s) are commonly used to model supervised learning prob-
+lems. A well trained ANN can generalize well, but it is difficult to interpret how the network
+is operating. This issue with interpretation makes ANNs like a black-box. This report aims
+to alleviate this problem by formalizing and developing a novel neural network architecture
+that builds interpretability into its structure.
+1.1      Motivation
+The number of situations in which ANN systems are used is growing, leading to an increas-
+ing interest in systems which are not only accurate but also provide a means to understand
+the logic used to derive their answers [1]. Interest in interpretable systems is driven by the
+variety of situations that utilize ANNs where incorrect or biased answers can have signifi-
+cant effects on users.
+     Ensuring a system is Safe and Ethical are two concepts which depending on the ap-
+plication are important to verify. If an ANN was able to provide its reasoning for giving a
+specific output then defending actions made by the system would be a more feasible task [1].
+     In the context of safety, a Machine Learning (ML) system often cannot be tested against
+all possible situations, as it is computationally infeasible to do so. If accessible, the logic con-
+tained inside the model could be used to verify that the system will not take any potentially
+dangerous actions.
+     It is also important to consider the implications of an ANN which is biased against a
+protected class of people. A paper published in 2017 demonstrated that standard machine
+learning algorithms trained using text data learn stereotyped biases [2]. An ANN designed
+with the intent to be fair could result in a system which discriminates because of implicit
+biases in the data used for training.
+     Another pressure causing the development of interpretable ML systems is changing
+laws. In 2018 the European Union (EU) General Data Protection Regulation [3] (GDPR or
+”right to explanation”) will come into affect. The GDPR will require algorithms which pro-
+file users based on their personal attributes be able to provide ”Meaningful information about
+the logic involved”. This law would effect many situations where ML systems are used. For
+example, banks, which use ML systems to make loan application decisions [4]. Using some
+simulated data sets, researchers trained an ANN to compute the probability of loan repay-
+                                                 1
+ment [4]. The simulated data consisted of white and non-white individuals, both groups
+with the same proportion of the population that made repayments. As the proportion of
+white to non-white individuals in the data increased, the ANN became less likely to grant
+loans to non-white individuals. This artificial situation demonstrates the effect biased data
+could have on an ANN.
+     The argument thus far has established that being able to defend or verify the decisions
+made by ANNs is not just an interesting academic question. It would allow for the creation
+of potentially safer and fairer ML systems. They provide a means to verify that not only
+correct decisions are made, but they are made for justifiable reasons. The GDPR gives a
+monetary motivation to use interpretable systems as breaches of the regulation will incur
+fines [4].
+1.2     Solution
+To address the problems laid out thus far we improved upon a probability based network
+architecture called Logical Neural Networks (LNNs) which yield a simpler trained model
+[5].
+     Existing methods for interpreting ANNs are post-hoc algorithms to extract some mean-
+ing from standard ANN’s. The approach presented in this report builds interpretability into
+the ANN through a structure based off logical functions. This report introduces a formal
+foundation for LNNs through the following stages.
+   1. Motivate the concept that Logical Neural Networks are built from (Chapter 2).
+   2. Motivate and derive at a particular case of Logical Neural Networks called Logical
+       Normal Form Networks (Chapter 3).
+   3. Discuss the performance, generalization and interpretation capabilities of Logical Nor-
+       mal Form Networks (Chapter 3).
+   4. Discuss the situations where Logical Normal Form Networks can be applied (Chapter
+       4)
+   5. Generalise Logical Normal Form Networks to Logical Neural Networks (Chapter 5).
+   6. Derive modifications to the Logical Neural Network architecture to improve accuracy
+       (Chapter 5)
+   7. Evaluate the modified Logical Neural Network structure (Chapter 6)
+   8. Demonstrate the possible use cases of Logical Neural Networks (Chapter 7).
+     Following the development of Logical Neural Networks, they are evaluated on the MNIST
+database and compared against standard Multi-Layer Perceptron Networks. It will be demon-
+strated that LNNs are a reasonable alternative to standard MLPNs as they are simpler to
+interpret and do not sacrifice performance.
+                                              2
+Chapter 2
+Background
+This chapter introduces concepts which are used to motivate and develop the solution pre-
+sented.
+2.1     Interpretability
+To create a system that is interpretable it is necessary to have an understanding of what it
+means to interpret a model and how its interpretation might be evaluated. Interpretability
+of Machine Learning systems has been defined as ”the ability to explain or to present in under-
+standable terms” [1] which is ambiguous.
+    When is an interpretable model necessary? [1] In some problem domains there is less
+risk associated with incorrect answers. An ANN which controls a car in a game has little
+risk as a poor driving decision will only affect an artificial environment. Problem domains
+where there is a high risk associated with incorrect answers include Safety and Ethics. A
+survey, ”Concrete Problems in AI Safety” [6] provides an example of potential safety issues
+with AI in the context of a cleaning robot. For example, if the robot’s objective is to havee an
+environment containing no mess, how can the robot be prevented from disabling its sensors
+which it uses to detect the mess? Alternatively, a self-driving car might be penalized for
+running a stop light, but what is to prevent the car from disabling the sensors that detect
+stop lights?
+    It has been demonstrated that Machine Learning systems learn human-like biases from
+textual data [2]. A study done in 2010 [7] developed a method to analyze datasets for biases
+against particular classes of people. An analysis of the German Credit Dataset was conducted.
+It which showed that discriminatory decisions were hidden in the data. An ANN trained on
+this data could learn these underlying biases. If the model was interpretable then it could
+be examined for discriminatory patterns.
+    If an ANN model is presented as being interpretable how can this be verified scientifi-
+cally? There are three categories of evaluation techniques [1].
+   1. ”Application-Grounded Evaluation” Conducting experiments with human subjects in a
+       specific problem domain. If the goal is to learn an interpretable classifier to grant bank
+       loans then a domain expert in granting/denying loans should be used to establish
+       interpretability.
+   2. ”Human-Grounded Metrics” Designing simpler experiments which still allow for es-
+                                                3
+      tablishing interpretability in a specific domain. This situation occurs when access to
+      domain experts is either too expensive or difficult. The tasks can be simplified to allow
+      humans that are not domain experts to complete them.
+   3. ”Functionally-Grounded Evaluation” If it is possible to define interpretability of the prob-
+      lem then it can be used to establish this property in the model.
+2.2    Rule Extraction
+A survey in 1995 focuses on rule extraction algorithms [8], identifying the reasons for need-
+ing these algorithms along with introducing ways to categorise and compare them.
+    There are three categories that rule extraction algorithms fall into [8]. An algorithm in the
+decompositional category focuses on extracting rules from each hidden/output unit. If an
+algorithm is in the pedagogical category then rule extraction is thought of as a learning pro-
+cess. The ANN is treated as a black box and the algorithm learns a relationship between the
+input and output vectors. The third category, electic, is a combination of decompositional
+and pedagogical. An Electic algorithm inspects the hidden/output neurons individually
+but extracts rules which represent the ANN globally [9].
+    To further divide the categories two more distinctions are introduced. One measures
+the portability of rule extraction techniques, i.e. how easily can they be applied to different
+types of ANN’s? The second is criteria to assess the quality of the extracted rules, these are
+accuracy, fidelity, consistency and comprehensibility [8].
+   1. A rule set is Accurate if it can generalize, i.e. classify previously unseen examples.
+   2. The behaviour of a rule set with a high fedelity is close to that of the ANN it was
+      extracted from.
+   3. A rule set is consistent if when trained under different conditions it generates rules
+      which assign the same classifications to unseen examples.
+   4. The measure of comprehensibility is defined by the number of rules in the set and the
+      number of literals per rule.
+    These survey provide a framework for evaluating the rules extracted using a particular
+technequic. By introducing this content the reader is familiar with this approach to evalu-
+ating extracted rule sets. The solution developed in this report allows for rule exaction in
+some situations and will be evaluated against these criteria.
+2.3    LIME: Local Interpretable Model-Agnostic Explanations
+The paper ”’Why should I Trust You?’ Explaining the Predictions of Any Classifier” [10]
+published in 2016 presents a novel approach to interpretation of Machine Learning models.
+The motivation for this research is the idea of trusting the answers provided, either in the
+context of an individual prediction or the model as a whole. The LIME technequic provides
+an explanation of a single prediction. Trust in the model can be developed by inspecting
+explanations of many individual predictions.
+                                                4
+    Essentially the LIME algorithm treats the classifier as a black-box and generates a num-
+ber of examples by slightly perturbing the instance for which an explanation is wanted and
+asks the model for a classification. It then constructs a linear model of local region around
+the instance using the classifications of the perturbed examples. A more detailed explana-
+tion of LIME is beyond the scope of this report.
+    LIME is a recent method for interpreting machine learning models. Consequently it will
+provide a comparison point when evaluating the solution presented in this report.
+2.4     Noisy Neurons
+In 2016 the concept of Noisy-OR and Noisy-AND neurons [5] was presented. These neurons
+are based on the discrete boolean OR and AND gates. The motivation for this work was
+that logical functions are directly interpretable as functions of their input. Consequently if
+a problem had a natural logical decomposition then it could be learnt by Artificial Neural
+Networks using Noisy neurons.
+The Noisy-OR neuron is derived from the Noisy-OR
+relation [11], a concept in Bayesian Networks devel-
+oped by Judea Pearl. A Bayesian Network represents
+the conditional dependencies between random vari-
+ables in the form of a directed acyclic graph [12].
+Figure 2.1 is a Bayesian network. It demonstrates the
+dependency between random variables ”Rush Hour”,
+”Raining”, ”Traffic”, ”Late To Work”. The connections
+show dependencies i.e. Traffic influences whether you
+are late to work, and it being rush hour or raining
+influences whether there is traffic.
+Consider a Bayesian Network consisting of a node D
+with parents S1 , ..., Sn . In other words Si influences the
+node D. Each Si is independent from all others. The
+relationship between D and its parents is defined as if
+                                                                                   Figure 2.1
+S1 OR ... OR Sn is true then D is true.
+    This relationship is binary but there might be uncertainly as to whether each Si influences
+D. Let ei be the probability that if Si = 1 then D = 0, i.e. P( D = 0|Si = 1) = ei . Then
+P( D = 0|Si = 1 ∀i ) = P( D = 0|S1 = 1) · · · P( D = 0|Sn = 1) = ∏in=1 ei . Therefore
+P( D = 1|S1 = 1, , Sn = 1) can be expressed as Equation 2.1.
+                                                                      n
+                                P( D = 1|S1 = 1, ..., Sn = 1) = 1 − ∏ ei                        (2.1)
+                                                                    i =1
+    In the context of a neuron consider the inputs x1 , ..., xn to represent D’s belief of the prob-
+ability that the inputs 1, ..., n are True. The output of a neuron as conditionally dependent
+on its inputs, in terms of a Bayesian Network the xi ’s is a parent of the neuron. Each ei is
+D’s uncertainty as to whether xi influences its output. The probability of D being True is
+influenced by xi and ei . A function f is needed to compute the irrelevance of node i in light
+of xi and ei . The list in Figure 2.2 gives three properties of f ( xi , ei ) [5].
+                                                     5
+   1. e = 1 means that f (e, x ) = 1
+   2. x = 0 means that f (e, x ) = 1
+   3. Monotonically increasing in e and decreasing in x. In other words, fixing x results in a
+       function that monotonically increases as e get closer to 1. Fixing e results in a function
+       that monotonically decreases as x approaches 1.
+                             Figure 2.2: Three properties of the function f
+    If the inputs of f are restricted to be either 0 or 1 then it becomes apparent that properties
+(1) - (3) describe the logic function x =⇒ e (x implies e) , this is shown in Figure 2.3.
+   1. f(1,1) = 1: This is shown by (1)
+   2. f(1,0) = 1: Shown by (2)
+   3. f(0,1) = 0: Fix x = 1 and let e = 1, f (1, 1) = 1. As e → 0 f is monotonically decreasing
+       so f (0, 1) = 0.
+   4. f(0,0) = 1: Shown by (2)
+            Figure 2.3: Demonstration that f is actually x =⇒ e when x, e ∈ {0, 1}
+    A function g( x1 , ..., xm ) is defined to be Boolean-Like [13] when xi ∈ {0, 1}∀i then g( x1 , ..., xm ) ∈
+{0, 1}. Consequently, on top of properties (1) - (3) f should be a boolean like Implies func-
+tion. A choice of f which satisfies properties (1) - (3) is f ( x, e) = e x . It is a simple task
+to check that f is a boolean like Implies function. Figure 2.4 shows that all properties are
+satisfied.
+                                             f (1, 1) = 11 = 1
+                                             f (1, 0) = 10 = 1
+                                             f (0, 1) = 01 = 0
+                                             f (0, 0) = 00 = 1
+Figure 2.4: Checking f (e, x ) = e x is a Boolean Like Implies function. Note that for f (0, 0) =
+00 strictly this is undefined, but lime→0 e0 = 0
+    This is not a unique solution but it has a property which becomes convenient later on,
+specifically log( f ) = log(e x ) = x · log(e).
+Definition 2.4.1. A Noisy-OR Neuron has weights e1 , ..., en ∈ (0, 1] which represent the
+uncertainty that corresponding inputs x1 , ..., xn ∈ [0, 1] influence the output. The activation
+of a Noisy-OR Neurons is given in Equation 2.2.
+                                                         p
+                                             a = 1 − ∏(eixi )                                      (2.2)
+                                                       i =1
+                                                      6
+     Consider that the Noisy-OR activation just defined is a boolean like OR function. How
+can Equation 2.2 be transformed to give a Noisy-AND activation which is boolean like. From
+logic it is known that a ∧ b = ¬(¬ a ∨ ¬b). Considering that f NOT ( a) = 1 − a is a boolean
+like NOT function then f AND ( x1 , ..., xn ) = f NOT ( fOR ( f NOT ( x1 ), ..., f NOT ( x1 ))). Using this as
+intuition the Noisy-OR activation can be converted into a Noisy-AND.
+Definition 2.4.2. A Noisy-AND Neuron has weights e1 , ..., en ∈ (0, 1] which represent the
+uncertainty that corresponding inputs x1 , ..., xn ∈ [0, 1] influence the output. The activation
+of a Noisy-AND Neurons is given in Equation 2.3
+                                                  p
+                                            a=  ∏(ei1−x ) i
+                                                                                                         (2.3)
+                                                i =1
+     The noisy neurons are the building blocks for the two network architectures present in
+this report. Without an understanding of these concepts it would be difficult to understand
+the motivations for the solution developed.
+2.5     Logical Normal Form Networks
+2.5.1    CNF & DNF
+A boolean formula is in Conjunctive Normal Form (CNF) if and only if it is a conjunction
+(and) of clauses. A clause in a CNF formula is given by a disjunction (or ) of literals. A literal
+is either an atom or the negation of an atom, an atom is one of the variables in the formula.
+     Consider the boolean formula ¬ a ∨ (b ∧ c), the CNF is (¬ a ∨ b) ∧ (¬ a ∨ c). In this CNF
+formula the clauses are (¬ a ∨ b), (¬ a ∨ c), the literals used are ¬ a, b, c and the atoms are a,
+b, c.
+     A boolean formula is in Disjunctive Normal Form (DNF) if and only if it is a disjunction
+(or) of clauses. A DNF clause is a conjunction (and) of literals. Literals and atoms are de-
+fined the same as in CNF formulas.
+     Consider the boolean formula ¬ a ∧ (b ∨ c), the DNF is (¬ a ∧ b) ∨ (¬ a ∧ c).
+2.5.2    CNF & DNF from Truth Table
+Given a truth table representing a boolean formula, constructing a DNF formula involves
+taking all rows which correspond to True and combining them with an OR operation. To
+construct a CNF one combines the negation of any row which corresponds to False by an
+OR operation and negates it.
+Theorem 2.5.1. The maximum number of clauses in a CNF or DNF formula is 2n
+Proof. Assume the goal is to find the CNF and DNF for a Boolean formula B of size n, for
+which the complete truth table is given. The truth table has exactly 2n rows.
+     First assume a CNF is being constructed, this is achieved by taking the OR of the nega-
+tion of all rows corresponding to False, the NOT operation leaves the number of clauses
+unchanged. At most there can be 2n rows corresponding to False, consequently there are at
+                                                    7
+most 2n clauses in the CNF.
+    A similar argument shows that the same holds for DNF.
+2.5.3    Definition of Logical Normal Form Networks
+In 1996 a class of networks called Logical Normal Form Networks [14] (LNFNs) where de-
+veloped. Focusing on learning the underlying CNF or DNF for a boolean expression which
+describes the problem. The approach relies on a specific network configuration along with
+restriction the function space of each neuron, allowing them to only perform an OR or AND
+on a subset of their inputs. Such OR and AND neurons are called Disjunctive and Conjunc-
+tive retrospectively. If the trained network is able to achieve a low enough accuracy then
+rules can be extracted from the network in terms of a Boolean CNF or DNF expression [14].
+    The algorithm which extracts rules from LNFNs would be Electic and certainly is not
+Portable as the algorithm is specific to the LNFN architecture. It is not possible to further
+classify the rule extraction algorithm as the research developing it lacks any experimental
+results. Justification is also missing making the LNFNs difficult to reproduce.
+2.6     Logical Neural Networks
+ANN’s containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Net-
+works [5] (LNN’s). If the network consists of only Noisy neurons then it a pure LNN. ANNs
+containing a mix of logical and standard activations where shown to not yield interpretable
+models and also have lower performance, consequently when LNNs are referred to it will
+always be in the context of Pure LNNs.
+2.7     Learning Fuzzy Logic Operations in Deep Neural Networks
+A paper published in September 2017 [15] aims to combine Deep Learning and Fuzzy Logic
+to create artificial neural networks which can be trained using back propagation and be
+more interpretable. They propose a single activation which can learn to perform a number
+of different fuzzy logic operations. The result of this paper is a neural network architecture
+that can perform well as a classifier but also yield a model from which fuzzy rules can
+be extracted. The Fuzzy Logic networks where compared against standard deep neural
+networks using a tanh activation function. In this comparison they where found to have
+    Fuzzy Logic Networks are a different approach to solving the problem outlined in this
+report. As such will be an interesting comparison point for the solution developed here.
+Does the solution presented here have comparable performance and intepretability?
+                                               8
+Chapter 3
+Foundation of Logical Normal Form
+Networks
+This chapter motivates the concept of Logical Normal Form Networks (LNFNs) along with
+deriving them in terms of Noisy Neurons. The training of LNFNs is discussed by deriving
+a weight initialization method, choosing a algorithm to propagate gradients and justifying
+a choice of mini-batch size. LNFNs are also compared against Multi-Layer Perceptron Net-
+works (MLPNs) using randomly generated truth tables as the data sets.
+    Consider the set of binary classification problems which have boolean input features. p
+is some problem in this set, with X p and Yp being the examples and targets retrospectively.
+Let B p be the set of all boolean functions which take an x ∈ X p and take it to either a 1 or 0.
+Then finding the optimal boolean function to solve the problem p corresponds to expression
+3.1 which is the function f with the smallest cross entropy loss.
+              arg min     −    ∑         (Ypi · log f ( X pi )) + ((1 − Ypi ) · log(1 − f ( X pi )))
+                                                                                                     (3.1)
+                f ∈Bp       0≤i ≤| X p |
+    How might Equation 3.1 be optimised in a way which allows f to be known? Enumer-
+ating every possible f ∈ B p is to computationally expensive. Alternatively a Multi-Layer
+Perceptron Network (MLPN) could learn f using gradient descent. MLPNs are univer-
+sal approximators so there exists a network architecture that can learn the optimal f . The
+problem with MLPNs is with interpreting the learnt function after training is difficult. The
+remainder of this chapter is dedicated to deriving an Artificial Neural Network Architecture
+which can be trained with gradient descent and reveal the function learnt after training.
+    Every boolean function has a unique Conjunctive and Disjunctive Normal Form (CNF &
+DNF). Learning the CNF of DNF of f is functionally equivalent to learning f and provides
+more guarantees about the structure of the solution. Both the CNF and DNF are described
+by the three logical operations OR, AND and NOT. A NOT operation can only occur inside a
+clause as a literal. Finally the maximum number of clauses in a CNF or DNF is 2n where n is
+the number of variables. A Bayesian Network representing the CNF of f could be thought of
+as three layers of nodes. The first layer containing all the literals (atoms and their negations),
+two of these nodes are dependent if they concern the same atom (one is the negation of the
+other). A second layer with k ≤ 2n nodes representing the clauses, each is dependent on
+a subset of the atoms and is True if all the dependencies are True. The last layer contains
+a single node which is dependent on all the second layer nodes and is True if one of the
+clauses is True. Each clause is an OR and the last layer node is an AND. This Bayesian
+                                                         9
+Network could then be represented by a Feed-Forward Neural Network where the nodes in
+the first, second and third layers are input, hidden and output neurons.
+ Each hidden neuron is a Noisy-
+OR and the output neuron is
+a Noisy-AND. Figure 3.1 is the
+structure that has been derived.
+By the same logic a network ar-
+chitecture for learning the DNF
+can be derived, the hidden layer
+consists of ANDs and the out-
+put of a single OR. These net-
+works for learning CNF (Defi-
+nition 3.0.1) and DNF (Defini-
+tion 3.0.2) formulae are a new
+derivation of Logical Normal
+Form Networks (LNFNs) [14]
+which use Noisy Neurons.                  Figure 3.1: Network Architecture for Learning
+                                          CNF
+Definition 3.0.1. A CNF-Network is a three layer network where neurons in the hidden
+layer consist solely of Noisy-OR’s and the output layer is a single Noisy-AND.
+Definition 3.0.2. A DNF-Network is a three layer network where neurons in the hidden
+layer consist solely of Noisy-AND’s and the output layer is a single Noisy-OR.
+Definition 3.0.3. A LNF-Network is a DNF or CNF Network
+     Theorem 3.0.1 proves that a CNF or DNF Network should have a hidden layer size of 2n
+to guarantee that the formulae can be learnt.
+Theorem 3.0.1. Let T be the complete truth table for the boolean formula B. Let L be an
+LNFN, if L has 2n hidden units then there always exists a set of weights for L which correctly
+classifies any assignment of truth values to atoms.
+     A proof of Theorem 3.0.1 is given in Appendix 9. Theorem 3.0.1 provides justification
+for using 2n hidden units, it guarantees that there at least exists an assignment of weights
+yielding a network that can correctly classify each item in the truth table.
+3.1      Noisy Gate Parametrisation
+The parametrisation of Noisy gates require weight clipping, an expensive operation. A new
+parametrisation is derived that implicitly clips the weights. Consider that e ∈ (0, 1], there-
+fore let ei = σ(wi ), these wi ’s can be trained without any clipping, after training the original
+ei ’s can be recovered.
+     Now these weights must be substituted into the Noisy activation. Consider the Noisy-
+OR activation.
+                                                 10
+                                                      p
+                               aor ( X ) = 1 − ∏(eixi )
+                                                    i =1
+                                                      p
+                                         = 1 − ∏ ( σ ( wi ) xi )
+                                                    i =1
+                                                      p
+                                                                      1
+                                         = 1 − ∏((                            ) xi )
+                                                    i =1
+                                                              1 + e − wi
+                                                      p
+                                         = 1 − ∏((1 + e−wi )−xi )
+                                                    i =1
+                                                         p                   − wi )
+                                         = 1 − e∑i=1 −xi ·ln(1+e
+                                                 0
+                                        Let wi = ln(1 + e−wi )
+                                                             0
+                                         = 1 − e−(W            ·X)
+    From a similar derivation we get the activation for a Noisy-AND.
+                                               i =1
+                               a and ( X ) =   ∏(ei1−x )       i
+                                                 p
+                                               i =1
+                                           = ∏ ( σ ( wi )1− x i )
+                                                 p
+                                                   p                           −w
+                                           =   e∑i=1 −(1− xi )·ln(1+e i )
+                                                        0
+                                           = e−(W         ·(1− X ))
+    Concisely giving equations 3.2, 3.3
+                                                                 0
+                                     a and ( X ) = e−(W            ·(1− X ))
+                                                                                          (3.2)
+                                                                        0
+                                       aor ( X ) = 1 − e−(W               ·X)
+                                                                                          (3.3)
+                               0
+    The function taking wi to wi is the soft ReLU function which is performing a soft clipping
+on the wi ’s.
+3.2    Training LNF Networks
+Using equations 3.3 and 3.2 for the Noisy-OR, Noisy-AND activations retrospectively al-
+lows LNFNs to be trained without the need to clip the weights.
+    Before these networks can be trained a number of choices must be made. These are
+outlined in the list below.
+  1. Weight Initialization: A method for initializing the weights must be derived. In the case
+      of MLPNs it was shown that if initialization of weights is not carefully thought about
+      as the number of neurons increases the learning conditions deteriorate [16].
+  2. Training Algorithm: There exists a number of different algorithms for propagating gra-
+      dients [17]. One must be chosen based on the properties of these networks.
+  3. Batch Size: What size should each batch be when training these networks.
+                                                      11
+3.2.1    Weight Initialization
+Poor weight initialization leads to slower or poor convergence [18]. Weight initialization
+algorithms can not be universally applied to different activations. A method derived for
+MLPNs was shown to be ineffective for networks using other activations [19].
+Deriving a Distribution For The Weights Before a weight initialization algorithm can be
+derived good learning conditions must be identified. The function e−z squash a variable z
+into the range [0, 1], Figure 3.2 shows a graph of this function.
+At z ≥ 4 the function e−z changes very little as it
+gets asymtoticly close to 0. This means that e−z
+suffers from what is known as saturation. If the
+method of initializing weights does not consider
+the inputs to a neuron then at a certain point the
+weighted sum of inputs will always be ≥ 4 and
+thus the activation will always be constant. The
+sigmoid function suffered from this problem and
+one method of fixing it was careful initilizaton of
+the weights [16]. The approach here is to derive
+an initial weight distribution which keeps the
+variance and mean of neuron activations the same                    Figure 3.2: Plot of e−z
+throughout the network [20].
+    As with previous approaches to solving this problem it will be assumed the inputs to the
+network are independent and weights are independent and identically distributed (i.i.d). It
+has previously been proved that these assumptions are enough to show the inputs to any
+layer are independent [20].
+    Ideally the output of each neuron would be varied for each training example, i.e. y ∼
+U (0, 1). Each training example X = { x1 , ..., xn } has each component xi ∈ (0, 1], it will be
+assumed that xi ∼ U (0, 1).
+If the input vectors and output of each neuron
+are both distributed U (0, 1) then the input to any         a AND ( X ) = e−(w1 (1− x1 )+...+wn (1− xn ))
+layer is distributed U (0, 1). Based on these facts
+                                                              aOR ( X ) = 1 − e−(w1 x1 +...+wn xn )
+it can be argued that the weight initialization is
+the same for both Noisy-OR and Noisy-AND, first            Figure 3.3: Noisy Neuron Activa-
+recall the activations for Noisy neurons given in          tions
+Figure 3.3.
+    Consider a random variable g, if g ∼ U (0, 1) then 1 − g ∼ U (0, 1) also holds. Conse-
+quently, if xi ∼ U (0, 1) then 1 − xi U (0, 1), also e−z ∼ U (0, 1) then 1 − e−z U (0, 1). It is
+therefore enough to consider e−(w1 x1 +...+wn xn ) when deriving the initialization method for
+                                 0
+each wi . Each wi = log(1 + ewi ) (as derived in Section 3.1) however for the purposes of this
+initialisation derivation this will be forgotten for now. Given that y = e−z U (0, 1), a first step
+is to determine the distribution of z.
+Theorem 3.2.1. If y ∼ U (0, 1) and y = e−z , then z ∼ exp(λ = 1)
+Proof. Consider that y = e−z can be re written as z = − log(y). The Cumulative Distribution
+Function (CDF) will be derived for z.
+                                                12
+                                        F (z) = P( Z < z)
+                                                 = P(− log(Y ) < z)
+                                                         1
+                                                 = P ( < e−z )
+                                                         Y
+                                                 = P (Y ≥ e − z )
+                                                 = 1 − P (Y ≤ e − z )
+                                                           Z e−z
+                                                 = 1−            f (y)dy
+                                                             0
+                                                           Z e−z
+                                                 = 1−            1dy
+                                                             0
+                                                             −z
+                                                 = 1−e
+    Therefore F (z) = 1 − e−λz where λ = 1. So z has the CDF of an exponential distribution.
+Consequently z ∼ exp(λ = 1)
+    The problem has now been reduced to find how wi is distributed given that z ∼ exp(λ =
+1) and xi ∼ U (0, 1). The approach taken is to find E[wi ] and var (wi ).
+                         E [ z ] = E [ w1 x 1 + · · · + w n x n ]
+                                 = E[w1 x1 ] + · · · + E[wn xn ] (independence)
+                                 = E [ w1 ] E [ x 1 ] + · · · + E [ w n ] E [ x n ]
+                                 = n · E[wi ] E[ xi ] (i.i.d)
+                                                    1
+                                 = n · E [ wi ] ·
+                                                    2
+                                    n
+                              1 = · E [ wi ]
+                                    2
+                                    2
+                       E [ wi ] =
+                                    n
+                                var (z) = var (w1 x1 + · · · + wn xn )
+                                        = var (w1 x1 ) + · · · + car (wn xn )
+              var (wi xi ) = ( E[wi ])2 var ( xi ) + ( E[ xi ])2 var (wi ) + var (wi )var ( xi )
+                                 4 1 1                                           1
+                           = 2 · + · var (wi ) + var (wi ) ·
+                                n 2 4                                           12
+                                 1      1
+                           = 2 + var (wi )
+                                3n      3
+    Consequently the variance can be found by the following
+                                                          13
+                                                   1          1         
+                                         1 = n·         2
+                                                           + var (wi )
+                                                    3n         3
+                                              1
+                                         3=      + n · var (wi )
+                                              n
+                                      3n = n2 var (wi )
+                                              3
+                                var (wi ) =
+                                              n
+    From the above arguments E[wi ] = n2 and var (wi ) = n3 . These values need to be fitted to
+a distribution that weights can be sampled from. Based on our initial assumptions this dis-
+tribution must also generate values in the interval [0, ∞]. There exists a number of different
+distributions which satisfy this constraint. The distribution which had the best results was
+log-normal [21], for brevity only its derivation is included.
+Fitting To Log Normal A Log-Normal distribution has two parameters μ and σ2 , by the
+                                                  σ2                           2   2
+definition of Log-Normal E[wi ] = n2 = eμ+ 2 and var (wi ) = n3 = eσ − 1 · e2μ+σ . Conse-
+                                                                                  
+quently
+                                                 2            σ2
+                                                     = eμ+ 2
+                                                 n
+                                               2               σ2
+                                          log( ) = μ +
+                                               n                 2
+                                              4
+                                         log( 2 ) = 2μ + σ2
+                                              n
+    From here this can be substituted into the other formula to give
+                                                3       2                  2
+                                                   = eσ − 1 · e2μ+σ
+                                                                   
+                                               n
+                                                        2                 4
+                                                   = eσ − 1 · elog( n2 )
+                                                                   
+                                                        2          4
+                                                   = eσ − 1 · 2
+                                                                      n
+                                                             σ2
+                                              3n = 4 · e − 4
+                                          3n + 4          2
+                                                   = eσ
+                                            4
+                                          3n + 4
+                             σ2 = log
+                                            4
+    Finally this substituted back gives the mean
+                                     4                      3n + 4
+                               log(    2
+                                         ) = 2μ + log
+                                     n                           4
+                                                     4              3n + 4
+                                      2μ = log( 2 ) − log
+                                                     n                4
+                                              1                16
+                                        μ = · log 2
+                                              2          n (3n + 4)
+                                                   14
+     Giving the parameters for the log normal distribution below
+                                                 3n + 4
+                                     σ2 = log                                                   (3.4)
+                                                   4
+                                            1           16
+                                      μ=      · log 2                                           (3.5)
+                                            2       n (3n + 4)
+Weight Initialization Algorithm Figure
+3.4 gives the algorithm for initializing 1 f u n c t i o n c o n s t r u c t W e i g h t s ( s i z e ) :
+weights for Noisy neurons. Each weight 2 wi ∼ LN ( f o r i = 0 t o s i z e )
+that is sampled from the Log Normal dis- 3 r e t u r n f −1 ({w0 , ...})
+                              0           0
+tribution. Recall w = f (w ) where w can
+be any real value, consequently to obtain
+                                                       Figure 3.4: Weight Initialization Algorithm
+the initial weights each w must be inversely
+                                                       for LNNs
+transformed using f −1 .
+3.2.2    Training Algorithm
+The ADAM Optimizer [22] is the learning algorithm which will be used. For the convenience
+of an adaptive learning rate and because it has been shown that networks of this form yield
+a sparse representation, which the ADAM algorithm works well with.
+3.2.3    Batch Size
+The batch size will be fixed to one. Experimental results from training an LNFN with a batch
+size of 1 converged faster.
+3.3     LNF Network Performance
+Preliminary testing initially gave poor performance on the simplest of logic gates. After im-
+plementing the weight initialization algorithm (derived in Section 3.2.1) the results became
+promising. They showed that LNFN’s are able to learn good classifiers on boolean gates,
+i.e. NOT, AND, NOR, NAND, XOR and Implies. How do LNFNs perform against standard
+MLPNs which are known to be universal function approximators? Two different MLPNs
+will be used as a benchmark
+    1. One will have the same configuration as the LNFNs, i.e. 2n hidden neurons.
+    2. The other has two hidden layers, both with N neurons.
+     The testing will consist of selecting 5 random boolean expressions for 2 ≤ n ≤ 9 and
+training each network 5 times, each with random initial conditions. Figure 3.5 shows a
+comparison between all 4 of the networks and Figure 3.6 shows just the LNFN’s.
+                                                  15
+                    Figure 3.5                                  Figure 3.6
+    Figure 3.5 show that the LNFNs have statistically equivalent performance to one of the
+configurations of MLPNs and the other Perceptron network with 2n hidden neurons has
+poor performance. Figure 3.6 shows that CNF and DNF networks have statistically equiva-
+lent performance.
+3.4    LNF Network Generalization
+These networks are able to perform as well as standard perceptron networks but so far they
+have been trained on a complete data set. In practice this will almost never be the case. Stan-
+dard ANN’s are widely used because of their ability to generalize. Here the generalization
+capability of LNFNs will be tested against that of MLPNs
+                                                          Figure 3.7 shows a comparison be-
+                                                          tween the generalization ability of
+                                                          CNF, DNF and Perceptron net-
+                                                          works. The graph shows the per-
+                                                          formance over all training data
+                                                          when successively removing ele-
+                                                          ments from the training set. It
+                                                          demonstrates that the CNF and
+                                                          DNF networks generalize as well
+                                                          as the perceptron networks when
+                                                          trained over boolean problems with
+                                                          6 inputs, this trend continues as n
+                                                          increases up to 9. Training LNFNs
+                                                          on boolean problems with more
+                                                          than 9 inputs is to expensive.
+                       Figure 3.7
+3.5    LNF Network Rule Extraction
+Consider the weights for a logical neuron W = {w1 , ..., wn }. These can be converted to
+ei = σ(wi ) where ei ∈ [0, 1] and represents the relevance input xi has on the neurons output.
+                                               16
+    To extract boolean rules from the network it must be possible to interpret each neuron as
+a logical function acting on a subset of its inputs. For this to be the case, at the conclusion
+of training either ei u 1 or ei u 0 needs to be true. If each ei is either 1 or 0 then the neuron
+is a logical function of the inputs which have corresponding e u 0. Conjecture 3.5.1 is the
+foundation of the following rule extraction algorithm, it was derived from experimental
+evidence by training LNFNs over complete truth tables and inspecting the weights. Ideally
+Conjecture 3.5.1 would be proved, but that is out of scope for this report.
+Conjecture 3.5.1. For an LNFN network trained on a binary classification problem with
+boolean inputs as the loss approaches 0 (i.e. the correct CNF or DNF has been found) the
+weights {w1 , ..., wn } approach ∞ or −∞. Consequently each ei = σ(wi ) (where σ(·) is the
+sigmoid function) approaches 0 or 1.
+The Algorithm displayed
+in figure 3.8 extracts rules    1 atoms = { x1 , ...xn , ¬ x1 , ..., ¬ xn , }
+from CNFNs. It takes the        2
+output weights (ow) and         3 f u n c t i o n extractRulesCNFN (ow, hw)
+hidden weights (hw) as          4     ow = σ(ow)
+input and outputs the a         5     hw = σ(hw)
+boolean expression.         A   6     relvHidden = [hw[ i ] where ow[ i ] : = 0 ]
+similar algorithm can be        7
+derived for DNFNs, it is        8     and=And ( [ ] )
+omitted but can be ob-          9          f o r weights i n relvHidden
+tained by simply switching     10              or=Or ( [ atoms [ i ] where weights [ i ] : = 0 ] )
+the    logical     operations  11              and . add ( or )
+around. In practice many       12
+clauses in the extracted       13      r e t u r n and
+expression contain redun-
+dant terms, such as clauses
+                                          Figure 3.8: Rule Extraction Algorithm (for CNFN)
+that are a tautology or a
+duplicate of another.
+    How does training over incomplete truth tables effect the generalization of extracted
+rules and what factors could influence this?
+    Consider B to be the set of all boolean problems with n inputs. What is the cardinality
+                                                       n
+of B? There are 2n rows in the truth table and 22 ways to assign true/false values to these
+                                                                                                n
+rows, each way corresponding to a different boolean function. Consequently | B| = 22 .
+Consider some b ∈ B represented by 2n rows of a truth table, removing one row from the
+training data means there are now two possible functions that could be learnt, one where
+the removed row corresponds to true and the other to false. As more rows are removed this
+problem is compounded. If m rows are taken then there are 2m possible functions that b
+could represent.
+    To test the generalization of the CNFN and DNFN rule sets LNFNs will be trained over a
+randomly generated boolean problem with 4 inputs. The training set will reduce in size one
+by one and the extracted rules will be evaluated over the entire tuth table. For each training
+set size the experiment will be repeated 30 times. Figures ?? & 3.10 shows the number of
+examples removed from the training set on the x axis. The y axis shows the number of
+incorrectly classified instances over the entire dataset. These experiments show that when
+                                                   17
+no examples are removed then the rules can achieve a perfect accuracy. As instances are
+removed from the training set the rules are able to generalise on average.
+     Figure 3.9: CNFN trained using an in- Figure 3.10: DNFN trained using an in-
+     complete truth table                         complete truth table
+    When constructing a CNF from a truth table (See Section 2.5.2) only the rows correspond-
+ing to false are considered. Is it then possible that by only removing rows which correspond
+to false a CNFN can learn rules which achieve a perfect accuracy. Figure 3.11 represents this
+situation.
+     Figure 3.11: CNFN trained using an in- Figure 3.12: DNFN trained using an in-
+     complete truth table, only rows corre- complete truth table, only rows corre-
+     sponding to false are removed                sponding to true are removed
+    Figures 3.11 & 3.12 show CNFNs and DNFNs trained over partial data retrospectively.
+In the case of CNFNs only entries corresponding to true in the truth table are removed and
+for the DNFNs only false entries. These graphs show that careful removal of each training
+example does not result in rules that perform better. These results indicate that the general-
+ization of extracted rule sets depends on the initial condtions rather than what examples are
+removed.
+3.6     Summary
+In this chapter a method for training LNFNs was derived. LNFNs where shown to have
+statistically equivalent performance and generalization to MLPNs. Finally it was shown
+that rules can be extracted from LNFNs and that these rule sets where able to generalise.
+                                                18
+Chapter 4
+Expanding the Problem Domain of
+Logical Normal Form Networks
+The LNFNs presented in Chapter 3 have only been shown to be applicable when learning
+boolean truth tables. This chapter investigates extending LNFNs to support multi class
+classification problems and continuous feature spaces.
+4.1     Multi-class Classification
+Extending an ANN to support multi class classification is achieved by adding more output
+neurons, one for each class. The value output neuron i can be considered the probability of
+class i. The networks output is now a vector representing the class distribution.
+    For example if given a problem with 3 classes then {1, 0, 0}, {0, 1, 0} and {0, 0, 1} repre-
+sent class 1, 2 and 3 retrospectively. The LNFN would have 3 output neurons, each repre-
+senting a bit in the output vector. During the training process if the true class of an example
+was 1 then the desired output vector would be {1, 0, 0}. This process of converting a cate-
+gorical variable to a binary string is known as One-Hot Encoding
+Definition 4.1.1. An LNFN to solve a k class classification problem is unchanged apart from
+the number of output neurons which is k.
+4.1.1    Application to Lenses Problem
+The Lenses problem [23] is multi class and contains a natural rule system making it an ideal
+problem for evaluating LNFNs. The goal is to determine whether (if any) contact lenses
+should be fitted to the patient. There are 3 classes, fit soft, fit hard and do not fit any. Each
+example has four features, three are binary and one categorical (of size 3). Applying One-
+Hot encoding to the categorical variable yields a set of instances each with length 6.
+    The LNFN will be evaluated against an MLPN with a two layer structure where the layer
+width are 2 · n and n retrospectively.
+    The performance of the two classifiers will be compared using Leave-One-Out Cross-
+Validation. The structure of the MLPN differs in the number of hidden layers/units, there
+are two hidden layers, one with 2 · n hidden units and the other with n
+                                              19
+                                         Error Rate       Error Rate CI (95%)
+                           CNF Net         0.0122           (0.0000, 0.0417)
+                           DNF Net         0.0104           (0.0000, 0.0417)
+                          MLPN Net         0.0000           (0.0000, 0.0000)
+                      Table 4.1: Network Performance On Lenses Problem
+    Table 4.1 demonstrates that the CNF & DNF Networks perform comparably to an MLPN
+as the confidence intervals for the errors overlap.
+    Now that the LNFN network has three output neurons it should be possible to extract
+three rules describing each of the classes. Consider that each problem instance is of the fol-
+lowing form { a, b, c, d, e, f } where a, b, c, d, e, f are all atoms. f refers to the tear production
+rate being normal or reduced if f = False or True retrospectively. Giving a description of the
+other atoms is not beneficial as they refer to medical terms which are unimportant.
+    The list of rules in Figure 4.1 have been extracted from a CNFN after being trained over
+the complete Lenses data set. These rules contain redundancies which could be filtered out
+automatically.
+    • Class 1: ( a ∨ ¬d) ∧ (e ∨ ¬ f ) ∧ (¬(¬ f )) ∧ (¬(¬e ∨ ¬ f )) ∧ (¬(e ∨ ¬ f ))
+    • Class 2: ( a ∨ b ∨ d ∨ e ∨ ¬c) ∧ (¬(e ∨ ¬ f )) ∧ (¬(e ∨ ¬ f )) ∧ (¬(e ∨ ¬ f ))
+    • Class 3: (c ∨ e ∨ ¬b ∨ ¬ f ) ∧ (e ∨ ¬d ∨ ¬ f ) ∧ (d ∨ ¬e ∨ ¬ f ) ∧ (b ∨ c ∨ ¬ a ∨ ¬ f ) ∧ (b ∨ c ∨
+      d ∨ e ∨ ¬ a ∨ ¬d ∨ ¬e ∨ ¬ f )
+                           Figure 4.1: CNF rules extracted from CNFN
+    Immediately it is possible to find useful information about this problem that was not
+obvious before. For example ¬ f = True =⇒ Class 3, or if the tear reduction rate is reduced
+then do not fit contact lenses. Alternatively DNF rules could be constructed using a DNFN,
+this possibility is demonstrated in the following three rules.
+    • Class 1: ( a ∧ d ∧ e ∧ f ∧ ¬b ∧ ¬c) ∨ ( a ∧ d ∧ e ∧ f ∧ ¬b ∧ ¬c) ∨ (e ∧ f ∧ ¬d)
+    • Class 2: ( f ∧ ¬c ∧ ¬d ∧ ¬e) ∨ (d ∧ f ∧ ¬e)
+    • Class 3: (e ∧ e ∧ ¬ a) ∨ (c ∧ f ∧ ¬ a ∧ ¬b ∧ ¬d ∧ ¬e) ∨ (¬ f ) ∨ (¬ f )
+    The formulae extracted from the DNFN confirm previous knowledge obtained from the
+CNFN, namely ¬ f = True =⇒ Class 3. Table 4.2 demonstrates the performance of ex-
+tracted rules over the Lenses dataset. The confidence intervals of networks and rule sets
+overlap so there is no statistically significant difference between the network and rule set in
+terms of their accuracy on the data.
+                                   Rule Error Rate        Rule Error Rate CI (95%)
+                    CNF Rules           0.0122                  (0.0000, 0.0417)
+                    DNF Rules           0.0156                  (0.0000, 0.0417)
+                                                Table 4.2
+                                                     20
+     The results shown thus far demonstrate that LNFNs can be applied to boolean multi
+class classification problems.
+4.2     Features with Continuous Domains
+It is possible for the inputs to a Noisy Neuron to be in the range [0, 1], but when does it make
+sense to do so? And what do these continuous features mean? The inputs can be thought
+of as being the probability that the feature is present. In the discrete case either the input
+is there (a 1) or not (a 0). Then in the continuous case each input feature is thought of as a
+probability.
+     How about the case where the feature range is not confined to [0, 1]. An option is to nor-
+malise the feature spaces, forcing them into a format compatible with LNFNs. The problem
+then comes down to meaning. Is possible to think of these normalised features as a prob-
+ability? Consider an arbitrary (un-normalised) feature f . Assume f ∈ [ f min , f max ] then the
+larger the normalised feature f N the closer its true value is to f max . Similarly if ¬ f N = 1 − f N
+is large then the true value is closer to f min . f N could then be the probability of sampling
+a v ∼ U ( f min , f max ) that is less than f . This is certainly not the only meaning normalised
+features could have, it is simply an example.
+     Another consideration to make is, how can trained LNFN models be interpreted if the
+features are continuous? When the weights are binary then a Noisy neuron can be con-
+sidered as a logical gate of its inputs with e u 0. The weights in a trained LNFN do not
+converge to 0 or 1 when the input features are continuous so a more general method to
+interpret LNFNs is needed.
+Influence Model One potential way to interpret LNFNs would be to compute the influ-
+ence each input feature has on the output neurons. This is named an Influence Model.
+The weights for a Noisy neuron directly correspond to the influence each input has on the
+neuron’s output.
+                                                         Consequently it is a trivial task to find an
+                                                         Influence Model for describing how each
+                                                         input feature affects the hidden layer out-
+                                                         puts, this is just the weights of each hid-
+                                                         den neuron. Consider Figure 4.2 and the
+                                                         problem computing an Influence Model
+                                                         describing the influence each xi has on
+                                                         the output of some o j . The activation
+                                                         of each h j is what influences the output
+                                                         layer. However each h j is influenced not
+           Figure 4.2: Example Network                   only by the xi of interest but also all the
+                                                         others.
+                  0
+     This new ei is dependent on all the other x’s, not just the xi of interest. Consequently
+there is not an obvious solution to computing Influence Model for LNFNs.
+Partial Influence Models While it is not obvious how to compute an Influence Model de-
+scribing a LNFN entirely it is trivial to compute one describing the influence between input
+                                                    21
+features and the hidden layer output. Using this Partial Influence Model can describe the
+the hidden neurons in terms of the input features. The weights belonging to each output
+neuron could then be used to find the most important hidden neurons.
+Continuous Rules Another way to interpret LNFNs in a continuous domain is to extract
+continuous rules. A threshold will be set, any input with a weight below the threshold will
+be considered important. Consequently each neuron will be considered a function of its
+inputs that have corosopnding weight less than or equal to a given threshold t. A potential
+issue with this method is that the less important features are removed after the threshold is
+applied, this might result in more incorrect classifications by the rules. A smaller threshold
+will lead to simpler rules with perhaps a higher error rate where as a larger threshold will
+give more complex rules with a possibly higher accuracy. This process also discards the true
+e’s which could potentially effect the accuracy of the rules.
+4.2.1     Application To Iris Problem
+The Iris data set [23] is the problem of classifying a plant as one of three classes. Each
+example consists of four features, all are measurements taken from the plant. 100% accuracy.
+All features are in centimetres
+and not confined to the range
+[0, 1]. Table 4.3 gives the results                         Error Rate Error Rate CI (95%)
+of training the Normalised Iris           CNF Network         0.027        (0.000, 0.111)
+problem on LNF networks.                  DNF Network         0.066        (0.000, 0.156)
+The results show that while the
+performance can vary a lot it is
+                                        Table 4.3: LNFN performance on an Iris prob-
+possible for both the CNF and
+                                        lem testing set
+DNF networks to obtain.
+     If attempting to interpret these models meaning must be assigned to each of the nor-
+malised features. Informally, an atom is ”truer” if the un-normalised feature is larger and
+”falser” if its smaller. A NOT operation inverts this property. Table 4.4 shows the perfor-
+mance of extracted continuous rules on a testing set. These performance statistics provide
+evidence that continuous rules have poor performance.
+                                       Error Rate   Error Rate CI (95%)
+                         CNF Rules        0.439         (0.156, 0.867)
+                         DNF Rules        0.323         (0.156, 0.511)
+      Table 4.4: Performance of rules extracted from LNFN on an Iris problem testing set
+                                                22
+The question remaining is, how do these
+rules contribute to interpreting the LNFN                1. Iris Setosa: ( g ∧ h) ∨ ( g ∧ h) ∨ ( g ∧
+model. Figure ?? shows raw continuous                       h) ∨ ( g ∧ h)
+rules extracted from a DNFN. Features
+                                                         2. Iris Versicolour: (c ∧ e ∧ f ∧ h) ∨ (c ∧
+{ a, b, c, d} correspond to preferring larger
+                                                            f ∧ h) ∨ (c ∧ f ∧ h) ∨ (c ∧ e ∧ f ∧ h) ∨
+values of { sepal length, sepal width, petal
+length, petal width }. On the other hand
+                                                            (c ∧ f ∧ h)
+e = ¬ a, f = ¬b, g = ¬c, h = ¬d.                         3. Iris Virginica: (c ∧ d ∧ f ) ∨ (c ∧ d ∧
+                                                            f ) ∨ (d ∧ f ) ∨ (c ∧ d ∧ f ) ∨ (c ∧ d ∧
+The list in Figure ?? shows some conclusions                f ) ∨ (c) ∨ (c ∧ d ∧ f )
+about the classes which can be drawn from
+the raw continuous rules. Having a small
+petal width and length mean the class is more        Figure 4.3: Raw continuous rules ex-
+likely to be Iris Setosa.                            tracted from a DNFN, with a threshold of
+                                                     0.5
+     Alternatively having a larger petal width means the instance is more likely to be Iris
+Versicolour or Iris Virginica.
+ Finally the Iris Versicolour rule is more compli-
+ cated and seems contradictory. If the instance
+ has a small petal width and length but also has
+ a large petal width or length.
+     1. Iris Setosa:      Smaller petal width ∧
+         Smaller petal length
+     2. Iris Versicolour:    Larger petal length
+         ∧ Smaller petal width ∧ Smaller sepal
+         width
+     3. Iris Virginica:    Larger petal length ∨
+         (Large petal width ∧ Small sepal width)
+                                                   Figure 4.5: Scatter plot of Iris dataset,
+                                                   showing the petal length on the x-axis
+ Figure 4.4: Rules representing the iris problem, and petal width on the y-axis
+ extracted from a CNFN
+     Figure plots the petal width and length features against each other, demonstrating the
+conclusions drawn make sense.
+     This section has shown that LNFNs can be applied to any problem with continuous
+features by normalisation. This operation creates an additional problem, namely it becomes
+difficult to interpret what the normalised features mean. Future work into LNNs might aim
+to develop a better way to convert feature domains to probabilities.
+4.3       Summary
+This chapter has demonstrated that LNFNs can be applied to more than just learning boolean
+truth tables. They have been shown to achieve good accuracy on multi class classification
+problems, with and without discrete input features. A number of methods for interpreting
+LNFNs applied to continuous feature spaces. These methods where then shown to provide
+                                               23
+useful insights into the Iris dataset.
+    In the context of the Lenses problem it was possible to extract boolean rules from the
+LNFNs which had a statistically equivalent performance to the networks. These rules also
+provided incite into the problem which was not obvious from the data. The LNFNs where
+able to achieve a low error rate (sometimes 0%) on the Iris data set. It was possible to
+extract useful information from the trained models which highlighted the most important
+features when making classifications. The experiments with the Iris problem also revealed
+limitations of LNNs
+                                            24
+Chapter 5
+Logical Neural Networks
+This chapter discusses development of Logical Neural Networks as a generalization of LNFNs.
+There are two key issues with LNFNs. Firstly the number of hidden units becomes infea-
+sible as the amount of inputs increases. Secondly if the problem size is small enough and
+the network can be trained the volume of hidden neurons allows for the possibility to mem-
+orise the input data. Using what has been learnt about LNFNs the class of Logical Neural
+Networks (LNNs) can be defined.
+Definition 5.0.1. A Logical Neural Network is an ANN where each neuron has a noisy acti-
+vation.
+     LNNs have a more flexible structure, allowing for deeper networks and hidden layers
+with a variable number of neurons. The current LNN model has been shown to have poor
+performance when compared to a Multi-Layer Perceptron Network [5]. An LNN, consisting
+of Noisy-OR hidden units and Noisy-AND outputs, was shown to perform worse than an
+MLPN. There are two key issues caused by removing the restrictions imposed by the LNFN
+definition (Definition 3.0.3) which must be addressed
+    1. Noisy neurons do not have the capacity to consider the presence of the negation of an
+       input. This was a problem for LNFNs as well, however given that only the negations
+       of atoms need to be considered to learn a CNF or DNF it was easily fixed by presenting
+       the network with each atom and its negation. The problem can not be solved so easily
+       for LNNs. A boolean formula can not always be represented by only AND and OR
+       gate, i.e the set of operations { AND, OR} is not functionally complete.
+    2. Another problem faced by LLNs that are not restricted to be ether a CNFN or DNFN
+       is that the structure of the network will have a higher impact on whether the problem
+       can be learnt.
+     Resolving Issue 1 involves making our operation set functionally complete, this requires
+the NOT operation. There are two ways to include the NOT operation in the LNNs, one
+is to simply augment the inputs to each layer appending so it receives the input and its
+negation. Another is to derive a parametrisation of Noisy gates which can learn to negate
+inputs. However both these have no way to enforce mutual exclusivity between an input
+and its negation.
+5.1     Modified Logical Neural Network
+5.1.1    Connections Between Layers & Parameters
+Figure ?? provides a new structure for the connections between the lectures.
+                                                25
+                                               Figure 5.1
+     Figure ?? shows the new LNN structure which includes an implicit NOT operation. The
+input to each layer consists of the true output of the previous plus the negated output from
+the last layer. If a layer has 20 outputs then there are 40 inputs to the following layer.
+5.1.2       Softmax Output Layer
+The softmax function takes a vector of real values to a vector of values in the range [0, 1] that
+equal 1 when summed. The softmax function highlights the difference between the maxi-
+mum and smaller values by increasing this difference. It is used in multi class classification
+to generate a probability distribution over the different outcomes and promote mutual ex-
+clusivity between the different classes.
+The old LNN structure does not include a Softmax
+layer as the output layer. A traditional Softmax layer               A = {01, 0.9}
+would not be effective as the neuron outputs are
+                                                                                e0.1      e0.9
+limited to the range [0, 1]. Figure ?? shows an ex- So f tMax ( A) = { 0.1            ,          }
+ample of the softmax function on probabilities, in-                         e + e0.9 e0.1 + e0.9
+stead of highlight the difference between 0.1 and 0.9                   u {0.29, 0.71}
+the resulting vector has the values closer together.
+Consider the following vector of probabilities P = Figure 5.2: Demonstration of Soft-
+{ p1 , ..., pn } where pi is the probability the given ex- max on probabilities
+ample belongs to class i.
+                      0      p                                                0
+     Then define pi = ∑ ip j , performing this action to generate a vector P where each of the
+                             j
+classes are mutually exclusive. This operation can be thought of as a ”Logical Softmax”.
+Adding a ”Logical Softmax” may guarantee mutual exclusivity of each classes but will it
+cause the network to be less interpretable? Consider that without with no softmax then the
+network outputs directly represent the probabilities that the input vector is class k given
+the parameters. Once the ”Logical Softmax” has been introduced then it becomes less clear
+what the non softmaxed probabilities represent. The softmax introduces a dependency be-
+tween the output neurons of the network which might cause a decrease in intepretability.
+This is a question which will be explored during experimentation with the modified LNN
+architecture.
+                                                   26
+Chapter 6
+Evaluation Of Logical Neural
+Networks
+To evaluate Logical Neural Networks their performance and intepretability are explored. In
+Chapter 2 different methods for evaluating the intepretability of models where presented.
+The method used in this report is ”Application-Grounded Evaluation” [1] which relies on do-
+main experts to assess the intepretability of a model. The two problems MNIST [24] and
+Tic-Tac-Toe [23] will be used in this evaluation.
+    These problems are a suitable choice as their simplicity makes most humans domain ex-
+perts. Tic-Tac-Toe has a simple rule set that is easy to comprehend. MNIST is the problem
+of classifying handwritten digits, a task that is performed on a daily bais by most humans.
+    There are 5 criteria that will be used for this evaluation.
+   1. Performance comparison between the old and new Logical Neural Network Struc-
+       tures.
+   2. Performance comparison between Multi Layer Perceptron Network and Logical Neu-
+       ral Networks.
+   3. Performance comparison between Logical Neural Networks with and without a Log-
+       ical Softmax.
+   4. Comparison of intepretability between MLPNs and new/old LNNs
+   5. Comparison of intepretability between MLPNs (using LIME) and new/old LNNs
+    It was conjectured that AND neurons where not effective for low level feature extrac-
+tion [5]. Throughout this evaluation, AND neurons will be used for this task to determine
+whether the conjecture holds.
+6.1     Performance of Logical Neural Networks
+To evaluate the performance of Logical Neural Networks (LNNs) a number of different con-
+figurations will be trained on the MNIST dataset. Any experiments with an LNN architec-
+ture will be trained with and without an Logical Softmax.
+   1. (OR → AND) Old Architecture: This will consist of 30 hidden OR neurons.
+                                                27
+   2. (OR → AND) Architecture: Same as 1 but with the new LNN architecture
+   3. (OR → AND → AND) Architecture: 60 hidden OR neurons, 30 hidden AND neurons
+   4. (OR) Architecture: Inputs are directly connected to the outputs which have a Noisy-
+      OR acitvation
+   5. (AND) Architecture: Inputs are directly connected to the outputs which have a Noisy-
+      AND acitvation
+   6. (AND) Old Architecture: Inputs are directly connected to the outputs which have a
+      Noisy-AND acitvation, this netowrk is also running on the old archetchure.
+    Sigmoid models will also be run to provide a performance comparison point for the
+Logical Neural Networks.
+Results Each network is trained 30 times to average the results over different initial con-
+ditions. Tables ?? & ?? display the Sigmoid and LNN results retrospectively. Each error rate
+reported is obtained from an unseen test set.
+ Network Config        Error Rate    Error Rate CI      Error Rate (with SM)  Error Rate CI (with SM)
+      60 → 30             0.034       (0.031, 0.038)            0.035               (0.030, 0.040)
+          30              0.046       (0.042, 0.050)            0.045               (0.041, 0.050)
+        N/A               0.085       (0.085, 0.085)            0.084               (0.084, 0.084)
+                     Table 6.1: Results of experiments with Sigmoid models
+     Network Config            Error Rate     Error Rate CI    Error Rate (LSM)  Error Rate CI (LSM)
+    (OR → AND) Old                0.105       (0.098, 0.115)          0.048          (0.043, 0.052)
+      (OR → AND)                  0.088       (0.079, 0.094)          0.042          (0.039, 0.046)
+ (OR → AND → AND)                 0.053       (0.046, 0.060)          0.032          (0.029, 0.036)
+            (OR)                  0.382       (0.381, 0.384)          0.334          (0.331, 0.336)
+           (AND)                  0.137       (0.135, 0.139)          0.076          (0.075, 0.079)
+        (AND) Old                 0.312       (0.311, 0.314)          0.111          (0.109, 0.114)
+            Table 6.2: Results of experiments with Logical Neural Network models
+    The experimental results lead to the following conclusions
+   1. New LNN Architecture Gives Better Performance Than the Old: The confidence intervals
+      for test set performance do not overlap for Architectures (OR → AND) Old and (OR
+      → AND) (without LSM). This can also be observed from Architectures (AND) Old
+      and AND.
+   2. Adding An LSM Improves Performance: Every LNN using the new architecture gets a
+      statistically significant performance increase when a LSM is added.
+   3. It Is Unclear What Provides The Largest Improvement, New Structure or LSM: The exper-
+      iments show that both the new architecture and LSM give a statistically significant
+      improvement in performance. From observing (OR → AND) Old and (OR → AND)
+                                                  28
+        (with LSM) it is possible to see that when a LSM is added then the change in archi-
+        tecture does not introduce an increase in performance. However the opposite is true
+        when comparing the (AND) and (AND) Old networks.
+    4. AND Neurons are Good at Low Level Feature Extraction: The AND network with an LSM
+        has a statistically significant performance increase when compared to the OR network
+        with an LSM or Sigmoid net with no hidden layers.
+6.2      Intepretability of Logical Neural Networks
+There are two cases of intepretability. In the situation where input and outputs are discrete
+then intepretablity becomes Boolean Rule Extraction. The other situation is where the inputs
+are continuous.
+6.2.1     Discrete Case (Rule Extraction)
+To assess the rule extraction of LNNs the Tic Tac Toe [23] problem will be the benchmark.
+This problem involves classifying tic-tac-toe
+endgame boards and determining whether
+’x’ can win . There are 9 categorical attributes,
+representing each cell of the board, each
+attribute can be ’x’ (x has a piece here), ’o’ ( o
+has a piece here) or ’b’ (blank).
+This gives a total of 27 attributes after conver-
+sion to a binary string. There are a total of 958
+instances, 70% of which will be used for train-
+ing, the rest for testing. Using the new LNN
+with the structure described in Figure ?? (us-
+ing 30 hidden OR neurons) is able to achieve
+an error rates displayed in Table ??. Each ex-
+periment is averaged over 30 runs                     Figure 6.1: Network architecture for learn-
+                                                      ing Tic-Tac-Toe
+               Net Error Rate       Net Error Rate CI    Rule Error Rate  Rule Error Rate CI 95%
+  Training          0.0035           (0.0035, 0.0035)          0.0000         (0.0000, 0.0000)
+   Testing          0.0015           (0.0015, 0.0015)          0.0259         (0.0104, 0.0451)
+Table 6.3: Results of experiments with Logical Neural Networks on the Tic Tac Toe problem
+     If instead ANDs are used as the hidden neurons and ORs for the outputs then the LNN
+is able to achieve statistically equivalent performance to the architecture in Figure ??. Table
+?? shows the results from these experiments.
+                                                   29
+              Net Error Rate    Net Error Rate CI    Rule Error Rate     Rule Error Rate CI 95%
+  Training         0.0035        (0.0035, 0.0035)         0.0000             (0.0000, 0.0000)
+   Testing         0.0015        (0.0015, 0.0015)         0.0038               (0.0, 0.0139)
+Table 6.4: Results of experiments with Logical Neural Networks on the Tic Tac Toe problem
+on a AND - OR Network
+     These experiments provide strong evidence against the conjecture stating that ANDs are
+not effective for extracting low level features.
+Evaluation of LNN Rules
+Figure ?? shows a rule taken at random from the AND OR network. This rule is saying that
+if the middle column contains all X’s then X has won. There is redundancy in these rules as
+a cell can only be occupied by either an X, O or nothing.
+                                     A future goal might be to implement a way to build in
+                                     mutual exclusivity of attributes into the network, this
+                                     could result in further simplification of rules.
+                                     The rule extraction algorithm given in Figure 3.8 is an
+                                     electic algorithm. This category describes algorithms
+                                     that examine the network by inspecting each neuron
+                                     but extract rules which represent the network as
+                                     a whole [9]. The algorithm is not portable as it can
+                                     only be applied to networks with the LNN architecture.
+ Figure 6.2: A pictorial ex-         Finally what is the quality of the rules extracted from
+ ample of a rule extracted           LNN? This is measured by the Accuracy, Fedelity, Con-
+ from the AND OR network             sistency and Comprehensibility [8].
+    1. Accurate: As demonstrated experimentally the extracted rules are able to generalise
+       well when presented with unseen examples.
+    2. Fedelity: The experiments show that the rules perform very similar to the network
+       they where extracted from as both have a similar performance on the testing set.
+    3. Consistency: These rule sets are consistent, shown by the low error rate when the
+       neural network is trained from a number of different initial conditions.
+    4. Comprehensibility: The upper limit of the total number of rules is a function of the
+       networks size. The OR AND model obtains a complex set of rules, with a total 35 of the
+       clauses. Whereas the AND OR model only utilizes 11 clauses. The network structure
+       also contributes to the comprehensibility of the rules. For instance each clause in the
+       AND OR rules represent a situation where the rule set is true. Where as in the OR
+       AND model each clause must true.
+6.2.2    Continuous Case
+Chapter 4 discusses three methods for intepreting Logical Normal Form Networks which
+can also be applied to the generalised LNN archetchure. Extracting a continous rule set
+                                               30
+would be to large to put in a report or intepret given MNIST has 784 features. For this
+reason Influence and Partial Influence models will be constructed and presented as images.
+     LNNs with no hidden layer can be intepreted easily by showing pictorial representa-
+tions of Indluence models. Interpreting Multi Layer LNNs will be achieved by constructing
+Partial Influence models and then displaying pictorial representations of the most impor-
+tant features that contribute to the classification of an example as the digit 1. Multi-Layer
+perceptron networks will be visulised by constructing a heat map of the weights.
+No Hidden Layer Networks
+Sigmoid Network In the depictions of weights from a sigmoid network. The blue/red
+represents the negative/positive weights. The neuron which is representative of the classi-
+fication as 0 does resemble the digit it is suppose to detect. The others do not appear to have
+any obvious relation to their digits.
+       Digit 0           Digit 2              Digit 4           Digit 7           Digit 9
+Figures representing the output neurons of a sigmoid neural network with no hidden layers
+AND Network Old Architecture (With and With Out LSM) The images in Figure ?? rep-
+resent how relevant each input feature is towards a positive classification of the digits 0, 2,
+4, 7 and 9. The top and bottom rows represents the relevance for an AND architecture with
+and without LSM retrospectively. The darker pixels represent more relevant features, where
+white is completely irrelevant.
+     The network without an LSM is using the pixels which occur in all representations of
+each digit. Whereas the network with an LSM is using the average filling to achieve its clas-
+sifications. Both models are interpretable as it is possible to understand the logic used in
+their decision making. Each of the models describe the problem in a different way, each un-
+covering distinct information. The model without an LSM shows describes what is common
+between every drawing of that digit. The model with an LSM describes which parts of each
+digit vary the most/least. The benefit of the model with an LSM is that the pictorial repre-
+sentations appear to look more like the the digits which they classify. However the model
+without an LSM has a sparser representation so the model is dependent on less information.
+                                                31
+        Digit 0            Digit 2            Digit 4            Digit 7          Digit 9
+        Digit 0           Digit 2             Digit 4            Digit 7          Digit 9
+Figure 6.19: Figures representing the weighted connections between the inputs and outputs
+in an AND network with the old archetchure. Top row is with an LSM and bottom row is
+with out an LSM
+AND Network (With LSM) The model here is an AND network running on the new
+archtchure (which considers the NOTs of inputs) with an LSM. The new archetchure means
+that each input feature can positively contribute to a classification or negatively contribute
+(i.e. if its present then the classification is less likely). Figure ?? shows the how relevent
+each input feature is with regards to a positive or negative classification for the digits 0, 2,
+4, 7 and 9. The top row of images represent positively weighted inputs and the bottom row
+represents the negatively weighted inputs.
+     The inputs which are positively weighted are the pixels that occur in many of the repre-
+sentations of the digit. Negatively weighted inputs represent the border of the digit, if pixels
+on this border are present then the neuron is less likely to be active. Using the classification
+of 0 as an example, the network does not like pixels in the middle as the centre of a zero
+should be empty. The outer circle represents the border of the average 0, if these pixels are
+present then its less likely to be a zero as most instances of a 0 do not have pixels present
+there.
+        Digit 0            Digit 2            Digit 4            Digit 7          Digit 9
+     Not Digit 0        Not Digit 2        Not Digit 4         Not Digit 7      Not Digit 9
+Figure 6.30: Figures representing the weighted connections between the inputs and outputs
+for an AND network with an LSM. The top and bottom rows represent the positive/negative
+contributions retrospectively.
+                                                 32
+AND Network (With out LSM) Figure 6.2.2 shows the positive/negative contributions to
+classification of the digits 0, 2, 4, 7 and 9. These features display the same patterns as the
+AND model with an LSM (Figure ??) however the representations here are less noisy and
+have harder boundaries.
+        Digit 0           Digit 2             Digit 4          Digit 7          Digit 9
+    Not Digit 0        Not Digit 2         Not Digit 4       Not Digit 7      Not Digit 9
+Figure 6.41: The top/bottom rows of images represent the positively/negatively weighted
+input features retrospectively
+Conclusion of Intepretability for LNNs with No Hidden Layer The logical Softmax in-
+troduces more noise into the weights but does not diminish the intepretability of the system.
+Using the new structure (i.e. adding nots of inputs) appears to change the means of which
+the LNN classifies the digits. Without NOTs the network positively weight the pixels which
+make-up the filling of the digits. On the other hand when the nots are added the network
+negatively weights pixels sitting just outside the border of the average digit.
+    These experiments provide evidence towards Logical Neural Networks being more in-
+terpretable than MLPNs. While it is possible to observe some of the MLPNs decision making
+process, the LNN is clearer and simpler leading to a more interpretable model.
+Single Hidden Layer Networks
+To intepret these multi layer networks Partial Influence models will be constructed and pic-
+torial representations of the most important features that contrubute to classification as a
+one will be displayed.
+Sigmoid Network The features in Figure ?? positively contribute to the classification as a
+1. These do not appear to have any clear relation to the digit 1. The features in Figure ??
+again appear to not have any relation ship with the digit 1.
+                                                33
+      Figure 6.42: Features that positively contribute to the classification as a 1.
+       Figure 6.43: Features that negatively contribute to the classification of 1
+OR → AND Network Old Structure
+(With Out LSM) It is not immediately
+apparent how the features in Figure ??
+make up the digit 1.
+Each hidden feature is an OR of its in-
+puts, as such only one of the dark pix-
+els needs to be active for the neuron to be
+on. The first and last could be the stem
+of a 1 where as the middle one contains
+a dark bar at the bottom which could be
+the base.                                            Figure 6.44: Features positively con-
+OR → AND Network Old Structure                       tributing to classification as a 1 for the OR
+(With LSM) Figure ?? shows hidden                    → AND Network
+features extracted from an OR AND Net-
+work. These features are not clearly rep-
+resentative of a 1. The weighting maps
+show that the features generally do not
+place a lot of emphasis on any particular
+inputs.
+                                           34
+Figure 6.45: Features positively contributing to the classification of 1 for the OR → AND
+Network Old Structure (With LSM)
+   OR → AND Network
+   (With Out LSM) The im-
+   ages in Figure ?? represent
+   the hidden features which
+   positively contribute to the
+   classification of an example
+   as the digit 1. The top and
+   bottom rows correspond
+   to the input features that
+   positively/negatively con-
+   tribute to each neurons
+   activation. It is not imme-           Figure 6.46: Features positively contributing to classifi-
+   diately obvious what the              cation as a 1 for OR → AND Network (With Out LSM)
+   features shown in Figure ??
+   represent.
+   Figure ?? shows the single feature which if
+   present then the classification is less likely
+   to be the digit 1. This feature appears to be
+   highly active if the pixels lying outside an
+   area which looks like the average 1 shape.
+   While this model is difficult to interpret it
+   does provide more information than previous
+   OR AND models using the old LNN architec-
+   ture.
+   OR → AND (With LSM) Figure ?? show the
+   positive features for an OR AND model with
+   an LSM. The features extracted from this net-            Figure 6.47: Features contributing to
+   work do not appear to correspond to a 1, not             classification not being 1 for OR →
+   in a way which is immediately interpretable.             AND Network (With Out LSM)
+                                             35
+The presence of the features represented
+in Figure ?? mean the classification is less
+likely to be a 1. These features do not
+appear to relate to the digit 1, but rather
+pixels that would not usually occur in
+the digit 1.
+                                               Figure 6.49: Features positively con-
+                                               tributing to the classification being 1 for
+                                               OR → AND (With LSM)
+Figure 6.48: Features contributing to the
+classification not being 1 for OR → AND
+(With LSM)
+AND → OR Model (With Out LSM)
+Figure ?? shows the single feature which
+positively contributes to the classification
+as the digit 1. This feature has learnt to
+positively identify the stem of a 1 and
+negatively identify .
+This network has a small number of
+features associated with each classifi-
+cation. In terms of the classifying the
+digit 1 there is only 1 hidden features.
+                                               Figure 6.50: Features positively con-
+This feature appears to classify a 1 by
+                                               tributing to classification as 1 for AND →
+positively liking the stem of a 1 and dis-
+                                               OR Model (With Out LSM)
+liking the anything outside the average 1.
+AND → OR Model (With LSM) Simi-
+larly to the AND OR Model with out the
+LSM this model appears to positively like
+inputs on the stem of a 1 and dislike any
+pixel outside the average border of a 1.
+These features are shown in Figure ??
+                                            36
+    Conclusion of Intepretability for LNNs
+    with No Hidden Layer The results of
+    the experiments show that in the context
+    of multi layer adding an LSM introduces
+    more noise into the feature maps. And
+    similarly to before the sigmoid weights
+    do not appear to relate to digit 1 in any
+    meaningful way.
+                                                             Figure 6.51: Features contributing to clas-
+                                                             sification not being 1 for AND → OR
+                                                             Model (With Out LSM)
+6.2.3   Results of Intepretability Experiments
+From the above experiments and discussions the following conclusions can be made
+   1. Rules Extracted are Intepretable: The Tic-Tac-Toe problem experiments showed that the
+      rules extracted from LNNs where interpretable.
+   2. Adding Nots Improves Intepretability: Using the new structure with nots allows the net-
+      work to place a greater emphasis on the presence or absence of various pixels. With-
+      out the Nots not many of inputs are of great importance, rather many have a relatively
+      small relevance.
+   3. Adding an Logical Soft Max does not hinder the intepretability (on the new architecture): By
+      comparing the two different network architectures with and without an LSM it is pos-
+      sible to see that the intepretability is not directly effected and the features representing
+      the classification of the digit 1 are not significantly changed.
+   4. Intepretability of Network is Heavily Dependent on Structure: As shown through the pre-
+      vious examples the OR → AND networks harder to interpret than the AND → OR
+      architecture.
+6.3    Comparason Between LNNs and Exsisting Methods
+6.3.1   Comparison between LNN Intepretability and LIME
+The aim of LIME is to build trust in the model by explaining how a specific predictions are
+arrived at. LIME is also model agnostic, so it is a highly portable algorithm. In compara-
+son, LNN intepretability comes down to directly identifying what input features contribute
+to each output neuron being active. Figure 7 shows the LIME algorythm applied to three
+different ANNs, two LNNs and one MLPN. Each image shows what features are important
+in classifiying the example as a 1.
+                                                 37
+Figure 6.52: Features contributing to classification not being 1 for AND → OR Model (With
+Out LSM)
+    The LIME filters out the features which have a low importance. Figure ?? says that for
+the three different classifiers the same features are most important to correctly classifiying
+this instance of a 1.
+6.3.2   Comparason Between LNNs and Fuzzy Logic Networks
+The paper presenting Fuzzy Logic Networks (FLN) evaluates their peformance on a number
+of benchmark problems including the Vehicle [23] dataset. The Vehicle problem concerns at-
+tempting to classify a given silhouette as one of four vehicles types. The data set consists of
+18 features extracted from car silhoute images.
+             Net Error Rate      Net Error Rate CI   Rule Error Rate   Rule Error Rate CI 95%
+ Training          0.101           (0.079, 0.132)         0.649              (0.380, 0.762)
+  Testing          0.173           (0.130, 0.224)         0.648              (0.398, 0.763)
+Table 6.5: Results of experiments with Logical Neural Networks on the Vehicle Problem
+using an OR → OR → AND network archetchure
+    Tabel ?? show the error rates of OR → OR → AND LNN on the Vehicle problem. The
+LNN network achieved an average error rate of –& on a testing set compared to 28.71% error
+rate for the FLN. The difference between the LNN and rule error rates is stisticaly signifi-
+cant. While the rules extracted from an LNN peform worse than the network its self they
+have comparable peformance to rules taken from a FLN. An LNN rule set obtains 64.8% av-
+erage error rate on the test set where as the FLN rules achieve an average error rate of 67.8%.
+    One advantage that the FLN has over LNNs is that the rule sets are more compact and
+thus are simpler to intepret. This experement would sugest that FLN is better than LNNs
+as the rule sets have similar peformance but FLN rules are simpler. Future work on LNNs
+might aim to implement an algorythm which can automatically simplyfy the extracted rules,
+this could lead to simpler expressions.
+6.4     Summary Of Logical Neural Network Evaluation
+Through the experiments carried out the following observations can be made. The new
+LNN structure (adding NOTs) results with a statistically significant increase in accuracy
+                                                38
+with some network architectures. The new LNN structure achieved statistically equivalent
+or better performance than the MLPN nets with an equivalent number of hidden neuron-
+s/layers. For any LNN (new structure or old) adding a Logical Softmax improved perfor-
+mance by a statistically significant margin. Any LNN (new or old structure) was more inter-
+pretable than the corresponding MLPN. These experiments have therefore shown that the
+LNN networks have statistically equivalent performance to MLPNs on the MNIST dataset.
+Evidence has also been provided in support of LNNs have a more interpretable model than
+MLPNs.
+    The LIME algorythm is more powerful than LNN Intepretability in the sense that it is
+model agnostic. On the other hand Intepreting LNNs provides a more complete picture of
+the models decison making process. Comparing LNNs and Fuzzy Logic Networks on the
+Vehicles problem showed that the LNN error rate was lower. However, ultimately a more
+interesting comparason is how the rule sets peform on a test set. Both LNN and FLN yield
+rules that obtain a comparable error rate the only difference between the two being FLN
+rules are simpler.
+                                              39
+Chapter 7
+Application to Auto Encoders
+This chapter demonstrates the flexibility of the LNN architecture by applying them in the
+context of Auto Encoders.
+    Auto encoders [25] [26] are a network architecture trained with unsupervised learning
+for a purpose of learning an encoding of the data. An application learning a new encoding
+is dimensionality reduction. The aim is to take the input to some reduced feature space and
+then from this feature space back to the original input with the smallest error. The case where
+there is one linear layer doing the encoding and decoding is called Linear Autoencoder.
+Logical Autoencoders are proposed (Definition 7.0.1) as an alternative means to lower the
+dimensions of a dataset.
+Definition 7.0.1. A Logical Autoencoder is an Autoencoder where the encoder and decoder
+are LNNs
+    Linear, Sigmoid and Logical Autoencoders will be compared. The network structure
+will be the same in all cases, only differing in the activations used. Experiments carried
+out will compress the MNIST feature space (784 dimensions) into 20. The accuracy and
+intepretability of the features will be explored. Each model was trained for 30 epochs
+Result of Linear Autoencoder (LAE) A linear auto encoder obtained an MSE of 21.34 on
+the training and 21.25 on the test data. Figure ?? shows a visualisation of some features
+learnt by the Linear Auto Encoder
+Figure 7.1: Visualisations of 5 features learnt by the Linear Auto Encoder. The red colours
+correspond to positive weights and the blue to negative
+Result of Sigmoid Auto Encoder (SAE) A Sigmoid Autoencoder achieved an MSE of 14.43
+on the training data and 14.25 on the testing data. Figure ?? show the visual representations
+of the features learnt.
+                                               40
+Figure 7.2: Visualisations of 5 features learnt by the Sigmoid Auto Encoder. The red colours
+correspond to positive weights and the blue to negative
+Result of Logical Auto Encoder (LoAE) A logical auto encoder, consisting of a single AND
+layer for both the encoder and decoder, was able to compress the feature space to 20 dimen-
+sions and achieve a Mean Square Error (MSE) of 20.55 on the training set and 20.22 on the
+testing set. Figure ?? shows five features learnt by the AND-Logical Autoencoder. Each im-
+age in the top row represents the input features which positively contribute to the activation.
+The bottom row correspond to the inputs which negatively contribute to each activation.
+Figure 7.3: Visualisations of 5 features learnt by the Logical Auto Encoder. Darker regions
+correspond to pixels which are relevant.
+Discussion While the results show that the Sigmoid Auto Encoder (AE) outperforms the
+Logical one this is an example of how Logical Neural Networks can be applied to different
+situations in Machine Learning where the goals are different from classification. Comparing
+Figures ?? & ?? & ?? show that the Logical Autoencoder takes a different approach to de-
+composing the MNIST dataset, where the Sigmoid and Linear took to be similar. Features
+learnt by the Logical AE are sparse and possible interpretable as each one can be viewed as
+a logical AND of the input features.
+                                               41
+Chapter 8
+Conclusion
+The growing number of situations where Artificial Neural Networks (ANNs) are used is
+driving the development of interpretable models. Being able to defend an ANNs decision
+can protect users from un safe or ethically biased systems and protect companies utilizing
+such systems from breaching EU regulations.
+    A study of Logical Normal Form Networks developed algorithms initialize network
+weights (leading to good learning conditions) and extract rules from trained models. Through
+experimentation such networks where demonstrated to have statistically equivalent perfor-
+mance and generalization to Multi-Layer Perceptron Networks. Training LNFNs on the
+Lenses and Iris data sets demonstrated their ability to learn multi class classification prob-
+lems and give insight into the data from their interpretable trained representation.
+    The foundational work developed the tools to derive modifications for the LNN struc-
+ture giving them statistically equivalent performance to standard Multi-Layer Perceptron
+Networks and improving the intepretability of the leant models. Consequently this report
+has shown that LNNs are a suitable alternative to Multi Layer Perceptron Networks, ob-
+taining a simpler and more interpretable model without sacrificing accuracy. By observing
+the weights of LNNs trained over the MNIST data set it was possible to determine what
+input features contributed to each classification and verify that the logic learnt was sensible.
+LNNs where also shown to have comparable peformance to recently developed network
+archetchures which take a similar approach to what was done here. Beyond applications
+to classification tasks Logical Neural Networks where applied to Auto Encoders. While the
+performance of Logical Auto Encoders was worse than standard Sigmoid Auto Encoders it
+demonstrates the flexibility of LNNs and the range of situations where they can be applied.
+    Perhaps the biggest limitation of LNNs comes down to interpreting multi layer logical
+neural networks. Because of this limitation any future work which can develop better ways
+to interpret these models would increase the power of LNNs. These future studies might
+also focus on establishing the model intepreability in a more scientific manner. On a larger
+number of problem domains and individuals who have the domain knowledge to assess
+how interpretable the model is.
+    This report has provided a formal foundation for Logical Neural Networks and shown
+their ability to not only learn accurate but also interpretable models. While limitations have
+been identified this does not diminish potential of LNNs but rather provides avenues to
+increase their application.
+                                                42
+Bibliography
+ [1] F. Doshi-Velez and B. Kim, “Towards a rigorous science of interpretable machine learn-
+     ing,” 2017.
+ [2] A. Caliskan, J. J. Bryson, and A. Narayanan, “Semantics derived automatically from
+     language corpora contain human-like biases,” Science, vol. 356, no. 6334, pp. 183–186,
+     2017.
+ [3] C. of European Union, “General data protection regulation,” 2016.
+ [4] B. Goodman and S. Flaxman, “European union regulations on algorithmic decision-
+     making and a” right to explanation”,” arXiv preprint arXiv:1606.08813, 2016.
+ [5] J. Laurenson, “Learning logical activations in neural networks,” 2016.
+ [6] D. Amodei, C. Olah, J. Steinhardt, P. Christiano, J. Schulman, and D. Mané, “Concrete
+     problems in ai safety,” arXiv preprint arXiv:1606.06565, 2016.
+ [7] S. Ruggieri, D. Pedreschi, and F. Turini, “Data mining for discrimination discovery,”
+     ACM Transactions on Knowledge Discovery from Data (TKDD), vol. 4, no. 2, p. 9, 2010.
+ [8] R. Andrews, J. Diederich, and A. B. Tickle, “Survey and critique of techniques for ex-
+     tracting rules from trained artificial neural networks,” Knowledge-based systems, vol. 8,
+     no. 6, pp. 373–389, 1995.
+ [9] A. B. Tickle, R. Andrews, M. Golea, and J. Diederich, “The truth will come to light: Di-
+     rections and challenges in extracting the knowledge embedded within trained artificial
+     neural networks,” IEEE Transactions on Neural Networks, vol. 9, no. 6, pp. 1057–1068,
+     1998.
+[10] M. T. Ribeiro, S. Singh, and C. Guestrin, “Why should i trust you?: Explaining the
+     predictions of any classifier,” in Proceedings of the 22nd ACM SIGKDD International Con-
+     ference on Knowledge Discovery and Data Mining, pp. 1135–1144, ACM, 2016.
+[11] S. Russell, P. Norvig, and A. Intelligence, “A modern approach,” Artificial Intelligence.
+     Prentice-Hall, Egnlewood Cliffs, vol. 25, p. 27, 1995.
+[12] R. E. Neapolitan et al., Learning bayesian networks, vol. 38. Pearson Prentice Hall Upper
+     Saddle River, NJ, 2004.
+[13] R. J. Williams, “The logic of activation functions,” Parallel distributed processing: Explo-
+     rations in the microstructure of cognition, vol. 1, pp. 423–443, 1986.
+[14] C. Herrmann and A. Thier, “Backpropagation for neural dnf-and cnf-networks,” Knowl-
+     edge Representation in Neural Networks, S, pp. 63–72, 1996.
+                                                  43
+[15] L. B. Godfrey and M. S. Gashler, “A parameterized activation function for learning
+     fuzzy logic operations in deep neural networks,” arXiv preprint arXiv:1708.08557, 2017.
+[16] X. Glorot and Y. Bengio, “Understanding the difficulty of training deep feedforward
+     neural networks,” in Proceedings of the Thirteenth International Conference on Artificial
+     Intelligence and Statistics, pp. 249–256, 2010.
+[17] S. Ruder, “An overview of gradient descent optimization algorithms,” arXiv preprint
+     arXiv:1609.04747, 2016.
+[18] D. Mishkin and J. Matas, “All you need is a good init,” arXiv preprint arXiv:1511.06422,
+     2015.
+[19] K. He, X. Zhang, S. Ren, and J. Sun, “Delving deep into rectifiers: Surpassing human-
+     level performance on imagenet classification,” in Proceedings of the IEEE international
+     conference on computer vision, pp. 1026–1034, 2015.
+[20] S. K. Kumar, “On weight initialization in deep neural networks,” arXiv preprint
+     arXiv:1704.08863, 2017.
+[21] N. Balakrishnan, Continuous multivariate distributions. Wiley Online Library, 2006.
+[22] D. Kingma and J. Ba, “Adam: A method for stochastic optimization,” arXiv preprint
+     arXiv:1412.6980, 2014.
+[23] M. Lichman, “UCI machine learning repository,” 2013.
+[24] Y. Lecun and C. Cortes, “The MNIST database of handwritten digits,”
+[25] P. Baldi and Z. Lu, “Complex-valued autoencoders,” Neural Networks, vol. 33, pp. 136–
+     147, 2012.
+[26] G. E. Hinton and R. R. Salakhutdinov, “Reducing the dimensionality of data with neu-
+     ral networks,” science, vol. 313, no. 5786, pp. 504–507, 2006.
+                                                 44
+Appendices
+    45
+Appendix A
+Proofs
+A.1         Proof Of Theorem 3.0.1
+Proof. Theorem 3.0.1 Let T be the truth table for a boolean function B. The atoms of B are
+x1 , ..., xn . T has exactly 2n rows. Construct an LNFN, L, in the following manner. L has 2n
+hidden units and by definition L has one output unit. The inputs to L are i1 , ..., i2n where
+i1 , i2 represent x1 , ¬ x1 and so on. Let eb = 1 for every neuron.
+      Let hk denote hidden unit k. hk has the weights ek,1 , ..., ek,2n , where ek,m represents input
+im ’s relevance to the output of hk . Similarly the output unit o has weights μ1 , .., μ2n where μm
+represents the relevance of hm to the output of o.
+      Assume L is a DNF Network. Starting from row one of the table T, to row 2n . If row a
+corresponds to False then set μ a = 1 (i.e. hidden node a is irrelevant), otherwise the row
+corresponds to True, then μ a = Z, where Z is a value close to 0 (any weight for a Noisy
+neuron cant be exactly 0). For each ea,m if the corresponding literal occurs in row a of the
+truth table then ea,m = Z other wise ea,m = 1.
+      Claim: For some assignment to the atoms of B, x1 = v1 , ..., xn = vn where vi ∈ {0, 1}.
+Then L(i1 , ..., i2n ) = B( x1 , ..., xn ).
+      Assume B( x1 , ..., xn ) = 1 for the assignment x1 = v1 , ..., xn = vn corresponding to row a
+of T. Then if ik is not considered in row a then ea,k = 1 and if it is present then ik = 1. The
+output of h a is given by
+                                                 = ∏ e1a,m  −im
+                                                 = Z ∑ i k =1 (1 − i k )
+                                                 = Z0
+Demonstrating that limZ→0 Out(h a ) = limZ→0 Z0 = 1. Consider the activation of o, it is
+known that μ a = Z consequently limZ→0 μha a = limZ→0 Z1 = 0, therefore
+                                                                       2n
+                                            lim Out(o ) = 1 −
+                                            Z →0
+                                                                      ∏ μmh m
+                                                                                                 (A.1)
+                                                                    m =1
+                                                        = 1−0 = 1                                (A.2)
+                                                        46
+     Therefore L(i1 , ..., i2n ) = 1. Alternatively if B( x1 , ..., xn ) = 0 then no hidden neuron
+will have activation 1, this can be demonstrated by considering that any relevant neuron
+                                                                                                   im
+(i.e. corresponding μ 6= 1) will have some input weight pair of im em such that em                    = 0.
+                                                    hm
+Consequently it can be said that for all m μm           = μ0m = 1, therefore the output unit will give
+0, as required.
+     Now assume that L is a CNF Network. The weights can be assigned in the same manner
+as before, except rather than considering the rows that correspond to True the negation of
+the rows corresponding to False are used. If a row a corresponds to True then μ a = 1, other-
+wise μ a = Z and for any literal present in the row then the input to L which corresponds to
+the negated literal has weight Z, all other weights are 1.
+     Claim: For some assignment to the atoms of B, x1 = v1 , ..., xn = vn where vi ∈ {0, 1}.
+Then L(i1 , ..., i2n ) = B( x1 , ..., xn ).
+     In this configuration it must be shown that every hidden neuron fires when the network
+is presented with a variable assignment which corresponds to True and there is always at
+least one neuron which does not fire when the assignment corresponds to False. Assume for
+a contradiction that for a given assignment B( x1 , ..., xn ) = 1 but L(i1 , ..., i2n ) = 0. Then there
+is at least one hidden neuron which does not fire. Let h a be such a neuron. Consequently for
+any input weight combination which is relevant eia,m          m
+                                                                 = 1, so im = 0 for any relevant input.
+Let ir1 , ..., irk be the relevant inputs then ir1 ∨ ... ∨ irk = False, so ¬(¬ir1 ∧ ... ∧ ¬irk ) = False, a
+contradiction as then B( x1 , ..., xn ) would be False.
+     Now assume for a contradiction B( x1 , ..., xn ) = 0 but L(i1 , ..., i2n ) = 1. Then there ex-
+ists some h a with output 1 where it should be 0. Consequently there exists at least one
+input/weight pair with eia,m        m
+                                         = 1 that should be 0. Let ir1 , ..., irk be all the relevant in-
+puts, at least one relevant input is present ir . Consequently ir1 ∨ ... ∨ irk = True, therefore
+¬(¬ir1 ∧ ... ∧ ¬irk ) = True, a contradiction as then B( x1 , ..., xn ) is True.
+                                                     47

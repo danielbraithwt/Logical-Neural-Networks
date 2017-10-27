@@ -66,7 +66,7 @@ Consider a Bayesian Network consisting of a node $D$ with parents $S_1,..., S_n$
 \end{figure}
 \end{minipage}
 
-This relationship is binary but there might be uncertainly as to whether each $S_i$ influences $D$. Let $\epsilon_i$ be the uncertainty that $S_i$ influence $D$. If $\epsilon_i = 0$ then parent $i$ influences the child, otherwise if $\epsilon_i = 1$ it does not. Therefore $P(D = 1| S_1 = 1, , S_n = 1)$ can be expressed as Equation \ref{equ:noisy-or-relation}. Given all the parents are 1, if the child is influenced by at least one of its parents then $\prod^n_{i=1} \epsilon_i = 0$ and D is 1. On the other hand if it is not influenced by any of its parents then $\prod^n_{i=1} \epsilon_i = 1$ so D is 0.
+This relationship is binary but there might be uncertainly as to whether each $S_i$ influences $D$. Let $\epsilon_i$ be the probability that if $S_i = 1$ then $D = 0$, i.e. $P(D = 0|S_i = 1) = \epsilon_i$. Then $P(D = 0 | S_i = 1\ \forall i) = P(D = 0 | S_1 = 1) \cdot \cdot \cdot P(D = 0 | S_n = 1) = \prod_{i=1}^{n} \epsilon_i$. Therefore $P(D = 1| S_1 = 1, , S_n = 1)$ can be expressed as Equation \ref{equ:noisy-or-relation}.
 
 \begin{align}
 P(D = 1 | S_1 = 1, ..., S_n = 1) = 1 - \prod^n_{i=1} \epsilon_i
@@ -110,7 +110,7 @@ f(0,0) &= 0^0 = 1\\
 \label{fig:f-check-implies}
 \end{figure}
 
-This is not a uniquic solution but it has a property which becomes convenient later on, specifically $\log(f) = \log(\epsilon^x) = x \cdot \log(\epsilon)$.
+This is not a unique solution but it has a property which becomes convenient later on, specifically $\log(f) = \log(\epsilon^x) = x \cdot \log(\epsilon)$.
 
 \begin{definition}
 	A \textbf{Noisy-OR} Neuron has weights $\epsilon_1, ..., \epsilon_n \in (0,1]$ which represent the uncertainty that corresponding inputs $x_1, ..., x_n \in [0,1]$ influence the output. The activation of a Noisy-OR Neurons is given in Equation \ref{equ:noisy-or-activation-1}.
@@ -121,6 +121,8 @@ This is not a uniquic solution but it has a property which becomes convenient la
 	\end{align}
 \end{definition}
 
+Consider that the Noisy-OR activation just defined is a boolean like OR function. How can Equation \ref{equ:noisy-or-activation-1} be transformed to give a Noisy-AND activation which is boolean like. From logic it is known that $a \land b = \lnot (\lnot a \lor \lnot b)$. Considering that $f_{NOT}(a) = 1 - a$ is a boolean like NOT function then $f_{AND}(x_1, ..., x_n) = f_{NOT}(f_{OR}(f_{NOT}(x_1), ..., f_{NOT}(x_1)))$. Using this as intuition the Noisy-OR activation can be converted into a Noisy-AND.
+
 \begin{definition}
 	A \textbf{Noisy-AND} Neuron has weights $\epsilon_1, ..., \epsilon_n \in (0, 1]$ which represent the uncertainty that corresponding inputs $x_1, ..., x_n \in [0,1]$ influence the output. The activation of a Noisy-AND Neurons is given in Equation \ref{equ:noisy-and-activation-1}
 	
@@ -130,7 +132,6 @@ This is not a uniquic solution but it has a property which becomes convenient la
 	\end{align}
 \end{definition}
 
-Both these parametrisations reduce to discrete logic gates when there is no noise, i.e. $\epsilon_i = 0$ for all $i$.\\
 The noisy neurons are the building blocks for the two network architectures present in this report. Without an understanding of these concepts it would be difficult to understand the motivations for the solution developed.
 
 \section{Logical Normal Form Networks}
@@ -169,7 +170,7 @@ ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Net
 
 
 \section{Learning Fuzzy Logic Operations in Deep Neural Networks}
-A paper published in 2017 \cite{godfrey2017parameterized} aims to combine Deep Learning and Fuzzy Logic to create artificial neural networks which can be trained using back propagation and be more interpretable.  They propose a single activation which can learn to perform a number of different fuzzy logic operations. The result of this paper is a neural network architecture that can perform well as a classifier but also yield a model from which fuzzy rules can be extracted. The Fuzzy Logic networks where compared against standard deep neural networks using a tanh activation function. In this comparison they where found to have 
+A paper published in September 2017 \cite{godfrey2017parameterized} aims to combine Deep Learning and Fuzzy Logic to create artificial neural networks which can be trained using back propagation and be more interpretable.  They propose a single activation which can learn to perform a number of different fuzzy logic operations. The result of this paper is a neural network architecture that can perform well as a classifier but also yield a model from which fuzzy rules can be extracted. The Fuzzy Logic networks where compared against standard deep neural networks using a tanh activation function. In this comparison they where found to have 
 
 Fuzzy Logic Networks are a different approach to solving the problem outlined in this report. As such will be an interesting comparison point for the solution developed here. Does the solution presented here have comparable performance and intepretability? 
 

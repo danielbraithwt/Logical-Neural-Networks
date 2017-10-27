@@ -103,7 +103,7 @@ Before these networks can be trained a number of choices must be made. These are
 	\item \textit{Batch Size:} What size should each batch be when training these networks.
 \end{enumerate}
 
-\subsection{Weight Initialization}
+\subsection{Weight Initialization} \label{subsec:weight-initlization}
 Poor weight initialization leads to slower or poor convergence \cite{mishkin2015all}. Weight initialization algorithms can not be universally applied to different activations. A method derived for MLPNs was shown to be ineffective for networks using other activations \cite{he2015delving}.
 
 \paragraph{Deriving a Distribution For The Weights}
@@ -269,7 +269,7 @@ The ADAM Optimizer \cite{kingma2014adam} is the learning algorithm which will be
 The batch size will be fixed to one. Experimental results from training an LNFN with a batch size of 1 converged faster. 
 
 \section{LNF Network Performance}
-Preliminary testing showed that LNFN's are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. How do LNFNs perform against standard MLPNs which are known to be universal function approximators? Two different MLPNs will be used as a benchmark
+Preliminary testing initially gave poor performance on the simplest of logic gates. After implementing the weight initialization algorithm (derived in Section \ref{subsec:weight-initlization}) the results became promising. They showed that LNFN's are able to learn good classifiers on boolean gates, i.e. NOT, AND, NOR, NAND, XOR and Implies. How do LNFNs perform against standard MLPNs which are known to be universal function approximators? Two different MLPNs will be used as a benchmark
 
 \begin{enumerate}
 	\item One will have the same configuration as the LNFNs, i.e. $2^n$ hidden neurons. \label{lnfn-peformance:mlpn-arch-1}
@@ -487,7 +487,7 @@ How about the case where the feature range is not confined to $[0,1]$. An option
 Another consideration to make is, how can trained LNFN models be interpreted if the features are continuous? When the weights are binary then a Noisy neuron can be considered as a logical gate of its inputs with $\epsilon \approxeq 0$. The weights in a trained LNFN do not converge to 0 or 1 when the input features are continuous so a more general method to interpret LNFNs is needed.
 
 \paragraph{Influence Model}
-One potential way to interpret LNFNs would be to compute the influence each input feature has on the output neurons, this is defined to be an \textbf{Influence Model}.  The weights for a Noisy neuron directly correspond to the influence each input has on the neuron's output. Consequently it is a trivial task to find an Influence Model for describing how each input feature affects the hidden layer outputs, this is just the weights of each hidden neuron. Consider Figure \ref{fig:network-example}  and the problem computing an Influnce Model describing the influence each $x_i$ has on the output of some $o_j$.
+One potential way to interpret LNFNs would be to compute the influence each input feature has on the output neurons. This is named an \textbf{Influence Model}.  The weights for a Noisy neuron directly correspond to the influence each input has on the neuron's output. 
 
 \begin{figure}[H]
 	\centering
@@ -500,12 +500,7 @@ One potential way to interpret LNFNs would be to compute the influence each inpu
 	\hspace{1px}
 	\begin{minipage}[t]{0.45\textwidth}
 		\vspace{2px}
-		 In the following computations $\epsilon_i^{h_j}$ is the ith $\epsilon$ for neuron $h_j$. Assume all activations are Noisy-OR's, then the activation of $o_j$ is $1 - \prod^m_{k=1} (\epsilon_k^{o_j})^{h_k}$ and the activation of some $h_k$ is $1 - \prod^n_{b=1} (\epsilon_b^{h_k})^{x_b}$. The aim is therefore to find an $(\epsilon^{'}_i)$ that stasfies Equation \ref{equ:interpetation-across-layers}.
-	
-		\begin{align}
-			(\epsilon^{'}_i)^{x_i} = \prod_{k = 1}^{m} (\epsilon^{o_j}_k)^{\prod_{b = 1}^{n} (\epsilon^{h_k}_b)^{x_b}}
-			\label{equ:interpetation-across-layers}
-		\end{align}
+		Consequently it is a trivial task to find an Influence Model for describing how each input feature affects the hidden layer outputs, this is just the weights of each hidden neuron. Consider Figure \ref{fig:network-example}  and the problem computing an Influence Model describing the influence each $x_i$ has on the output of some $o_j$. The activation of each $h_j$ is what influences the output layer. However each $h_j$ is influenced not only by the $x_i$ of interest but also all the others.
 	\end{minipage}
 	\hfill
 \end{figure}
@@ -516,29 +511,36 @@ This new $\epsilon^{'}_i$ is dependent on all the other $x$'s, not just the $x_i
 While it is not obvious how to compute an Influence Model describing a LNFN entirely it is trivial to compute one describing the influence between input features and the hidden layer output. Using this Partial Influence Model can describe the the hidden neurons in terms of the input features. The weights belonging to each output neuron could then be used to find the most important hidden neurons.
 
 \paragraph{Continuous Rules}
-Another way to interpret LNFNs in a continuous domain is to extract continuous rules. A threshold will be set, any input with a weight below the threshold will be considered important. Consequently each neuron will be considered a function of its inputs that have corosopnding weight less than or equal to a given threshold $t$. The same rule extraction algorithm (given in Figure \ref{alg:rule-extraction}) can therefore be used in both the discrete and continuous case if line 6 is adjusted to \textit{relvHidden = [hw[i] where ow[i] $\leq t$]}. The weights of all features will be truncated to 0 as if the weights where kept then it is essentially still an LNN with some connections removed. The continuous rules can be applied by using the Noisy activations with each $\epsilon \approxeq 0$. A potential issue with this method is that the less important features are removed after the threshold is applied, this might result in more incorrect classifications by the rules. A smaller threshold will lead to simpler rules with perhaps a higher error rate where as a larger threshold will give more complex rules with a possibly higher accuracy. This process also discards the true $\epsilon$'s which could potentially effect the accuracy of the rules.
+Another way to interpret LNFNs in a continuous domain is to extract continuous rules. A threshold will be set, any input with a weight below the threshold will be considered important. Consequently each neuron will be considered a function of its inputs that have corosopnding weight less than or equal to a given threshold $t$. A potential issue with this method is that the less important features are removed after the threshold is applied, this might result in more incorrect classifications by the rules. A smaller threshold will lead to simpler rules with perhaps a higher error rate where as a larger threshold will give more complex rules with a possibly higher accuracy. This process also discards the true $\epsilon$'s which could potentially effect the accuracy of the rules.
 
 \subsection{Application To Iris Problem}
 
 
-The Iris data set \cite{Lichman:2013} is the problem of classifying a plant as one of three classes. Each example consists of four features, all are measurements taken from the plant. All features are in centimetres and not confined to the range $[0, 1]$. Table \ref{tab:iris-network-peformance-comp} gives the results of training the Normalised Iris problem on LNF networks. The results show that while the performance can vary a lot it is possible for both the CNF and DNF networks to obtain 100\% accuracy.
+The Iris data set \cite{Lichman:2013} is the problem of classifying a plant as one of three classes. Each example consists of four features, all are measurements taken from the plant.  100\% accuracy.
 
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{| c | c | c |}
-			\hline
-			& Error Rate & Error Rate CI (95\%) \\
-			\hline
-			\hline
-			CNF Network & 0.027 & (0.000, 0.111) \\
-			\hline
-			DNF Network & 0.066 & (0.000, 0.156) \\
-			\hline
-		\end{tabular}
-	\end{center}
-	\caption{LNFN performance on an Iris problem testing set}
-	\label{tab:iris-network-peformance-comp}
-\end{table}
+\noindent
+\begin{minipage}[t]{0.35\textwidth}
+	All features are in centimetres and not confined to the range $[0, 1]$. Table \ref{tab:iris-network-peformance-comp} gives the results of training the Normalised Iris problem on LNF networks. The results show that while the performance can vary a lot it is possible for both the CNF and DNF networks to obtain.\\
+\end{minipage}
+\hspace{0.05\textwidth}
+\begin{minipage}[t]{0.50\textwidth}
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{| c | c | c |}
+				\hline
+				& Error Rate & Error Rate CI (95\%) \\
+				\hline
+				\hline
+				CNF Network & 0.027 & (0.000, 0.111) \\
+				\hline
+				DNF Network & 0.066 & (0.000, 0.156) \\
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{LNFN performance on an Iris problem testing set}
+		\label{tab:iris-network-peformance-comp}
+	\end{table}
+\end{minipage}
 
 If attempting to interpret these models meaning must be assigned to each of the normalised features. Informally, an atom is "truer" if the un-normalised feature is larger and "falser" if its smaller. A NOT operation inverts this property. Table \ref{tab:iris-rule-peformance-comp} shows the performance of extracted continuous rules on a testing set. These performance statistics provide evidence that continuous rules have poor performance.
 
