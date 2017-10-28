@@ -2,7 +2,7 @@
 This chapter introduces concepts which are used to motivate and develop the solution presented.
 
 \section{Interpretability}
-To create a system that is interpretable, it is necessary to have an understanding of what it means to interpret a model and how its interpretation might be evaluated. Interpretability of Machine Learning systems has been defined as \textit{"the ability to explain or to present in understandable terms"} \cite{doshi2017towards} which is ambiguous.\\
+To create a system that is interpretable it is necessary to have an understanding of what it means to interpret a model and how its interpretation might be evaluated. Interpretability of Machine Learning systems has been defined as \textit{"the ability to explain or to present in understandable terms"} \cite{doshi2017towards} which is ambiguous.\\
 
 When is an interpretable model necessary? \cite{doshi2017towards} In some problem domains there is less risk associated with incorrect answers. An ANN which controls a virtual car has a low risk as poor or dangerous driving will only affect an artificial environment. Problem domains where there is a high risk associated with incorrect answers include Safety and Ethics. A survey, "Concrete Problems in AI Safety" \cite{amodei2016concrete} provides an example of potential safety issues with AI in the context of a cleaning robot.  For example, if the robot's objective is to have an environment containing no mess, how can the robot be prevented from disabling its sensors which it uses to detect the mess? Alternatively, a self-driving car might be penalized for running a stop light, but what is to prevent it from disabling the sensors that detect stop lights?\\
 
@@ -22,7 +22,7 @@ If an ANN model is presented as being interpretable how can this be verified sci
 
 A survey in 1995 focuses on rule extraction algorithms \cite{andrews1995survey}, identifying the reasons for needing these algorithms along with introducing ways to classify and compare them.\\
 
-There are three categories that rule extraction algorithms fall into \cite{andrews1995survey}. An algorithm in the \textbf{decompositional} class focuses on extracting rules from each hidden/output unit. If an algorithm is in the \textbf{pedagogical} category, then rule extraction is thought of as a learning process. The ANN is treated as a black box, and the algorithm learns a relationship between the input and output vectors. The third category, \textbf{electic}, is a combination of decompositional and pedagogical. An Electic algorithm inspects the hidden/output neurons individually but extracts rules which represent the ANN globally \cite{tickle1998truth}.\\
+There are three categories that rule extraction algorithms fall into \cite{andrews1995survey}. An algorithm in the \textbf{decompositional} class focuses on extracting rules from each hidden/output unit. If an algorithm is in the \textbf{pedagogical} category, then rule extraction is thought of as a learning process. The ANN is treated as a black box, and the algorithm learns a relationship between the input and output vectors. The third category, \textbf{eclectic}, is a combination of decompositional and pedagogical. An eclectic, algorithm inspects the hidden/output neurons individually but extracts rules which represent the ANN globally \cite{tickle1998truth}.\\
 
 To further divide the categories two more distinctions are introduced. One measures the portability of rule extraction techniques, i.e., how easily can they be applied to different types of ANN's? The second is criteria to assess the quality of extracted rules; these are accuracy, fidelity, consistency, and comprehensibility \cite{andrews1995survey}.
 
@@ -38,17 +38,17 @@ These surveys provide a framework for evaluating the rules extracted using a par
 \section{LIME: Local Interpretable Model-Agnostic Explanations}
 The paper "'Why should I Trust You?' Explaining the Predictions of Any Classifier" \cite{ribeiro2016should} published in 2016 presents a novel approach to the interpretation of Machine Learning models. The motivation for this research is the idea of trusting the answers provided, either in the context of an individual prediction or the model as a whole. The LIME technique explains  a single prediction. Trust in the model can be developed by inspecting explanations of many individual predictions.\\
 
-Essentially the LIME algorithm treats the classifier as a black-box and generates a number of examples by slightly perturbing the instance for which an explanation is wanted and asks the model for a classification. It then constructs a linear model of local region around the instance using the classifications of the perturbed examples. A more detailed explanation of LIME is beyond the scope of this report.
+Essentially the LIME algorithm treats the classifier as a black-box and generates many examples by slightly perturbing the instance for which an explanation is wanted and asks the model for a classification. It then constructs a linear model of local region around the instance using the classifications of the perturbed examples. A more detailed explanation of LIME is beyond the scope of this report.
 
 LIME is a recent method for interpreting machine learning models. Consequently, it will provide a comparison point when evaluating the solution presented in this report.
 
 \section{Noisy Neurons} \label{sec:background-noisy-neurons}
-In 2016 the concept of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActivations} was presented. These neurons are based on the discrete boolean OR and AND gates. The motivation for this work was that logical functions are directly interpretable as functions of their input. Consequently, if a problem had a natural logical decomposition, then it could be learned by Artificial Neural Networks using Noisy neurons.
+In 2016 the concept of Noisy-OR and Noisy-AND neurons \cite{LearningLogicalActivations} was presented. These neurons are based on the discrete boolean OR and AND gates. The motivation for this work was that logical functions are directly interpretable as functions of their input. Consequently, if a problem had a natural, logical decomposition, then it could be learned by Artificial Neural Networks using Noisy neurons.
 
 \noindent
 \begin{minipage}[t]{0.6\textwidth}
 \vspace{0px}
-The Noisy-OR neuron is derived from the Noisy-OR relation \cite{russell1995modern}, a concept in Bayesian Networks developed by Judea Pearl. A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph \cite{neapolitan2004learning}. Figure \ref{fig:bayesian-network-example} is a Bayesian network. It demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies, i.e. Traffic influences whether someone is late to work,\ and it being rush hour or raining influences whether there is traffic.\\
+The Noisy-OR neuron is derived from the Noisy-OR relation \cite{russell1995modern}, a concept in Bayesian Networks developed by Judea Pearl. A Bayesian Network represents the conditional dependencies between random variables in the form of a directed acyclic graph \cite{neapolitan2004learning}. Figure \ref{fig:bayesian-network-example} is a Bayesian network. It demonstrates the dependency between random variables "Rush Hour", "Raining", "Traffic", "Late To Work". The connections show dependencies, i.e., Traffic influences whether someone is late to work,\ and it being rush hour or raining influences whether there is traffic.\\
 
 Consider a Bayesian Network consisting of a node $D$ with parents $S_1,..., S_n$. In other words, $S_i$ influences the node $D$. Each $S_i$ is independent of all others. The relationship between D and its parents is defined as if $S_1\ OR\ ...\ OR\ S_n$ is true then $D$ is true.
 \end{minipage}
@@ -66,14 +66,14 @@ Consider a Bayesian Network consisting of a node $D$ with parents $S_1,..., S_n$
 \end{figure}
 \end{minipage}
 
-This relationship is binary but there might be uncertainly as to whether each $S_i$ influences $D$. Let $\epsilon_i$ be the probability that if $S_i = 1$ then $D = 0$, i.e. $P(D = 0|S_i = 1) = \epsilon_i$. Then $P(D = 0 | S_i = 1\ \forall i) = P(D = 0 | S_1 = 1) \cdot \cdot \cdot P(D = 0 | S_n = 1) = \prod_{i=1}^{n} \epsilon_i$. Therefore $P(D = 1| S_1 = 1, , S_n = 1)$ can be expressed as Equation \ref{equ:noisy-or-relation}.
+This relationship is binary, but there might be some uncertainty as to whether each $S_i$ influences $D$. Let $\epsilon_i$ be the probability that if $S_i = 1$ then $D = 0$, i.e. $P(D = 0|S_i = 1) = \epsilon_i$. Then $P(D = 0 | S_i = 1\ \forall i) = P(D = 0 | S_1 = 1) \cdot \cdot \cdot P(D = 0 | S_n = 1) = \prod_{i=1}^{n} \epsilon_i$. Therefore $P(D = 1| S_1 = 1, , S_n = 1)$ can be expressed as Equation \ref{equ:noisy-or-relation}.
 
 \begin{align}
 P(D = 1 | S_1 = 1, ..., S_n = 1) = 1 - \prod^n_{i=1} \epsilon_i
 \label{equ:noisy-or-relation}
 \end{align}
 
-In the context of a neuron consider the inputs $x_1, ..., x_n$ to represent $D$'s belief of the probability that the inputs $1, ..., n$ are True. The output of a neuron as conditionally dependent on its inputs, in terms of a Bayesian Network the $x_i$'s is a parent of the neuron. Each $\epsilon_i$ is $D$'s uncertainty as to whether $x_i$ influences its output. The probability of $D$ being True is influenced by $x_i$ and $\epsilon_i$. A function $f$ is needed to compute the irrelevance of node $i$ in light of $x_i$ and $\epsilon_i$. The list in Figure \ref{fig:irelevence-function-cond} gives three properties of $f(x_i, \epsilon_i)$ \cite{LearningLogicalActivations}.\\
+In the context of a neuron consider the inputs $x_1, ..., x_n$ to represent $D$'s belief of the probability that the inputs $1, ..., n$ are True. The output of a neuron as conditionally dependent on its inputs, for a Bayesian Network each $x_i$ is a parent of the neuron. Each $\epsilon_i$ is $D$'s uncertainty as to whether $x_i$ influences its output. The probability of $D$ being True is influenced by $x_i$ and $\epsilon_i$. A function $f$ is needed to compute the irrelevance of node $i$ in light of $x_i$ and $\epsilon_i$. The list in Figure \ref{fig:irelevence-function-cond} gives three properties of $f(x_i, \epsilon_i)$ \cite{LearningLogicalActivations}.\\
 
 \begin{figure}[H]
 \begin{enumerate}
@@ -94,10 +94,10 @@ If the inputs of $f$ are restricted to be either 0 or 1 then it becomes apparent
 \item \textit{f(0,1) = 0:} Fix $x = 1$ and let $\epsilon = 1$, $f(1,1) = 1$. As $\epsilon \rightarrow 0 $ $f$ is monotonically decreasing so $f(0,1) = 0$.
 \item \textit{f(0,0) = 1:} Shown by (2)
 \end{enumerate}
-\caption{Demonstration that $f$ is actually $x \implies \epsilon$ when $x,\epsilon \in \{0, 1\}$}
+\caption{Demonstration that $f$ is the boolean function $x \implies \epsilon$ when $x,\epsilon \in \{0, 1\}$}
 \label{fig:f-actually-implies}
 \end{figure}
-A function $g(x_1, ..., x_m)$ is defined to be \textit{Boolean-Like} \cite{williams1986logic} when $x_i \in \{0, 1\} \forall i$ then $g(x_1, ..., x_m) \in \{0, 1\}$. Consequently, on top of properties (1) - (3) $f$ should be a boolean like Implies function. A choice of $f$ which satisfies properties (1) - (3) is $f(x, \epsilon) = \epsilon^x$. It is a simple task to check that $f$ is a \textit{boolean like} Implies function. Figure \ref{fig:f-check-implies} shows that all properties are satisfied.
+A function $g(x_1, ..., x_m)$ is defined to be \textit{Boolean-Like} \cite{williams1986logic} when $x_i \in \{0, 1\} \forall i$ then $g(x_1, ..., x_m) \in \{0, 1\}$. Consequently, on top of properties (1) - (3) $f$ should be a \textit{boolean like} Implies function. A choice of $f$ which satisfies properties (1) - (3) is $f(x, \epsilon) = \epsilon^x$. It is a simple task to check that $f$ is a \textit{boolean like} Implies function. Figure \ref{fig:f-check-implies} shows that all properties are satisfied.
 
 \begin{figure}[H]
 \begin{align*}
@@ -121,7 +121,7 @@ This is not a unique solution but it has a property which becomes convenient lat
 	\end{align}
 \end{definition}
 
-Consider that the Noisy-OR activation just defined is a boolean like OR function. How can Equation \ref{equ:noisy-or-activation-1} be transformed to give a Noisy-AND activation which is boolean like. From logic it is known that $a \land b = \lnot (\lnot a \lor \lnot b)$. Considering that $f_{NOT}(a) = 1 - a$ is a boolean like NOT function then $f_{AND}(x_1, ..., x_n) = f_{NOT}(f_{OR}(f_{NOT}(x_1), ..., f_{NOT}(x_1)))$. Using this as intuition the Noisy-OR activation can be converted into a Noisy-AND.
+Consider that the Noisy-OR activation just defined is a \textit{boolean like} OR function. How can Equation \ref{equ:noisy-or-activation-1} be transformed to give a Noisy-AND activation which is \textit{boolean like}. From logic it is known that $a \land b = \lnot (\lnot a \lor \lnot b)$. Considering that $f_{NOT}(a) = 1 - a$ is a \textit{boolean like} NOT function then $f_{AND}(x_1, ..., x_n) = f_{NOT}(f_{OR}(f_{NOT}(x_1), ..., f_{NOT}(x_1)))$. Using this as intuition the Noisy-OR activation can be converted into a Noisy-AND.
 
 \begin{definition}
 	A \textbf{Noisy-AND} Neuron has weights $\epsilon_1, ..., \epsilon_n \in (0, 1]$ which represent the uncertainty that corresponding inputs $x_1, ..., x_n \in [0,1]$ influence the output. The activation of a Noisy-AND Neurons is given in Equation \ref{equ:noisy-and-activation-1}
@@ -132,17 +132,17 @@ Consider that the Noisy-OR activation just defined is a boolean like OR function
 	\end{align}
 \end{definition}
 
-The noisy neurons are the building blocks for the two network architectures present in this report. Without an understanding of these concepts it would be difficult to understand the motivations for the solution developed.
+The noisy neurons are the building blocks for the two network architectures present in this report. Without an understanding of these concepts, it would be difficult to understand the motivations for the solution developed.
 
 \section{Logical Normal Form Networks}
 \subsection{CNF \& DNF}
-A boolean formula is in Conjunctive Normal Form (CNF) if and only if it is a conjunction (and) of clauses. A clause in a CNF formula is given by a disjunction (or ) of literals. A literal is either an atom or the negation of an atom, an atom is one of the variables in the formula.\\
+A boolean formula is in Conjunctive Normal Form (CNF) if and only if it is a conjunction (and) of clauses. A clause in a CNF formula is given by a disjunction (or ) of literals. A literal is either an atom or the negation of an atom, and an atom is one of the variables in the formula.\\
 
-Consider the boolean formula $\lnot a \lor (b \land c)$, the CNF is $(\lnot a \lor b) \land (\lnot a \lor c)$. In this CNF formula the clauses are $(\lnot a \lor b)$, $(\lnot a \lor c)$, the literals used are $\lnot a$, $b$, $c$ and the atoms are $a$, $b$, $c$.\\
+Consider the boolean formula $\lnot a \lor (b \land c)$, then the CNF is $(\lnot a \lor b) \land (\lnot a \lor c)$. In this CNF formula the clauses are $(\lnot a \lor b)$, $(\lnot a \lor c)$, the literals used are $\lnot a$, $b$, $c$ and the atoms are $a$, $b$, $c$.\\
 
 A boolean formula is in Disjunctive Normal Form (DNF) if and only if it is a disjunction (or) of clauses. A DNF clause is a conjunction (and) of literals. Literals and atoms are defined the same as in CNF formulas.\\
 
-Consider the boolean formula $\lnot a \land (b \lor c)$, the DNF is $(\lnot a \land b) \lor (\lnot a \land c)$.\\
+Consider the boolean formula $\lnot a \land (b \lor c)$, then the DNF is $(\lnot a \land b) \lor (\lnot a \land c)$.\\
 
 \subsection{CNF \& DNF from Truth Table} \label{subsec:construct-cnfdnf}
 Given a truth table representing a boolean formula, constructing a DNF formula involves taking all rows which correspond to True and combining them with an OR operation. To construct a CNF one combines the negation of any row which corresponds to False by an OR operation and negates it.
@@ -153,24 +153,22 @@ Given a truth table representing a boolean formula, constructing a DNF formula i
 \end{theorem}
 
 \begin{proof}
-	Assume the goal is to find the CNF and DNF for a Boolean formula B of size $n$, for which the complete truth table is given. The truth table has exactly $2^n$ rows.\\
+	Assume the goal is to find the CNF and DNF for a Boolean formula B of size $n$, for which the complete truth table is given. The truth table has precisely $2^n$ rows.\\
 	
-	First assume a CNF is being constructed, this is achieved by taking the OR of the negation of all rows corresponding to False, the NOT operation leaves the number of clauses unchanged. At most there can be $2^n$ rows corresponding to False, consequently there are at most $2^n$ clauses in the CNF.\\
+	First, assume a CNF is being constructed, this is achieved by taking the OR of the negation of all rows corresponding to False, the NOT operation leaves the number of clauses unchanged. At most, there can be $2^n$ rows corresponding to False. consequently, there is no more than $2^n$ clauses in the CNF.\\
 	
 	A similar argument shows that the same holds for DNF.
 \end{proof}
 
 \subsection{Definition of Logical Normal Form Networks}
-In 1996 a class of networks called Logical Normal Form Networks \cite{herrmann1996backpropagation} (LNFNs) where developed. Focusing on learning the underlying CNF or DNF for a boolean expression which describes the problem. The approach relies on a specific network configuration along with restriction the function space of each neuron, allowing them to only perform an OR or AND on a subset of their inputs. Such OR and AND neurons are called Disjunctive and Conjunctive retrospectively. If the trained network is able to achieve a low enough accuracy then rules can be extracted from the network in terms of a Boolean CNF or DNF expression \cite{herrmann1996backpropagation}.\\
+In 1996 a class of networks called Logical Normal Form Networks \cite{herrmann1996backpropagation} (LNFNs) where developed. Focusing on learning the underlying CNF or DNF for a boolean expression which describes the problem. The approach relies on a specific network configuration along with restriction the function space of each neuron, allowing them to only perform an OR or AND on a subset of their inputs. Such OR and AND neurons are called Disjunctive and Conjunctive retrospectively. If the trained network can achieve a low enough error rate, then rules can be extracted from the network as a Boolean CNF or DNF expression \cite{herrmann1996backpropagation}.\\
 
-The algorithm which extracts rules from LNFNs would be Electic and certainly is not Portable as the algorithm is specific to the LNFN architecture. It is not possible to further classify the rule extraction algorithm as the research developing it lacks any experimental results. Justification is also missing making the LNFNs difficult to reproduce.
+The algorithm which extracts rules from LNFNs would be Electic and indeed is not Portable as the algorithm is specific to the LNFN architecture. It is not possible to further classify the rule extraction algorithm as the research developing it lacks any experimental results. Justification is also missing making the LNFNs challenging to reproduce.
 
 \section{Logical Neural Networks}
-ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Networks \cite{LearningLogicalActivations} (LNN's). If the network consists of only Noisy neurons then it a pure LNN. ANNs containing a mix of logical and standard activations where shown to not yield interpretable models and also have lower performance, consequently when LNNs are referred to it will always be in the context of Pure LNNs.
+ANN's containing of Noisy-OR and Noisy-AND neurons are called Logical Neural Networks \cite{LearningLogicalActivations} (LNN's). If the network consists of only Noisy neurons then it a pure LNN. ANNs containing a mix of logical and standard activations where shown not to yield interpretable models and also have lower performance, consequently when LNNs are referred to it will always be in the context of Pure LNNs.
 
 
 \section{Learning Fuzzy Logic Operations in Deep Neural Networks}
-A paper published in September 2017 \cite{godfrey2017parameterized} aims to combine Deep Learning and Fuzzy Logic to create artificial neural networks which can be trained using back propagation and be more interpretable.  They propose a single activation which can learn to perform a number of different fuzzy logic operations. The result of this paper is a neural network architecture that can perform well as a classifier but also yield a model from which fuzzy rules can be extracted. The Fuzzy Logic networks where compared against standard deep neural networks using a tanh activation function. In this comparison they where found to have 
-
-Fuzzy Logic Networks are a different approach to solving the problem outlined in this report. As such will be an interesting comparison point for the solution developed here. Does the solution presented here have comparable performance and intepretability? 
+A paper published in September 2017 \cite{godfrey2017parameterized} has a novel approach to combine Deep Learning and Fuzzy Logic with the goal of creating artificial neural networks which can be trained using backpropagation and be more interpretable. They propose a single activation which can learn to perform many different fuzzy logic operations. The result of this paper is a neural network architecture that can perform well as a classifier but also yield a model from which fuzzy rules can be extracted. The Fuzzy Logic networks where compared against standard deep neural networks using a tanh activation function. In this comparison, they were found to have equivalent performance in some cases but worse in others. After training it was possible to extract fuzzy rules from the networks which were unable to perform well but had a simple representation. Fuzzy Logic Networks are a different approach to solving the problem outlined in this report. Consequently, they will be an interesting comparison point for the solution developed here. Does the solution presented here have comparable performance and interpretability? 
 
