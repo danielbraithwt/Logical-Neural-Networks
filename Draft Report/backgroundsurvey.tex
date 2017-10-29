@@ -87,6 +87,8 @@ Equation \ref{fig:bayesian-network-example} is the noisy or relation. Consider t
 
 If the inputs of $f$ are restricted to be either 0 or 1 then it becomes apparent that properties (1) - (3) describe the logic function $x \implies \epsilon$ ($x$ implies $\epsilon$) , this is shown in Figure \ref{fig:f-actually-implies}. 
 
+\noindent
+\begin{minipage}[t]{0.5\textwidth}
 \begin{figure}[H]
 \begin{enumerate}
 \item \textit{f(1,1) = 1:} This is shown by (1)
@@ -97,8 +99,9 @@ If the inputs of $f$ are restricted to be either 0 or 1 then it becomes apparent
 \caption{Demonstration that $f$ is the boolean function $x \implies \epsilon$ when $x,\epsilon \in \{0, 1\}$}
 \label{fig:f-actually-implies}
 \end{figure}
-A function $g(x_1, ..., x_m)$ is defined to be \textit{Boolean-Like} \cite{williams1986logic} when $x_i \in \{0, 1\} \forall i$ then $g(x_1, ..., x_m) \in \{0, 1\}$. Consequently, on top of properties (1) - (3) $f$ should be a \textit{boolean like} Implies function. A choice of $f$ which satisfies properties (1) - (3) is $f(x, \epsilon) = \epsilon^x$. It is a simple task to check that $f$ is a \textit{boolean like} Implies function. Figure \ref{fig:f-check-implies} shows that all properties are satisfied.
-
+\end{minipage}
+\hspace{0.05\textwidth}
+\begin{minipage}[t]{0.45\textwidth}
 \begin{figure}[H]
 \begin{align*}
 f(1,1) &= 1^1 = 1\\
@@ -106,9 +109,13 @@ f(1,0) &= 1^0 = 1\\
 f(0,1) &= 0^1 = 0\\
 f(0,0) &= 0^0 = 1\\
 \end{align*}
-\caption{Checking $f(\epsilon, x) = \epsilon^x$ is a Boolean Like Implies function. Note that for $f(0,0) = 0^0$ strictly this is undefined, but $\lim_{\epsilon \rightarrow 0} \epsilon^0 = 0$}
+\caption{Checking $f(\epsilon, x) = \epsilon^x$ is a Boolean Like Implies function. Note that for $f(0,0) = 0^0$ strictly this is undefined, but $\lim_{\epsilon \rightarrow 0} \epsilon^0 = 0$\\}
 \label{fig:f-check-implies}
 \end{figure}
+\end{minipage}
+
+A function $g(x_1, ..., x_m)$ is defined to be \textit{Boolean-Like} \cite{williams1986logic} when $x_i \in \{0, 1\} \forall i$ then $g(x_1, ..., x_m) \in \{0, 1\}$. Consequently, on top of properties (1) - (3) $f$ should be a \textit{boolean like} Implies function. A choice of $f$ which satisfies properties (1) - (3) is $f(x, \epsilon) = \epsilon^x$. It is a simple task to check that $f$ is a \textit{boolean like} Implies function. Figure \ref{fig:f-check-implies} shows that all properties are satisfied.
+
 
 This choice of $f$ is not a unique solution, but it has a property which becomes convenient later on, specifically $\log(f) = \log(\epsilon^x) = x \cdot \log(\epsilon)$.
 

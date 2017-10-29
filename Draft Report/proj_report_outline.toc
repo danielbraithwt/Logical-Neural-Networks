@@ -18,7 +18,7 @@
 \contentsline {section}{\numberline {3.2}Training LNF Networks}{11}
 \contentsline {subsection}{\numberline {3.2.1}Weight Initialization}{12}
 \contentsline {paragraph}{Deriving a Distribution For The Weights}{12}
-\contentsline {paragraph}{Fitting To Log Normal}{14}
+\contentsline {paragraph}{Fitting To Log-Normal}{14}
 \contentsline {paragraph}{Weight Initialization Algorithm}{15}
 \contentsline {subsection}{\numberline {3.2.2}Training Algorithm}{15}
 \contentsline {subsection}{\numberline {3.2.3}Batch Size}{15}
@@ -50,28 +50,28 @@
 \contentsline {paragraph}{Sigmoid Network}{30}
 \contentsline {paragraph}{AND Network Old Architecture (With and With Out LSM)}{30}
 \contentsline {paragraph}{AND Network (With LSM)}{31}
-\contentsline {paragraph}{AND Network (Without LSM)}{32}
+\contentsline {paragraph}{AND Network (Without LSM)}{31}
 \contentsline {paragraph}{Conclusion of Interpretability for LNNs with No Hidden Layer}{32}
 \contentsline {subsubsection}{Single Hidden Layer Networks}{32}
 \contentsline {paragraph}{Sigmoid Network}{32}
 \contentsline {paragraph}{OR $\rightarrow $ AND Network Old Structure (With Out LSM)}{33}
 \contentsline {paragraph}{OR $\rightarrow $ AND Network Old Structure (With LSM)}{33}
-\contentsline {paragraph}{OR $\rightarrow $ AND Network (With Out LSM)}{34}
+\contentsline {paragraph}{OR $\rightarrow $ AND Network (With Out LSM)}{33}
 \contentsline {paragraph}{OR $\rightarrow $ AND (With LSM)}{34}
 \contentsline {paragraph}{AND $\rightarrow $ OR Model (With Out LSM)}{35}
 \contentsline {paragraph}{AND $\rightarrow $ OR Model (With LSM)}{35}
-\contentsline {paragraph}{Conclusion of Interpretability for LNNs with One Hidden Layer}{36}
-\contentsline {subsection}{\numberline {6.2.3}Results of Interpretability Experiments}{36}
+\contentsline {paragraph}{Conclusion of Interpretability for LNNs with One Hidden Layer}{35}
+\contentsline {subsection}{\numberline {6.2.3}Results of Interpretability Experiments}{35}
 \contentsline {section}{\numberline {6.3}Comparison Between LNNs and Existing Methods}{36}
 \contentsline {subsection}{\numberline {6.3.1}Comparison between LNN Interpretability and LIME}{36}
-\contentsline {subsection}{\numberline {6.3.2}Comparison Between LNNs and Fuzzy Logic Networks}{37}
-\contentsline {section}{\numberline {6.4}Summary Of Logical Neural Network Evaluation}{38}
-\contentsline {chapter}{\numberline {7}Application to Autoencoders}{39}
-\contentsline {paragraph}{Result of Linear Autoencoder (LAE)}{39}
-\contentsline {paragraph}{Result of Sigmoid Auto Encoder (SAE)}{39}
-\contentsline {paragraph}{Result of Logical Auto Encoder (LoAE)}{40}
-\contentsline {paragraph}{Discussion}{40}
-\contentsline {chapter}{\numberline {8}Conclusion}{41}
-\contentsline {chapter}{Appendices}{44}
-\contentsline {chapter}{\numberline {A}Proofs}{45}
-\contentsline {section}{\numberline {A.1}Proof Of Theorem \ref {thm:upper-bound-hidden-units}}{45}
+\contentsline {subsection}{\numberline {6.3.2}Comparison Between LNNs and Fuzzy Logic Networks}{36}
+\contentsline {section}{\numberline {6.4}Summary Of Logical Neural Network Evaluation}{37}
+\contentsline {chapter}{\numberline {7}Application to Autoencoders}{38}
+\contentsline {paragraph}{Result of Linear Autoencoder (LAE)}{38}
+\contentsline {paragraph}{Result of Sigmoid Autoencoder (SAE)}{38}
+\contentsline {paragraph}{Result of Logical Autoencoder (LoAE)}{39}
+\contentsline {paragraph}{Discussion}{39}
+\contentsline {chapter}{\numberline {8}Conclusion}{40}
+\contentsline {chapter}{Appendices}{43}
+\contentsline {chapter}{\numberline {A}Proofs}{44}
+\contentsline {section}{\numberline {A.1}Proof Of Theorem \ref {thm:upper-bound-hidden-units}}{44}

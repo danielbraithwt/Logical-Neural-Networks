@@ -168,7 +168,7 @@ Consider a random variable $g$, if $g \sim U(0,1)$ then $1 - g \sim U(0,1)$ also
 	Therefore $F(z) = 1 - e^{-\lambda z}$ where $\lambda = 1$. So $z$ has the CDF of an exponential distribution. Consequently $z \sim exp(\lambda = 1)$
 \end{proof}
 
-The problem has now been reduced to find how $w_i$ is distributed given that $z \sim exp(\lambda = 1)$ and $x_i \sim U(0,1)$. The approach taken is first to find $E[w_i]$ and $var(w_i)$, then find a distrubution with these paramaters that can be sampled from.
+The problem has now been reduced to find how $w_i$ is distributed given that $z \sim exp(\lambda = 1)$ and $x_i \sim U(0,1)$. The approach taken is first to find $E[w_i]$ and $var(w_i)$, then find a distrubution with these parameters that can be sampled from.
 
 \begin{align*}
 E[z] &= E[w_1x_1 + \cdot \cdot \cdot + w_nx_n]\\
@@ -204,7 +204,7 @@ var(w_i) &= \frac{3}{n}
 
 From the above arguments $E[w_i] = \frac{2}{n}$ and $var(w_i) = \frac{3}{n}$. These values need to be fitted to a distribution from which weights can be sampled. Based on our initial assumptions this distribution must also generate values in the interval $[0, \infty]$. There exist many different distributions which satisfy this constraint. The distribution which had the best results was log-normal \cite{balakrishnan2006continuous}, for brevity only its derivation is included.
 
-\paragraph{Fitting To Log Normal}
+\paragraph{Fitting To Log-Normal}
 
 A log-normal distribution has two parameters $\mu$ and $\sigma^2$, by the definition of log-normal $E[w_i] = \frac{2}{n} = e^{\mu + \frac{\sigma^2}{2}}$ and $var(w_i) = \frac{3}{n} = \big[e^{\sigma^2} - 1\big] \cdot e^{2\mu + \sigma^2}$. Consequently
 
@@ -270,7 +270,7 @@ The batch size will be fixed to one. Preliminary results showed that training an
 Preliminary testing initially gave poor performance on the simplest of logic gates. After implementing the weight initialization algorithm (derived in Section \ref{subsec:weight-initlization}) the results became promising. They showed that LNFN's could learn good classifiers on boolean gates, i.e., NOT, AND, NOR, NAND, XOR, and Implies. How do LNFNs perform against standard MLPNs which are known to be universal function approximators? Two different MLPNs will be used as a benchmark
 
 \begin{enumerate}
-	\item One will have the same configuration as the LNFNs, i.e., $2^n$ hidden neurons. \label{lnfn-peformance:mlpn-arch-1}
+	\item One will have the same configuration as the LNFNs, i.e., $2^n$ hidden neurons. Called \textbf{Perceptron (Same Config)}. \label{lnfn-peformance:mlpn-arch-1}
 	\item The other has two hidden layers, both with N neurons.
 \end{enumerate}
 
@@ -279,12 +279,12 @@ The testing will consist of selecting 5 random boolean expressions for $2 \leq n
 \begin{figure}[H]
   \centering
   \begin{minipage}[b]{0.45\textwidth}
-    \includegraphics[width=\textwidth]{All-Peformance-Comparason.png}
+    \includegraphics[width=\textwidth]{all-peformance.png}
     \caption{}
     \label{fig:peformance-comparason-all}
   \end{minipage}
   \begin{minipage}[b]{0.45\textwidth}
-    \includegraphics[width=\textwidth]{CNFvsDNF.png}
+    \includegraphics[width=\textwidth]{lnfn-peformance.png}
     \caption{}
     \label{fig:peformance-comparason-cnfdnf}
   \end{minipage}
@@ -412,7 +412,7 @@ The Lenses problem \cite{Lichman:2013} is multi-class and contains a natural rul
 \noindent
 \begin{minipage}[t]{0.35\textwidth}
 	\vspace{0px}
-	The LNFN will be evaluated against an MLPN with a two-layer structure where the layer widths are $2 \cdot n$ and $n$ retrospectively. The performance of the three classifiers will be compared using Leave-One-Out Cross-Validation given the small dataset size.\\
+	The LNFN will be evaluated against an MLPN with a two-layer structure, the layer widths are $2 \cdot n$ and $n$ retrospectively. The performance of the three classifiers will be compared using Leave-One-Out Cross-Validation given the small dataset size.\\
 \end{minipage}
 \hspace{0.05\textwidth}
 \begin{minipage}[t]{0.6\textwidth}
@@ -443,7 +443,7 @@ Table \ref{tab:lenses-peformance-comp} demonstrates that the CNF \& DNF Networks
 \begin{minipage}[t]{0.45\textwidth}
 $f$ refers to the \textit{tear production rate} being normal or reduced if $f = False$ or $True$ retrospectively. Describing the other atoms is not beneficial as they refer to medical terms which are unimportant.\\
 
-The list of rules in Figure \ref{fig:lenses-cnfn-rules} have been extracted from a CNFN after being trained over the complete Lenses data set. These rules contain redundancies which could be filtered out automatically.\\ \\
+The list of rules in Figure \ref{fig:lenses-cnfn-rules} have been extracted from a CNFN after being trained over the complete Lenses data set. The extracted rules contain redundancies which could be filtered out automatically.\\ \\
 \end{minipage}
 \hspace{0.05\textwidth}
 \begin{minipage}[t]{0.5\textwidth}
@@ -786,8 +786,6 @@ The experimental results lead to the following conclusions.
 \end{enumerate}
 
 \section{Interpretability of Logical Neural Networks}
-There are two cases of interpretability; one where the input features are boolean and the other when they are continuous. Both cases are explored here
-
 \subsection{Discrete Case}
 To assess the rule extraction of LNNs the Tic Tac Toe  \cite{Lichman:2013} problem will be the benchmark. 
 
@@ -827,7 +825,6 @@ To assess the rule extraction of LNNs the Tic Tac Toe  \cite{Lichman:2013} probl
 	\caption{Results of experiments with Logical Neural Networks on the Tic Tac Toe problem}
 	\label{tab:tic-tac-toe-lnn-peformance-results}
 \end{table}
-
 If instead ANDs are used as the hidden neurons and ORs for the outputs then the LNN can achieve statistically equivalent performance to the architecture in Figure \ref{fig:tic-tac-toe-net}. Table \ref{tab:tic-tac-toe-lnn-peformance-results-and-or} shows the results of these experiments.
 
 \begin{table}[H]
@@ -1330,7 +1327,7 @@ The images in Figure \ref{fig:or-and-net-without-lsm-pos} represent the hidden f
 			%\caption{Digit 0}
 			\label{}
 		\end{minipage}
-		\caption{Features positively contributing to classification as a 1 for OR $\rightarrow$ AND Network (With Out LSM). They grey image means no pixles where considered}
+		\caption{Features positively contributing to classification as a 1 for OR $\rightarrow$ AND Network (With Out LSM). The grey image means no pixles where considered}
 		\label{fig:or-and-net-without-lsm-pos}
 		\hfill
 	\end{figure}
@@ -1339,7 +1336,7 @@ The images in Figure \ref{fig:or-and-net-without-lsm-pos} represent the hidden f
 \noindent
 \begin{minipage}[t]{0.5\textwidth}
 	\vspace{0cm}
-Figure \ref{fig:or-and-net-without-lsm-neg} shows the single feature which if present then the classification is less likely to be the digit 1. This feature appears to be highly active if the pixels lying outside the border of the average 1 shape. While this model is difficult to interpret it does provide more information than previous OR-AND models using the old LNN architecture.
+Figure \ref{fig:or-and-net-without-lsm-neg} shows the single feature which if present then the classification is less likely to be the digit 1. This feature appears to be highly active if the pixels lying outside the border of the average 1 shape; while this model is difficult to interpret it does provide more information than previous OR-AND models using the old LNN architecture.
 		
 \paragraph{OR $\rightarrow$ AND (With LSM)} Figure \ref{fig:or-and-with-lsm-pos} show the positive features for an OR AND model with an LSM. 
 The features extracted from this network do not appear to correspond to a 1, not in a way which is immediately interpretable. 
@@ -1520,7 +1517,7 @@ The features extracted from this network do not appear to correspond to a 1, not
 
 
 \paragraph{Conclusion of Interpretability for LNNs with One Hidden Layer}
-	The results of the experiments show that in the context of multi-layer LNNs adding an LSM introduces more noise into the feature maps, just as it did with the no hidden layer models. The MLPNs where more diffcult to intepret in this situation. Whereas the LNN models where simpler than the MLPNs and sometimes more intepretable. Lastly, these experemenets showed that intepretability is structure dependent.
+	The results of the experiments show that in the context of multi-layer LNNs adding an LSM introduces more noise into the feature maps, just as it did with the no hidden layer models. The MLPNs where more difficult to interpret in this situation; whereas the LNN models were simpler than the MLPNs and sometimes more interpretable. Lastly, these experiments showed that interpretability is structure dependent.
 
 \subsection{Results of Interpretability Experiments}
 From the above experiments and discussions, the following conclusions can be made.
@@ -1555,7 +1552,7 @@ LIME aims to build trust in the model by explaining how specific predictions are
 		%\caption{Digit 0}
 		\label{}
 	\end{minipage}
-	\caption{LIME Intepretation of classifiers. Left is the LNN AND model (no hidden layers). Middle is a 2 layer LNN with 60 and 30 nodes respectively, finally the activations are OR-AND-AND LNN. Lastly right is an MLPN with 2 hidden layers, with 60 and 30 nodes respectively.}
+	\caption{LIME Interpretation of classifiers. Left is the LNN AND model (no hidden layers). The middle is a 2 layer LNN with 60 and 30 nodes respectively. Finally the activations are OR-AND-AND LNN. Lastly right is an MLPN with 2 hidden layers, with 60 and 30 nodes respectively.}
 	\label{fig:lime-comp}
 \end{figure}
 
@@ -1585,12 +1582,12 @@ Tabel \ref{tab:vehicle-lnn-peformance} show the error rates of OR $\rightarrow$ 
 One advantage that the FLN has over LNNs is that the rule sets are more compact and thus are more straightforward to interpret, this would suggest that FLN rules are better. Future work on LNNs might aim to implement an algorithm which can automatically simplify the extracted rules; this could lead to simpler expressions.
 
 \section{Summary Of Logical Neural Network Evaluation}
-Through the experiments carried out, the following observations can be made. The new LNN structure (adding NOTs) results with a statistically significant increase in accuracy with some network architectures. The new LNN structure achieved statistically equivalent or better performance than the MLPN nets with an equivalent number of hidden neurons/layers. For any LNN (new structure or old) adding a Logical Softmax improved performance by a statistically significant margin. Any LNN (new or old structure) had a simpler learned representation than the corresponding MLPN. Depending on the LNN structure, they where also more intepretable. These experiments have therefore shown that the LNN networks have statistically equivalent performance to MLPNs on the MNIST dataset. Evidence has also been provided in support of LNNs have a more interpretable model than MLPNs.
+Through the experiments carried out, the following observations can be made. The new LNN structure (adding NOTs) results with a statistically significant increase in accuracy with some network architectures. The new LNN structure achieved statistically equivalent or better performance than the MLPN nets with an equivalent number of hidden neurons/layers. For any LNN (new structure or old) adding a Logical Softmax improved performance by a statistically significant margin. Any LNN (new or old structure) had a simpler learned representation than the corresponding MLPN. Depending on the LNN structure, they were also more interpretable. These experiments have therefore shown that the LNN networks have statistically equivalent performance to MLPNs on the MNIST dataset. Evidence has also been provided in support of LNNs have a more interpretable model than MLPNs.
 
 The LIME algorithm is more robust than LNN Interpretability in the sense that it is model agnostic. On the other hand, interpreting LNNs provides a clearer picture of the model's decision-making process. FLNs where shown to be better than LNNs because of their ability to generate simpler rule sets. It could, however, be possible to close this gap by developing an algorithm to simplify the rules learned by an LNN.
 
 \chapter{Application to Autoencoders} \label{C:lnn-application}
-This chapter demonstrates the flexibility of the LNN architecture by applying them in the context of Auto Encoders. \\
+This chapter demonstrates the flexibility of the LNN architecture by applying them in the context of Autoencoders. \\
 
 Autoencoders \cite{baldi2012complex} \cite{hinton2006reducing} are a network architecture trained to learn an encoding of the data. An autoencoder is trained by presenting it with an instance, which it then converts to an alternate feature space using an encoder, and then back using a decoder, the objective is to minimise the loss between the instance and its reconstruction. The encoder and decoders are Artificial Neural Networks. 
 
@@ -1603,7 +1600,7 @@ An application of autoencoders is to learn a new encoding which has a smaller di
 Linear, Sigmoid and Logical Autoencoders will be compared. The network structure will be the same in all cases, only differing in the activations used. Experiments carried out will compress the MNIST feature space (784 dimensions) into 20. The accuracy and interpretability of the features will be explored. Each model was trained for 30 epochs.
 
 \paragraph{Result of Linear Autoencoder (LAE)}
-A linear autoencoder obtained an MSE of 21.34 on the training and 21.25 on the test data. Figure \ref{fig:linear-autoencoder-features} shows a visualization of some features learned by the Linear Auto Encoder
+A linear autoencoder obtained an MSE of 21.34 on the training and 21.25 on the test data. Figure \ref{fig:linear-autoencoder-features} shows a visualization of some features learned by the Linear Autoencoder.
 
 \begin{figure}[H]
 	%\captionsetup{labelformat=empty}
@@ -1639,13 +1636,13 @@ A linear autoencoder obtained an MSE of 21.34 on the training and 21.25 on the t
 		\label{}
 	\end{minipage}
 	
-	\caption{Visualisations of 5 features learned by the Sigmoid Auto Encoder. The red colors correspond to positive weights and the blue to negative}
+	\caption{Visualisations of 5 features learned by the Sigmoid Autoencoder. The red colors correspond to positive weights and the blue to negative}
 	\label{fig:linear-autoencoder-features}
 	\hfill
 \end{figure}
 
-\paragraph{Result of Sigmoid Auto Encoder (SAE)}
-A Sigmoid Autoencoder achieved an MSE of 14.43 on the training data and 14.25 on the testing data. Figure \ref{fig:sigmoid-autoencoder-features} show the visual representations of the features learned.
+\paragraph{Result of Sigmoid Autoencoder (SAE)}
+A Sigmoid Autoencoder achieved an MSE of 14.43 on the training data and 14.25 on the testing data. Figure \ref{fig:sigmoid-autoencoder-features} shows the visual representations of the features learned.
 
 \begin{figure}[H]
 	%\captionsetup{labelformat=empty}
@@ -1680,12 +1677,12 @@ A Sigmoid Autoencoder achieved an MSE of 14.43 on the training data and 14.25 on
 		%\caption{Digit 0}
 		\label{}
 	\end{minipage}
-	\caption{Visualisations of 5 features learnt by the Sigmoid Auto Encoder. The red colours correspond to positive weights and the blue to negative}
+	\caption{Visualisations of 5 features learned by the Sigmoid Autoencoder. The red colours correspond to positive weights and the blue to negative}
 	\label{fig:sigmoid-autoencoder-features}
 	\hfill
 \end{figure}
 
-\paragraph{Result of Logical Auto Encoder (LoAE)}
+\paragraph{Result of Logical Autoencoder (LoAE)}
 A logical autoencoder, consisting of a single AND layer for both the encoder and decoder, was able to compress the feature space to 20 dimensions and achieve a Mean Square Error (MSE) of 20.55 on the training set and 20.22 on the testing set. Figure \ref{fig:logical-autoencoder-features} shows five features learned by the AND-Logical Autoencoder. Each image in the top row represents the input features which positively contribute to the activation. The bottom row corresponds to the inputs which negatively contribute to each activation. 
 
 \begin{figure}[H]
@@ -1754,10 +1751,10 @@ A logical autoencoder, consisting of a single AND layer for both the encoder and
 		%\caption{Digit 0}
 		\label{}
 	\end{minipage}
-	\caption{Visualisations of 5 features learned by the Logical Auto Encoder. Darker regions correspond to pixels which are relevant.}
+	\caption{Visualisations of 5 features learned by the Logical Autoencoder. Darker regions correspond to pixels which are relevant.}
 	\label{fig:logical-autoencoder-features}
 	\hfill
 \end{figure}
 
 \paragraph{Discussion}
-While the results show that the Sigmoid Auto Encoder (AE) outperforms the Logical one this is an example of how Logical Neural Networks can be applied to different situations in Machine Learning where the goals are different from classification. Comparing Figures \ref{fig:linear-autoencoder-features} \& \ref{fig:sigmoid-autoencoder-features} \& \ref{fig:logical-autoencoder-features} show that the Logical Autoencoder takes a different approach to decomposing the MNIST dataset, when compared to the Sigmoid and Linear autoencoders. Features learned by the Logical AE not necessarley intepretable, but are sparser and simpler than both the Linear and Sigmoid models.
+While the results show that the Sigmoid Autoencoder (AE) outperforms the Logical one this is an example of how Logical Neural Networks can be applied to different situations in Machine Learning where the goals are different from classification. Comparing Figures \ref{fig:linear-autoencoder-features} \& \ref{fig:sigmoid-autoencoder-features} \& \ref{fig:logical-autoencoder-features} show that the Logical Autoencoder takes a different approach to decomposing the MNIST dataset, when compared to the Sigmoid and Linear autoencoders. Features learned by the Logical AE not necessarily interpretable, but are sparser and simpler than both the Linear and Sigmoid models.
