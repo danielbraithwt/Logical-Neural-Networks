@@ -1,0 +1,107 @@
+                   Logical Neural Networks
+                      Opening The Black Box
+                        COMP 489 Project
+                        Daniel Braithwaite
+                     Supervisor: Marcus Frean
+Daniel Braithwaite        Logical Neural Networks Supervisor: Marcus Frean 1 / 14
+Introduction + Motivation
+ Difficult to interpret Artificial Neural Networks using standard activations,
+ e.g., Sigmoid, TanH.
+ Why Interpretable Systems?
+       Safety Critical Systems
+       Ensuring systems make Ethical decisions
+       European Union General Data Protection Regulation
+        Daniel Braithwaite         Logical Neural Networks Supervisor: Marcus Frean 2 / 14
+Problem Statement
+   Want Artificial Neural Networks which can achieve a high accuracy.
+   Want Artificial Neural Networks which have an interpretable learned
+   model so their predictions can be defended
+    Daniel Braithwaite       Logical Neural Networks Supervisor: Marcus Frean 3 / 14
+Idea
+     Some problems appear to have a logical decomposition
+     Logical functions are a natural thing for humans to interpret
+     Goal: Learn these logical decompositions using Backpropagation
+     Problem: Standard Boolean Logic Gates are not continuous.
+      Daniel Braithwaite       Logical Neural Networks Supervisor: Marcus Frean 4 / 14
+Noisy-OR Relation
+    Foundation for the Logic based activation functions which are
+    presented.
+    C = OR(x1 , ..., xn ), so P(C = 0|xi = 1∀i) = 0
+    What if there is uncertainty
+                             Q       that input i influences C. Then
+    P(C = 0|xi = 1∀i) = P(C = 0|xi = 1)
+                                                  Q
+    Therefore P(C = 1|xi = 1∀i) = 1 − i
+     Daniel Braithwaite         Logical Neural Networks    Supervisor: Marcus Frean 5 / 14
+Noisy Neurons
+    Noisy-OR neuron essentially the noisy or relation, but there is also
+    uncertainty as to the i’th input being on.
+    xi ∈ [0, 1] is probability the i’th input is on.
+    i ∈ [0, 1] is the probability that input i is irrelevant. The ’s are the
+    learned weights
+    Post-training it is possible to view these neurons as logical functions
+    of their inputs that have low weights.
+    There exists Noisy-AND and Noisy-OR Neurons.
+     Daniel Braithwaite          Logical Neural Networks   Supervisor: Marcus Frean 6 / 14
+Approach: Logical Neural Networks
+Logical Neural Networks have layers consisting of Noisy Neurons. Can be
+trained with Backpropagation.
+Problem: Weight Initialization
+     Even small networks would not train.
+     Derived a distribution from which to sample weights.
+     Now large networks can be trained, including deep Logical Networks.
+     Up to 10 layers deep were tested!
+      Daniel Braithwaite       Logical Neural Networks Supervisor: Marcus Frean 7 / 14
+Experimental Approach
+   Want to evaluate accuracy and interpretability of Logical Neural
+   Networks
+   Implement in Tensorflow.
+   Will use MNIST problem.
+   Accuracy: Networks trained from 30 different initial conditions,
+   accuracy compared using confidence intervals obtained from
+   evaluation of the network on a testing set.
+   Interpretability: Difficult to establish. Results are obtained by
+   visually comparing interpretations of the weights from different
+   networks.
+    Daniel Braithwaite        Logical Neural Networks  Supervisor: Marcus Frean 8 / 14
+Experimental Results: Accuracy
+   Logical Neural Networks have statistically equivalent accuracy to
+   Multi-Layer Perceptron Networks.
+    Daniel Braithwaite     Logical Neural Networks   Supervisor: Marcus Frean 9 / 14
+Experimental Results: Interpretability
+   Logical Neural Networks are potentially more interpretable that
+   Multi-Layer Perceptron Networks.
+   Interpretability of Logical Neural Networks depends on activations
+   used.
+    Daniel Braithwaite         Logical Neural Networks Supervisor: Marcus Frean 10 / 14
+Experimental Results: Interpretability - No Hidden
+Pictures represent the weights in learned the models, specifically the
+output neuron representing a 0. Dark regions are most important, and
+white is irrelevant.
+Figure: Features for a
+perceptron network
+                                             Figure: Logical Neural Network
+                                             using an AND activation
+      Daniel Braithwaite      Logical Neural Networks        Supervisor: Marcus Frean 11 / 14
+Experimental Results: Interpretability - Hidden Layer
+In this case, pictures represent an important feature for classifying an
+instance as a 1.
+Figure: Features that positively
+contribute to the classification
+as a 1.
+                                                Figure: Features contributing to
+                                                classification of a 1 in an AND
+                                                → OR Model
+      Daniel Braithwaite         Logical Neural Networks          Supervisor: Marcus Frean 12 / 14
+Conclusion
+Did we succeed in solving the problem? Well... Yes and No
+    Logical Neural Networks are a promising alternative to Multi-Layer
+    Perceptron Networks.
+    Can train shallow and deep networks with good accuracy.
+    Interpretability on MNIST was ”better”. However, this is difficult to
+    establish.
+    Was found that interpreting Logical Neural Networks became difficult
+    with multiple layers.
+     Daniel Braithwaite      Logical Neural Networks Supervisor: Marcus Frean 13 / 14
+                   Questions
+Daniel Braithwaite  Logical Neural Networks Supervisor: Marcus Frean 14 / 14
