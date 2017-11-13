@@ -47,8 +47,8 @@ def generateExpressions(n):
 
     return np.array(list(map(lambda x: (inputs, x), outputs)))
 
-var = np.sqrt(np.log(4 * (4 + 3*n)))
-mean = -(1.0/2.0) * np.log(n*n * (4 + 3*n))
+#var = np.sqrt(np.log(4 * (4 + 3*n)))
+#mean = -(1.0/2.0) * np.log(n*n * (4 + 3*n))
 
 def inv_transform(weights):
     return -np.log(np.exp(weights)-1)
@@ -65,17 +65,23 @@ def transform_weights(weights):
 #w = np.random.poisson((2.0/n), n)
 #w = transform_weights(inv_transform(w))
 
+var = np.sqrt(np.log(4 * (4 + 3*n)))
+mean = -(1.0/2.0) * np.log(n**2 * (4 + 3*n))
+
 iters = 100
 
 means = []
-var = []
+v = []
 
 for i in range(30):
     res = []
-    w = stats.betaprime.rvs((14.0/(3.0 * n)), (10.0/3.0), size=n)
-    #np.random.lognormal(mean, var, n)
+
+    #print(n)
+    #print(mean)
+    #print(var)
+    w = np.random.lognormal(mean, var, (n))
     for i in range(iters):
-        
+        #w = stats.betaprime.rvs((14.0/(3.0 * n)), (10.0/3.0), size=n)
         x = np.random.randint(0, 2, n)
         z = np.sum(np.multiply(x, w))
         y = 1 - np.exp(-z)
@@ -84,13 +90,13 @@ for i in range(30):
 
     res = np.array(res)
     means.append(res.mean())
-    var.append(res.var())
+    v.append(res.var())
 
 
 means = np.array(means)
-var = np.array(var)
+v = np.array(v)
 print(means.mean())
-print(var.mean())
+print(v.mean())
 
 #x = np.linspace(stats.betaprime.ppf(0.01, (14.0/(3.0 * n)), (10.0/3.0)), stats.betaprime.ppf(0.99, (14.0/(3.0 * n)), (10.0/3.0)), 100)
 #rv = stats.betaprime((14.0/(3.0 * n)), (10.0/3.0))

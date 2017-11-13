@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../lib/')
 
-from RealSpaceLNFNetwork import train_cnf_network, train_dnf_network, run_cnf_network, run_dnf_network
-from NeuralNetwork import train_perceptron_network, train_perceptron_network_general, run_perceptron_network_general
+import MultiOutLNN
+import MultiOutNN
 import numpy as np
 from multiprocessing import Process
 from multiprocessing import Queue
@@ -58,15 +58,53 @@ def generateExpressions(n, size):
     return np.array(list(map(lambda x: (inputs, x), outputs)))
 
 
+def train_cnf_network(data, targets):
+    res = MultiOutLNN.train_lnn(data, targets, 3000 * len(data), len(data[0]), [2**n], 1, [MultiOutLNN.noisy_or_activation, MultiOutLNN.noisy_and_activation], False)
+    wrong = MultiOutLNN.run_lnn(data, targets, res, [MultiOutLNN.noisy_or_activation, MultiOutLNN.noisy_and_activation], False)
+    er = float(wrong)/float(len(data))
+    return res, er
+
+def train_dnf_network(data, targets):
+    res = MultiOutLNN.train_lnn(data, targets, 3000 * len(data), len(data[0]), [2**n], 1, [MultiOutLNN.noisy_and_activation, MultiOutLNN.noisy_or_activation], False)
+    wrong = MultiOutLNN.run_lnn(data, targets, res, [MultiOutLNN.noisy_and_activation, MultiOutLNN.noisy_or_activation], False)
+    er = float(wrong)/float(len(data))
+    return res, er
+
+
+def train_perceptron_network_general(data, targets):
+    res = MultiOutNN.train_lnn(data, targets, 3000 * len(data), len(data[0]), [n, n], 1, False)
+    wrong = MultiOutNN.run_lnn(data, targets, res, False)
+    er = float(wrong)/float(len(data))
+    return res, er
+
+
+def run_cnf_network(data, targets, res):
+    wrong = MultiOutLNN.run_lnn(data, targets, res, [MultiOutLNN.noisy_or_activation, MultiOutLNN.noisy_and_activation], False)
+    er = float(wrong)/float(len(data))
+    return er
+
+def run_dnf_network(data, targets, res):
+    wrong = MultiOutLNN.run_lnn(data, targets, res, [MultiOutLNN.noisy_and_activation, MultiOutLNN.noisy_or_activation], False)
+    er = float(wrong)/float(len(data))
+    return er
+
+
+def run_perceptron_network_general(data, targets, res):
+    wrong = MultiOutNN.run_lnn(data, targets, res, False)
+    er = float(wrong)/float(len(data))
+    return er
+
 def train(func, n, data, targets, q):
-    _, net, loss, time = func(n, data, targets, 100000)
-    q.put((net, loss, time))
+    net, er = func(data, targets)
+    q.put((net, er))
 
 def run(func, net, n, data, targets, q):
-    loss = func(n, data, targets, net)
+    loss = func(data, targets, net)
     q.put(loss)
 
 def run_training(n, data, targets):
+    data, targets = transform(data, targets)
+    print(data)
     cnf_res = Queue()
     dnf_res = Queue()
     pcep_res = Queue()
@@ -87,18 +125,19 @@ def run_training(n, data, targets):
     #pcep_p.join()
     pcep_g_p.join()
 
-    cnf_net, cnf_loss, cnf_time = cnf_res.get()
-    dnf_net, dnf_loss, dnf_time = dnf_res.get()
+    cnf_net, cnf_loss = cnf_res.get()
+    dnf_net, dnf_loss = dnf_res.get()
    # pcep_net, pcep_loss, pcep_time = pcep_res.get()
-    pcep_g_net, pcep_g_loss, pcep_g_time = pcep_g_res.get()
+    pcep_g_net, pcep_g_loss = pcep_g_res.get()
 
     #print("[T] Training Time: [CNF: " + str(cnf_time) + ", DNF: " + str(dnf_time) + ", PCEP: " + str(pcep_time) + ", PCEP G: " + str(pcep_g_time) + "]")
     #print("[T] Training Loss: [CNF: " + str(cnf_loss) + ", DNF: " + str(dnf_loss) + ", PCEP: " + str(pcep_loss) + ", PCEP G: " + str(pcep_g_loss) + "]")
-    print("[T] Training Time: [CNF: " + str(cnf_time) + ", DNF: " + str(dnf_time) + ", PCEP G: " + str(pcep_g_time) + "]")
+    #print("[T] Training Time: [CNF: " + str(cnf_time) + ", DNF: " + str(dnf_time) + ", PCEP G: " + str(pcep_g_time) + "]")
     print("[T] Training Loss: [CNF: " + str(cnf_loss) + ", DNF: " + str(dnf_loss) + ", PCEP G: " + str(pcep_g_loss) + "]")
     return cnf_net, dnf_net, pcep_g_net
 
 def run_test(n, cnf, dnf, pcep_g, data, targets):
+    data, targets = transform(data, targets)
     cnf_res = Queue()
     dnf_res = Queue()
     #pcep_res = Queue()
@@ -148,6 +187,12 @@ def conf_interval(data):
     conf_interval = (np.abs(sorted_estimates[int(0.025 * N)] - M), np.abs(sorted_estimates[int(0.975 * N)] - M))
     return conf_interval
 
+
+def transform(data, targets):
+    data = np.array([np.concatenate((x, 1-x), 0) for x in data])
+    targets = np.array([[x] for x in targets])
+
+    return data, targets
 
 def plot(x, y, ci, c, name):
     ci=np.transpose(np.array(ci))
@@ -225,6 +270,7 @@ if __name__ == "__main__":
 
         data = expression[0]
         targets = expression[1]
+
 
         print("Expression:\n")
         print(str(data) + "\n")

@@ -61,8 +61,8 @@ def split_data(data, targets, ratio):
 
 task_id = sys.argv[1]
 
-acts = [LNNWithNot.noisy_and_activation, LNNWithNot.noisy_or_activation]
-acts_name = ["AND", "OR"]
+acts = [LNNWithNot.noisy_or_activation, LNNWithNot.noisy_and_activation]
+acts_name = ["OR", "AND"]
 
 targets, examples = read_data()
 
@@ -71,7 +71,9 @@ X_train, Y_train, X_test, Y_test = split_data(examples, targets, 0.7)
 res = LNNWithNot.train_lnn(X_train, np.array(Y_train), 600000, len(examples[0]), [100], 1, acts)
 
 rule = LNNWithNot.ExtractRules(len(examples[0]), res, acts_name)
-print(rule)
+print(rule[0])
+print(rule[0].get_literals())
+print(len(rule[0].get_literals()))
 
 wrong_net_train, id_wrong_net_train = LNNWithNot.run_lnn(X_train, Y_train, res,  len(examples[0]), [30], 1, acts)
 wrong_rule_train, id_wrong_rule_train = LNNWithNot.test(rule[0], X_train, Y_train)
@@ -88,7 +90,7 @@ rule_test_err = wrong_rule_test/len(X_test)
 res = [net_train_err, rule_train_err, net_test_err, rule_test_err, np.array(id_wrong_net_train), np.array(id_wrong_rule_train), np.array(id_wrong_net_test), np.array(id_wrong_rule_test)]
 res = np.array(res, dtype=object)
 
-np.save('results-{}'.format(task_id), res)
+#np.save('results-or-{}'.format(task_id), res)
 
 #print("-- Evaluating --")
 #print("Training Set, Size = ", len(X_train))

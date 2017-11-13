@@ -5,6 +5,13 @@ import matplotlib.cm as cm
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
+def sigmoid(inputs, weights, bias):
+    z = np.add(np.matmul(inputs, np.transpose(weights)), bias)
+    return 1.0/(1.0 + np.exp(-z))
+
+def linear(inputs, weights, bias):
+    return np.add(np.matmul(inputs, np.transpose(weights)), bias)
+
 def transform_weights(weights):
     return np.log(1 + np.exp(-weights))
 
@@ -25,6 +32,7 @@ def noisy_and_activation(inputs, weights, bias):
     return np.exp(-z)
 
 def apply_network(network, activations, iput, addNot):
+    print(network)
     prev_out = iput
     for idx in range(len(network)):
         #print()
@@ -38,12 +46,12 @@ def apply_network(network, activations, iput, addNot):
         layer = network[idx]
         act = activations[idx]
         
-        w = layer
-        #b = layer[1]
+        w = layer[0]
+        b = layer[1]
         #print(b.shape)
 
         #print(prev_out.shape)
-        out = act(prev_out, w, 0)
+        out = act(prev_out, w, b)
         #print(out.shape)
         prev_out = out
 
@@ -61,9 +69,11 @@ Y_test = mnist.test.labels
 
 
 network = np.load('mnist-autoencoder.npy')
-activations = [noisy_or_activation, noisy_and_activation, noisy_and_activation]
+#activations = [sigmoid]#[noisy_and_activation]
+activations = [noisy_and_activation]#
 
-vec = np.array([[1,1,1,1,0,0,0,0,0,0]])
+
+vec = np.array([[0,0,0,0,0,0,0,0,0,0]])
 decoder = np.array([network[1]])[0]
 encoder = np.array([network[0]])[0]
 
@@ -82,15 +92,17 @@ for i in range(len(Y_test)):
 
     img = np.reshape(decoded, (28, 28))
     hm = plt.imshow(img, cmap='gray', interpolation='nearest')
+    plt.colorbar(hm, ticks=[0,1])
     plt.savefig("Image{}.png".format(Y_test[i]))
     plt.clf()
 
 
 print(decoder.shape)
-decoded = apply_network(decoder, np.flip(activations, 0), vec, True)
+decoded = apply_network(decoder, np.flip(activations, 0), vec, False)
 #print(decoded)
 img = np.reshape(decoded, (28, 28))
 
 hm = plt.imshow(img, cmap='gray', interpolation='nearest')
+plt.colorbar(hm, ticks=[0,1])
 plt.savefig("Image.png")
 plt.clf()

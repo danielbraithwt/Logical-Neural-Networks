@@ -2,7 +2,7 @@ import sys
 sys.path.append('../../lib/')
 
 import MultiOutLNN
-from tensorflow.examples.tutorials.mnist import input_data
+#from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 import os
 import numpy as np
@@ -20,9 +20,9 @@ data, targets = ReadLensesData.read_data()
 data = np.array(data)
 targets = np.array([to_one_hot(v, 3) for v in targets])
 
-res = MultiOutLNN.train_lnn(data, targets, 140000, len(data[0]), [30], len(targets[0]), [MultiOutLNN.noisy_or_activation, MultiOutLNN.noisy_and_activation])
+res = MultiOutLNN.train_lnn(data, targets, int(140000 * 1), len(data[0]), [30], len(targets[0]), [MultiOutLNN.noisy_and_activation, MultiOutLNN.noisy_or_activation], True)
 
-rule = MultiOutLNN.ExtractRules(len(data[0]), res, ["OR", "AND"])
+rule = MultiOutLNN.ExtractRules(len(data[0]), res, ["AND", "OR"])
 print(len(rule))
 
 for i in range(len(rule)):

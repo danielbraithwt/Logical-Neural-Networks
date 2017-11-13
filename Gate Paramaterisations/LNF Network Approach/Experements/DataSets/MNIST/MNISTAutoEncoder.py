@@ -51,7 +51,7 @@ def gen_weights(shape):
     w = inv_transform(initial)
     #print(transform(w))
 
-    #w = np.random.normal(0, 1.0/shape[1], shape)
+    w = np.random.normal(0, 1.0/np.sqrt(shape[1]), shape)
 
     return w
 
@@ -108,11 +108,15 @@ print(len(X_train[0]))
 
 iterations = 30
 num_inputs = len(X_train[0])
-encoded_size = 10
+encoded_size = 20
 
-activations = [noisy_or_activation, noisy_and_activation, noisy_and_activation]#
-encoder_net = construct_network(num_inputs, [60, 30], encoded_size, False)
-decoder_net = construct_network(encoded_size, [30, 60], num_inputs, False)
+activations = [linear]#
+encoder_net = construct_network(num_inputs, [], encoded_size, False)
+decoder_net = construct_network(encoded_size, [], num_inputs, False)
+
+#activations = [sigmoid]#
+#encoder_net = construct_network(num_inputs, [], encoded_size, False)
+#decoder_net = construct_network(encoded_size, [], num_inputs, False)
 
 examples = tf.constant(X_train)
 
@@ -122,16 +126,9 @@ random_example = tf.train.slice_input_producer([examples],
 example_batch = tf.train.batch([random_example],
                                           batch_size=1)
 
-weights = []
-for layer in encoder_net:
-    weights.append(1 - tf.nn.sigmoid(layer[0]))
 
-for layer in decoder_net:
-    weights.append(1 - tf.nn.sigmoid(layer[0]))
-
-
-l1_reg = tf.contrib.layers.l1_regularizer(0.0001)
-regularizer = tf.contrib.layers.apply_regularization(l1_reg, weights)
+#l1_reg = tf.contrib.layers.l1_regularizer(0.00000001)
+#regularizer = tf.contrib.layers.apply_regularization(l1_reg, weights)
 
 x = tf.placeholder("float32", )
 
@@ -141,7 +138,7 @@ decoded = apply_network(decoder_net, np.flip(activations, 0), encoded, False)
 errors = tf.pow(x - decoded, 2)
 error = tf.reduce_sum(errors)
 
-train_op = tf.train.AdamOptimizer(0.001).minimize(error + regularizer)
+train_op = tf.train.AdamOptimizer(0.001).minimize(error)
 model = tf.global_variables_initializer()
 
 with tf.Session() as session:
@@ -156,18 +153,17 @@ with tf.Session() as session:
         for d in range(len(X_train)):
             er += session.run(error, feed_dict={x:[X_train[d]]})
 
-        print(session.run(regularizer))
         print(er/len(X_train))
 
     enc = []
     for l in encoder_net:
-        weights, _ = session.run(l)
-        enc.append(weights)
+        weights, bias = session.run(l)
+        enc.append([weights, bias])
 
     dec = []
     for l in decoder_net:
-        weights, _ = session.run(l)
-        dec.append(weights)
+        weights, bias = session.run(l)
+        dec.append([weights, bias])
 
     np.save('mnist-autoencoder', [enc, dec])
 

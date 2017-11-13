@@ -166,9 +166,15 @@ def transform(weights):
 
 
 def gen_weights(shape):
-    initial = np.abs(np.random.normal(np.log(4)/shape[1], 1/shape[1], shape))
+    var = np.sqrt(np.log((3 * shape[1] + 4)/4))
+    mean = np.log(16.0/(shape[1]**2 * (3 * shape[1] + 4)))/2
+    #var = np.sqrt(np.log(4 * (4 + 3*shape[1])))
+    #mean = -(1.0/2.0) * np.log(shape[1]**2 * (4 + 3*shape[1]))
+    initial = np.random.lognormal(mean, var, shape)
     w = inv_transform(initial)
+    print(transform(w))
 
+    #w = np.random.normal(0, 1.0/shape[1], shape)
 
     return w
 
@@ -307,19 +313,22 @@ def run_lnn(data, targets, network, num_inputs, hidden_layers, num_outputs, acti
     model = tf.global_variables_initializer()
 
     wrong = 0
+    id_wrong = []
     with tf.Session() as session:
         for i in range(len(data)):
             session.run(model)
             pred = np.round(session.run(y_hat_prime, feed_dict={x:[data[i]], y:targets[i]}))
             if not (pred == targets[i]):
                 wrong += 1
+                id_wrong.append(i)
                 break
 
-        return wrong
+        return wrong, id_wrong
 
 
 def test(cnf, data, targets):
     wrong = 0
+    id_wrong = []
 
     for i in range(len(data)):
         row = data[i]
@@ -328,8 +337,9 @@ def test(cnf, data, targets):
 
         if not t_hat == targets[i]:
             wrong += 1
+            id_wrong.append(i)
 
-    return wrong
+    return wrong, id_wrong
 
 def get_inputs(row):
     atoms = []

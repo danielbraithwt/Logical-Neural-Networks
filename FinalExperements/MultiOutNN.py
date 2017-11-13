@@ -280,7 +280,7 @@ def train_lnn(data, targets, iterations, num_inputs, hidden_layers, num_outputs,
             #print(sigmoid(weights))
             final_network.append([weights, bias])
 
-        np.save('network', final_network)
+        np.save('sig-network', final_network)
 
         coord.request_stop()
         coord.join(threads)

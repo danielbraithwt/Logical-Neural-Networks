@@ -35,43 +35,43 @@
 \contentsline {paragraph}{Continuous Rules}{21}
 \contentsline {subsection}{\numberline {4.2.1}Application To Iris Problem}{22}
 \contentsline {section}{\numberline {4.3}Summary}{23}
-\contentsline {chapter}{\numberline {5}Logical Neural Networks}{24}
-\contentsline {section}{\numberline {5.1}Modified Logical Neural Network}{24}
-\contentsline {subsection}{\numberline {5.1.1}Connections Between Layers \& Parameters}{24}
-\contentsline {subsection}{\numberline {5.1.2}Softmax Output Layer}{25}
-\contentsline {chapter}{\numberline {6}Evaluation Of Logical Neural Networks}{26}
-\contentsline {section}{\numberline {6.1}Performance of Logical Neural Networks}{26}
-\contentsline {paragraph}{Results}{27}
-\contentsline {section}{\numberline {6.2}Interpretability of Logical Neural Networks}{28}
-\contentsline {subsection}{\numberline {6.2.1}Discrete Case}{28}
-\contentsline {subsubsection}{Evaluation of LNN Rules}{29}
-\contentsline {subsection}{\numberline {6.2.2}Continuous Case}{29}
-\contentsline {subsubsection}{No Hidden Layer Networks}{30}
-\contentsline {paragraph}{Sigmoid Network}{30}
-\contentsline {paragraph}{AND Network Old Architecture (With and With Out LSM)}{30}
-\contentsline {paragraph}{AND Network (With LSM)}{31}
-\contentsline {paragraph}{AND Network (Without LSM)}{31}
-\contentsline {paragraph}{Conclusion of Interpretability for LNNs with No Hidden Layer}{32}
-\contentsline {subsubsection}{Single Hidden Layer Networks}{32}
-\contentsline {paragraph}{Sigmoid Network}{32}
-\contentsline {paragraph}{OR $\rightarrow $ AND Network Old Structure (With Out LSM)}{33}
-\contentsline {paragraph}{OR $\rightarrow $ AND Network Old Structure (With LSM)}{33}
-\contentsline {paragraph}{OR $\rightarrow $ AND Network (With Out LSM)}{33}
-\contentsline {paragraph}{OR $\rightarrow $ AND (With LSM)}{34}
-\contentsline {paragraph}{AND $\rightarrow $ OR Model (With Out LSM)}{35}
-\contentsline {paragraph}{AND $\rightarrow $ OR Model (With LSM)}{35}
-\contentsline {paragraph}{Conclusion of Interpretability for LNNs with One Hidden Layer}{35}
-\contentsline {subsection}{\numberline {6.2.3}Results of Interpretability Experiments}{35}
-\contentsline {section}{\numberline {6.3}Comparison Between LNNs and Existing Methods}{36}
-\contentsline {subsection}{\numberline {6.3.1}Comparison between LNN Interpretability and LIME}{36}
-\contentsline {subsection}{\numberline {6.3.2}Comparison Between LNNs and Fuzzy Logic Networks}{36}
-\contentsline {section}{\numberline {6.4}Summary Of Logical Neural Network Evaluation}{37}
-\contentsline {chapter}{\numberline {7}Application to Autoencoders}{38}
-\contentsline {paragraph}{Result of Linear Autoencoder (LAE)}{38}
-\contentsline {paragraph}{Result of Sigmoid Autoencoder (SAE)}{38}
-\contentsline {paragraph}{Result of Logical Autoencoder (LoAE)}{39}
-\contentsline {paragraph}{Discussion}{39}
-\contentsline {chapter}{\numberline {8}Conclusion}{40}
-\contentsline {chapter}{Appendices}{43}
-\contentsline {chapter}{\numberline {A}Proofs}{44}
-\contentsline {section}{\numberline {A.1}Proof Of Theorem \ref {thm:upper-bound-hidden-units}}{44}
+\contentsline {chapter}{\numberline {5}Logical Neural Networks}{25}
+\contentsline {section}{\numberline {5.1}Modified Logical Neural Network}{25}
+\contentsline {subsection}{\numberline {5.1.1}Connections Between Layers \& Parameters}{25}
+\contentsline {subsection}{\numberline {5.1.2}Softmax Output Layer}{26}
+\contentsline {chapter}{\numberline {6}Evaluation Of Logical Neural Networks}{27}
+\contentsline {section}{\numberline {6.1}Performance of Logical Neural Networks}{27}
+\contentsline {paragraph}{Results}{28}
+\contentsline {section}{\numberline {6.2}Interpretability of Logical Neural Networks}{29}
+\contentsline {subsection}{\numberline {6.2.1}Discrete Case}{29}
+\contentsline {subsubsection}{Evaluation of LNN Rules}{30}
+\contentsline {subsection}{\numberline {6.2.2}Continuous Case}{30}
+\contentsline {subsubsection}{No Hidden Layer Networks}{31}
+\contentsline {paragraph}{Sigmoid Network}{31}
+\contentsline {paragraph}{AND Network Old Architecture (With and With Out LSM)}{31}
+\contentsline {paragraph}{AND Network (With LSM)}{32}
+\contentsline {paragraph}{AND Network (Without LSM)}{32}
+\contentsline {paragraph}{Conclusion of Interpretability for LNNs with No Hidden Layer}{33}
+\contentsline {subsubsection}{Single Hidden Layer Networks}{33}
+\contentsline {paragraph}{Sigmoid Network}{33}
+\contentsline {paragraph}{OR $\rightarrow $ AND Network Old Structure (With Out LSM)}{34}
+\contentsline {paragraph}{OR $\rightarrow $ AND Network Old Structure (With LSM)}{34}
+\contentsline {paragraph}{OR $\rightarrow $ AND Network (With Out LSM)}{34}
+\contentsline {paragraph}{OR $\rightarrow $ AND (With LSM)}{35}
+\contentsline {paragraph}{AND $\rightarrow $ OR Model (With Out LSM)}{36}
+\contentsline {paragraph}{AND $\rightarrow $ OR Model (With LSM)}{36}
+\contentsline {paragraph}{Conclusion of Interpretability for LNNs with One Hidden Layer}{36}
+\contentsline {subsection}{\numberline {6.2.3}Results of Interpretability Experiments}{36}
+\contentsline {section}{\numberline {6.3}Comparison Between LNNs and Existing Methods}{37}
+\contentsline {subsection}{\numberline {6.3.1}Comparison between LNN Interpretability and LIME}{37}
+\contentsline {subsection}{\numberline {6.3.2}Comparison Between LNNs and Fuzzy Logic Networks}{37}
+\contentsline {section}{\numberline {6.4}Summary Of Logical Neural Network Evaluation}{38}
+\contentsline {chapter}{\numberline {7}Application to Autoencoders}{39}
+\contentsline {paragraph}{Result of Linear Autoencoder (LAE)}{39}
+\contentsline {paragraph}{Result of Sigmoid Autoencoder (SAE)}{39}
+\contentsline {paragraph}{Result of Logical Autoencoder (LoAE)}{40}
+\contentsline {paragraph}{Discussion}{40}
+\contentsline {chapter}{\numberline {8}Conclusion}{41}
+\contentsline {chapter}{Appendices}{45}
+\contentsline {chapter}{\numberline {A}Proofs}{47}
+\contentsline {section}{\numberline {A.1}Proof Of Theorem \ref {thm:upper-bound-hidden-units}}{47}
